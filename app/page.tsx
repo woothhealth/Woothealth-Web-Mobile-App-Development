@@ -1,9 +1,9 @@
 import React from 'react'
-import HeroSection from '../Components/HomePage/HeroSection'
+import ComingSoon from '../Pages/ComingSoon'
 
 const page = () => {
   return (
-    <HeroSection />
+    <ComingSoon/>
   )
 }
 

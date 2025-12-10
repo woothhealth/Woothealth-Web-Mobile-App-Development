@@ -57,5 +57,6 @@ button {
   pointer-events: none;
 }
 
-section {
+li {
+  cursor: pointer;
 }

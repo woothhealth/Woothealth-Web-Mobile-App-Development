@@ -1,9 +1,9 @@
 import React from 'react'
-import ComingSoon from '../Pages/ComingSoon'
+import HomePage from '../Pages/HomePage'
 
 const page = () => {
   return (
-    <ComingSoon/>
+    <HomePage/>
   )
 }
 

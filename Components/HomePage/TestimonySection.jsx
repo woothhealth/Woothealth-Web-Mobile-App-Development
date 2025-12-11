@@ -32,21 +32,21 @@ const testimonials = [
     name: "Funmi Ajayi",
     role: "Starter Plan",
     quote: "I needed insurance but didn't want to break the bank. Woot Health gave me exactly what I needed at a price I could afford.",
-    image: "https://picsum.photos/100/100?random=12"
+    image: "https://picsum.photos/100/100?random=13"
   },
   {
     id: 5,
     name: "Kunle Adeleke",
     role: "Essential Plan",
     quote: "Signed up in minutes, got covered immediately. The app makes everything so easy.",
-    image: "https://picsum.photos/100/100?random=12"
+    image: "https://picsum.photos/100/100?random=14"
   },
   {
     id: 6,
     name: "Abiodun Olaniyi",
     role: "Starter Plan",
     quote: "Getting covered was so easy! I signed up in less than 10 minutes and had my insurance card the same day.",
-    image: "https://picsum.photos/100/100?random=12"
+    image: "https://picsum.photos/100/100?random=15"
   }
 ];
 
@@ -62,55 +62,60 @@ const TestimonySection = () => {
   };
 
   return (
-    <section id="testimonials" className="py-8">
-      <div className="mx-auto px-6">
-        <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-          <div className="relative w-full overflow-hidden flex items-center justify-center border border-[#E1E1E2] rounded-4xl p-4 md:px-6 md:py-8">
-            {testimonials.map((item, index) => (
-              <div 
-                key={item.id}
-                className={`absolute inset-0 flex flex-col justify-center transition-all duration-700 ease-in-out ${
-                  index === currentIndex 
-                    ? 'opacity-100 translate-x-0 relative' 
-                    : 'opacity-0 translate-x-20 absolute pointer-events-none'
-                }`}
-                aria-hidden={index !== currentIndex}
-              >
-                <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} width={100} height={100}
-                    className="w-14 h-14 rounded-full grayscale object-cover" loading='lazy'
-                  />
-                  <div className="text-left flex flex-col gap-1">
-                    <p className="font-bold tracking-wide text-[20px] uppercase">{item.name}</p>
-                    <p className="text-[14px] uppercase tracking-wide">{item.role}</p>
+    <section id="testimonials" className="py-8 lg:px-12 md:px-6 px-4">
+      <div className='flex flex-col items-center justify-center gap-8 text-center'>
+        <h3 className='lg:text-[54px] text-[38px] leading-tight'>
+          Loved by thousands of Nigerians
+        </h3>
+        <div className="relative mx-auto px-8">
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative md:px-6 md:py-8">
+              {testimonials.map((item, index) => (
+                <div 
+                  key={item.id}
+                  className={`flex flex-col justify-center transition-all duration-700 ease-in-out border border-[#E1E1E2] md:w-2xl h-70 rounded-4xl p-4 mx-auto ${
+                    index === currentIndex 
+                      ? 'opacity-100 translate-x-0 relative' 
+                      : 'opacity-0 translate-x-20 absolute pointer-events-none'
+                  }`}
+                  aria-hidden={index !== currentIndex}
+                >
+                  <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
+                    <img 
+                      src={item.image} 
+                      alt={item.name} width={200} height={100}
+                      className="w-14 h-14 rounded-full grayscale object-cover" loading='lazy'
+                    />
+                    <div className="text-left flex flex-col gap-1">
+                      <p className="font-bold tracking-wide text-[20px] uppercase">{item.name}</p>
+                      <p className="text-[12px] uppercase tracking-wide">{item.role}</p>
+                    </div>
                   </div>
+                  <p className="text-[16px] md:text-[18px] font-serif leading-relaxed mb-8 mt-3 text-start">
+                    {item.quote}
+                  </p>
+                  
+                  <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#49A5EF80] text-9xl" />
                 </div>
-                <p className="text-[18px] md:text-[20px] font-serif leading-relaxed mb-8 mt-3">
-                  {item.quote}
-                </p>
-                
-                <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#49A5EF80] text-8xl" />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="flex gap-8 mt-6">
-            <button 
-              onClick={prevSlide}
-              className="p-3 border border-gray-700 rounded-full text-gray-400 hover:text-white hover:border-white hover:bg-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-white"
-              aria-label="Previous testimonial"
-            >
-              <FaChevronLeft size={24} />
-            </button>
-            <button 
-              onClick={nextSlide}
-              className="p-3 border border-gray-700 rounded-full text-gray-400 hover:text-white hover:border-white hover:bg-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-white"
-              aria-label="Next testimonial"
-            >
-              <FaChevronRight size={24} />
-            </button>
+            <div className="absolute flex justify-between w-full">
+              <button 
+                onClick={prevSlide}
+                className="p-1 text-gray-400/70 hover:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-white"
+                aria-label="Previous testimonial"
+              >
+                <FaChevronLeft size={24} />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="p-1 text-gray-400/70 hover:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-white"
+                aria-label="Next testimonial"
+              >
+                <FaChevronRight size={24} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

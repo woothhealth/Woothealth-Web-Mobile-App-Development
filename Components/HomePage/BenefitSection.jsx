@@ -30,19 +30,21 @@ const BenefitSection = () => {
             <p className='text-[#120052] text-[40px] font-semibold leading-tight'>
                 The benefits we offer you
             </p>
-            <p className='max-w-sm leading-tight text-[17px] md:text-[16px] text-justify'>
+            <p className='md:max-w-sm leading-tight text-[17px] md:text-[16px] text-justify'>
                 Quality care shouldn't break the bank. Our affordable plans give you peace of mind and easy access to the care you deserve, with flexible payment options that fit your schedule.
             </p>
         </div>
-        <div className='grid md:grid-cols-3 grid-cols-1 items-center mt-8 '>
+        <div className='grid md:grid-cols-3 grid-cols-1 items-center mt-12 md:mt-8 gap-6'>
             {benefits.map((benefit, index) => {
                 const isCentered = index === 1;
                 
                 return (
-                    <div key={index} className={`text-justify p-6 md:h-60 flex flex-col gap-1.5 md:gap-1 ${isCentered ? 'md:border-x-2 border-[#B6B6B9]' : 'border-none'}`}>
-                        <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-12 w-12 md:text-lg text-xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>{benefit.icon}</div>
+                    <div key={index} className={`text-justify md:p-6 md:h-60 flex flex-col gap-1 ${isCentered ? 'md:border-x-2 border-[#B6B6B9]' : 'border-none'}`}>
+                        <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-14 w-14 md:text-xl text-2xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>
+                            {benefit.icon}
+                        </div>
                         <h3 className='font-semibold md:text-lg text-xl'>{benefit.title}</h3>
-                        <p className='text-[1.25rem] md:text-base'>{benefit.text}</p>
+                        <p className='text-[1rem] md:text-base'>{benefit.text}</p>
                     </div>
                 )
             })

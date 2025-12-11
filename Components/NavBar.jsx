@@ -23,9 +23,9 @@ const NavBar = () => {
     }
 
     return (
-        <nav className='flex justify-between px-8 py-5 md:px-10 md:py-6 lg:px-16 items-center sticky top-0 left-0 right-0 bg-white z-50 shadow-md'>
+        <nav className='flex justify-between px-8 py-4 md:px-10 md:py-6 lg:px-16 items-center sticky top-0 left-0 right-0 bg-white z-50 shadow-md'>
             <div className=''>
-                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-[2.5rem]' priority />
+                <Image src='/Logo2.png' width={500} height={0} alt="WootHealth Logo" className='w-auto h-10' priority />
             </div>
             {/* Desktop menu */}
             <ul className='hidden lg:flex gap-6 text-[16px] font-medium'>
@@ -80,7 +80,7 @@ const NavBar = () => {
 
             {/* Mobile and Tab Menu */}
             {menuOpen && (
-                <div className='flex flex-col absolute top-20 left-0 right-0 bg-white shadow-lg lg:hidden h-screen px-4 py-2 md:px-10'>
+                <div className='flex flex-col absolute top-18 left-0 right-0 bg-white shadow-lg lg:hidden h-screen px-4 py-2 md:px-10'>
                     <ul className='flex flex-col gap-6 md:gap-10 py-6 text-[18px] md:text-[20px] font-medium'>
                         <li className='flex flex-col gap-2 cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md'>
                             <span onClick={toggleHealthPlans} className='flex justify-between items-center'>

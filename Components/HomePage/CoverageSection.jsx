@@ -4,8 +4,8 @@ import Image from 'next/image'
 const CoverageSection = () => {
     const coverageImages = [
         '/Coverage_1.png',
-        '/Coverage_2.png',
-        '/Coverage_3.png'
+        '/Coverage_3.png',
+        '/Coverage_2.png'
     ];
   return (
     <section className='flex flex-col items-center justify-center pt-16 pb-8 lg:px-[68px] md:px-10 px-6'>
@@ -18,7 +18,7 @@ const CoverageSection = () => {
                      const isFeatured = index === 1;
                      return (
                         <div key={index} className={`md:my-5 ${isFeatured ? 'md:scale-110' : 'md:scale-100'}`}>
-                            <Image src={src} alt={`Coverage ${index + 1}`} width={100} height={100} className='w-auto md:h-80 h-[450px] object-cover rounded-br-2xl rounded-tl-2xl' loading='lazy' />
+                            <Image src={src} alt={`Coverage ${index + 1}`} width={500} height={100} className='w-auto md:h-80 h-[450px] object-cover rounded-br-[70px] rounded-tl-[70px] md:rounded-none' loading='lazy' />
                         </div>
                      )
                 }

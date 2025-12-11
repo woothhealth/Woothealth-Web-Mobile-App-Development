@@ -36,7 +36,7 @@ const Footer = () => {
                 </ul>
             </div>
             <div className='md:col-span-3'>
-                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
+                <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
                 <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
                 
@@ -88,8 +88,10 @@ const Footer = () => {
                 </div>
             </div>
             <div className='col-span-2'>
-                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-10 mb-4' loading='lazy' />
-                <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
+                <Image src='/Logo2.png' width={500} height={100} alt="WootHealth Logo" className='w-auto h-8 mb-4' priority />
+                <p className='text-base mb-4'>
+                    Healthcare that works for your everyday life
+                </p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
                 
                 <div className='mt-8 flex gap-4'>

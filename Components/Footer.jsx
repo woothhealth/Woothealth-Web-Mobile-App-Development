@@ -67,7 +67,7 @@ const Footer = () => {
                 </ul>
             </div>
             <div className=''>
-                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
+                <Image src='/Logo2.png' width={500} height={100} alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
                 <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
 

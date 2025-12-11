@@ -25,7 +25,7 @@ const NavBar = () => {
     return (
         <nav className='flex justify-between px-8 py-5 md:px-10 md:py-6 lg:px-16 items-center sticky top-0 left-0 right-0 bg-white z-50 shadow-md'>
             <div className=''>
-                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-[2.5rem]' loading='lazy' />
+                <Image src='/Logo.png' width={45} height={0} alt="WootHealth Logo" className='w-auto h-[2.5rem]' priority />
             </div>
             {/* Desktop menu */}
             <ul className='hidden lg:flex gap-6 text-[16px] font-medium'>
@@ -63,7 +63,7 @@ const NavBar = () => {
                     Contact Us
                 </li>
             </ul>
-            <button className='hidden lg:block w-[120px] h-[38px]'>
+            <button className='btn hidden lg:block w-[120px] h-[38px]'>
                 Login
             </button>
 
@@ -120,7 +120,7 @@ const NavBar = () => {
                             Contact Us
                         </li>
                     </ul>
-                    <button className='w-full h-12 bg-[#49A5EF] text-white rounded-full font-semibold mt-2'>
+                    <button className='btn w-full h-12 bg-[#49A5EF] text-white rounded-full font-semibold mt-2'>
                         Login
                     </button>
                 </div>

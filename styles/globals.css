@@ -28,11 +28,13 @@ body {
 }
 
 button {
-  background: var(--color-btn);
   border-radius: 40px;
-  font-size: 16px;
-  color: var(--foreground-secondary);
   cursor: pointer;
+}
+
+.btn {
+  background: var(--color-btn);
+  color: var(--foreground-secondary);
 }
 
 .sect {
@@ -42,7 +44,6 @@ button {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  display: flex;
 }
 
 .sect::before {
@@ -59,4 +60,35 @@ button {
 
 li {
   cursor: pointer;
+}
+
+.about {
+  height: 50svh;
+  background-image: url(../public/HomeAbout.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.glassy {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(3px);
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

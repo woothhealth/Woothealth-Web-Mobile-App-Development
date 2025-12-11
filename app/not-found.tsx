@@ -12,7 +12,7 @@ const notFound = () => {
           This is page is not available.
         </p>
         <Link href={'/'}>
-          <button className='px-20 py-3 font-semibold'>
+          <button className='btn px-20 py-3 font-semibold'>
             Go Back
           </button>
         </Link>

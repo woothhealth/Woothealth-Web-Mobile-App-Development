@@ -2,6 +2,7 @@
 import React from 'react'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const NavBar = () => {
     const [healthPlansOpen, setHealthPlansOpen] = React.useState(false);
@@ -59,9 +60,11 @@ const NavBar = () => {
                         </div>
                     )}
                 </li>
-                <li className='cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md'>
-                    Contact Us
-                </li>
+                <Link href="/contact">
+                    <li className='cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md'>
+                        Contact Us
+                    </li>
+                </Link>
             </ul>
             <button className='btn hidden lg:block w-[120px] h-[38px]'>
                 Login

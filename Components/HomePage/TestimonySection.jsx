@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import Image from 'next/image';
-import { RiDoubleQuotesR } from 'react-icons/ri';
+import React, { useState } from 'react'
+import Image from 'next/image'
+import { RiDoubleQuotesR } from 'react-icons/ri'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 const testimonials = [
   {
@@ -48,18 +48,22 @@ const testimonials = [
     quote: "Getting covered was so easy! I signed up in less than 10 minutes and had my insurance card the same day.",
     image: "https://picsum.photos/100/100?random=15"
   }
-];
+]
 
 const TestimonySection = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [current, setCurrent] = useState(0)
+  const itemsPerPageDesktop = 3
+  const itemsPerPageMobile = 1
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+    setCurrent((prev) => (prev + 1) % Math.ceil(testimonials.length / itemsPerPageDesktop))
+  }
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+    setCurrent((prev) => (prev - 1 + Math.ceil(testimonials.length / itemsPerPageDesktop)) % Math.ceil(testimonials.length / itemsPerPageDesktop))
+  }
+
+  const visibleTestimonialsDesktop = testimonials.slice(current * itemsPerPageDesktop, (current + 1) * itemsPerPageDesktop)
 
   return (
     <section id="testimonials" className="py-8 lg:px-12 md:px-6 px-4">
@@ -67,55 +71,64 @@ const TestimonySection = () => {
         <h3 className='lg:text-[54px] text-[38px] leading-tight'>
           Loved by thousands of Nigerians
         </h3>
-        <div className="relative mx-auto px-8">
-          <div className="flex flex-col items-center justify-center">
-            <div className="relative md:px-6 md:py-8">
-              {testimonials.map((item, index) => (
-                <div 
-                  key={item.id}
-                  className={`flex flex-col justify-center transition-all duration-700 ease-in-out border border-[#E1E1E2] md:w-2xl h-70 rounded-4xl p-4 mx-auto ${
-                    index === currentIndex 
-                      ? 'opacity-100 translate-x-0 relative' 
-                      : 'opacity-0 translate-x-20 absolute pointer-events-none'
-                  }`}
-                  aria-hidden={index !== currentIndex}
-                >
-                  <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} width={200} height={100}
-                      className="w-14 h-14 rounded-full grayscale object-cover" loading='lazy'
-                    />
-                    <div className="text-left flex flex-col gap-1">
-                      <p className="font-bold tracking-wide text-[20px] uppercase">{item.name}</p>
-                      <p className="text-[12px] uppercase tracking-wide">{item.role}</p>
-                    </div>
+        {/* Desktop: Show 3 testimonials with navigation */}
+        <div className="hidden md:block relative mx-auto max-w-6xl">
+          <div className="flex gap-4 justify-center">
+            {visibleTestimonialsDesktop.map((item) => (
+              <div key={item.id} className="relative flex-1 max-w-sm border border-[#E1E1E2] rounded-4xl p-4 h-70">
+                <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    width={56} 
+                    height={56}
+                    className="w-14 h-14 rounded-full grayscale object-cover" 
+                  />
+                  <div className="text-left flex flex-col gap-1">
+                    <p className="font-bold tracking-wide text-[20px] uppercase">{item.name}</p>
+                    <p className="text-[12px] uppercase tracking-wide">{item.role}</p>
                   </div>
-                  <p className="text-[16px] md:text-[18px] font-serif leading-relaxed mb-8 mt-3 text-start">
-                    {item.quote}
-                  </p>
-                  
-                  <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#49A5EF80] text-9xl" />
                 </div>
-              ))}
-            </div>
-
-            <div className="absolute flex justify-between w-full">
-              <button 
-                onClick={prevSlide}
-                className="p-1 text-gray-400/70 hover:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-white"
-                aria-label="Previous testimonial"
-              >
-                <FaChevronLeft size={24} />
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="p-1 text-gray-400/70 hover:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-white"
-                aria-label="Next testimonial"
-              >
-                <FaChevronRight size={24} />
-              </button>
-            </div>
+                <p className="text-[16px] md:text-[18px] font-serif leading-relaxed mb-8 mt-3 text-start">
+                  {item.quote}
+                <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#49A5EF80] text-9xl" />
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-10 mt-7">
+            <button onClick={prevSlide} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+              <FaChevronLeft />
+            </button>
+            <button onClick={nextSlide} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+              <FaChevronRight />
+            </button>
+          </div>
+        </div>
+        {/* Mobile: Horizontal scrollable list */}
+        <div className="md:hidden overflow-x-auto max-w-full">
+          <div className="flex gap-4 px-4">
+            {testimonials.map((item) => (
+              <div key={item.id} className="shrink-0 w-80 border border-[#E1E1E2] rounded-4xl p-4 h-70">
+                <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    width={56} 
+                    height={56}
+                    className="w-14 h-14 rounded-full grayscale object-cover" 
+                  />
+                  <div className="text-left flex flex-col gap-1">
+                    <p className="font-bold tracking-wide text-[20px] uppercase">{item.name}</p>
+                    <p className="text-[12px] uppercase tracking-wide">{item.role}</p>
+                  </div>
+                </div>
+                <p className="text-[16px] md:text-[18px] font-serif leading-relaxed mb-8 mt-3 text-start">
+                  {item.quote}
+                </p>
+                <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#49A5EF80] text-9xl" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

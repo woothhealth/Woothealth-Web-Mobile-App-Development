@@ -30,6 +30,13 @@ const Contact = () => {
     email: '',
     message: ''
   });
+  const [errors, setErrors] = useState({
+    name: '',
+    company: '',
+    subject: '',
+    email: '',
+    message: ''
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -38,10 +45,42 @@ const Contact = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setErrors({
+      ...errors,
+      [e.target.name]: ''
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let newErrors = { name: '', company: '', subject: '', email: '', message: '' };
+    let hasError = false;
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Field not filled';
+      hasError = true;
+    }
+    if (!formData.company.trim()) {
+      newErrors.company = 'Field not filled';
+      hasError = true;
+    }
+    if (!formData.subject.trim()) {
+      newErrors.subject = 'Field not filled';
+      hasError = true;
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Field not filled';
+      hasError = true;
+    }
+    if (!formData.message.trim()) {
+      newErrors.message = 'Field not filled';
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) return;
+
     setIsSubmitting(true);
     
     // Simulate form submission
@@ -87,9 +126,11 @@ const Contact = () => {
                 <p>We're just a message away. Contact us anytime for questions about your coverage, claims support, or anything else we can help with.</p>
             </div>
             <div>
+
+            {/* Contact Form, Submitted and Not */}
              {isSubmitted ? (
-                <div className="text-center bg-[#E5E7EB]/50 border-green-200 py-4">
-                  <FaCheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+                <div className="text-center border-green-200 py-4">
+                  <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">
                     Message Sent Successfully!
                   </h3>
@@ -98,7 +139,7 @@ const Contact = () => {
                   </p>
                   <button
                     onClick={() => setIsSubmitted(false)}
-                    className="bg-[#49A5EF]/60 text-white px-4 py-2 rounded-sm"
+                    className="bg-[#49A5EF]/780 text-white px-5 py-3 rounded-sm"
                   >
                     Send Another Message
                   </button>
@@ -111,34 +152,39 @@ const Contact = () => {
                             <label htmlFor="Name">
                                 Name
                             </label>
-                            <input type="text" placeholder='Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1' id="name" name="name" value={formData.name} onChange={handleChange} required />
+                            <input type="text" placeholder='Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1.5' id="name" name="name" value={formData.name} onChange={handleChange} />
+                            {errors.name && <span className="text-red-500/60 text-sm">{errors.name}</span>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
-                            <label htmlFor="Company">
+                            <label htmlFor="company">
                                 Company
                             </label>
-                            <input type="text" name='Company' id="company" placeholder='Company' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1' value={formData.company} onChange={handleChange} required />
+                            <input type="text" name='company' id="company" placeholder='Company' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1.5' value={formData.company} onChange={handleChange}/>
+                            {errors.company && <span className="text-red-500/60 text-sm">{errors.company}</span>}
                         </div>
                     </div>
                     <div className='flex gap-6 w-full'>
                         <div className='flex flex-col gap-1 w-full'>
-                            <label htmlFor="Subject">
+                            <label htmlFor="subject">
                                 Subject
                             </label>
-                            <input type="text" placeholder='Subject' name='Subject' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1' id="subject" value={formData.subject} onChange={handleChange} required />
+                            <input type="text" placeholder='Subject' name='subject' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1.5' id="subject" value={formData.subject} onChange={handleChange} />
+                            {errors.subject && <span className="text-red-500/60 text-sm">{errors.subject}</span>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
-                            <label htmlFor="Company">
+                            <label htmlFor="email">
                                 Email
                             </label>
-                            <input type="email" name='Email' placeholder='Email' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1' id="email" value={formData.email} onChange={handleChange} required />
+                            <input type="email" name='email' placeholder='Email' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1.5' id="email" value={formData.email} onChange={handleChange} />
+                            {errors.email && <span className="text-red-500/60 text-sm">{errors.email}</span>}
                         </div>
                     </div>
                     <div className='flex flex-col gap-1 w-full'>
-                            <label htmlFor="Message">
+                            <label htmlFor="message">
                                 Message
                             </label>
-                            <textarea name='message' placeholder='Write a message' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1' value={formData.email} onChange={handleChange}></textarea>
+                            <textarea name='message' placeholder='Write a message' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1 resize-none h-20' value={formData.message} onChange={handleChange}></textarea>
+                            {errors.message && <span className="text-red-500/60 text-sm">{errors.message}</span>}
                     </div>
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-6 py-2 rounded-sm w-fit mt-2'>
                         {isSubmitting ? 'Sending...' : 'Send Message'}

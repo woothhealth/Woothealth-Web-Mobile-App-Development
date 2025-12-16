@@ -4,7 +4,7 @@ import { FaExclamationTriangle, FaTools } from 'react-icons/fa'
 
 const notFound = () => {
   return (
-    <section className='sect flex items-center justify-center text-[#ededed]'>
+    <section className='sect flex items-center justify-center text-[#ededed] py-10 relative'>
         <div className='flex flex-col z-10 gap-4 items-center w-180'>
         <FaExclamationTriangle className='text-yellow-400 h-40 w-auto mb-5'/>
         <h2 className='font-extrabold text-4xl'>PAGE NOT FOUND</h2>

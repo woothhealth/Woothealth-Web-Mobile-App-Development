@@ -4,8 +4,8 @@ import CoverageSection from '../Components/HomePage/CoverageSection'
 import BenefitSection from '../Components/HomePage/BenefitSection'
 import AboutSection from '../Components/HomePage/AboutSection'
 import ProviderSection from '../Components/HomePage/ProviderSection'
-import TestimonySection from '../Components/HomePage/TestimonySection'
-import FAQ from '../Components/HomePage/FAQ'
+import TestimonySection from '../UI/TestimonySection'
+import FAQ from '../UI/FAQ'
 import HomeArticle from '../Components/HomePage/HomeArticle'
 
 const HomePage = () => {

@@ -68,3 +68,7 @@ li {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.formDiv::-webkit-scrollbar {
+        display: none;
+    }

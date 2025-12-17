@@ -101,7 +101,7 @@ const Contact = () => {
 
   return (
     <section className='grid md:grid-cols-2 grid-cols-1 gap-10 pt-10 pb-12 lg:px-[68px] md:px-10 px-6'>
-        <div className='flex flex-col gap-6 px-4'>
+        <div className='flex flex-col gap-6 md:px-4 px-0'>
             <div className='border-b pb-6'>
                 <h2 className='text-[30px] mb-4'>Get in touch</h2>
                 <p>Reach out to our team with any inquiries. We're committed to providing you with prompt, helpful responses.</p>
@@ -120,16 +120,16 @@ const Contact = () => {
                 ))}
             </div>
         </div>
-        <div className='px-4 flex flex-col gap-8 border-[#E5E7EB] border rounded-2xl py-3'>
+        <div className='md:px-5 flex flex-col gap-8 border-[#E5E7EB] border-b rounded-2xl pt-3 pb-6'>
             <div>
                 <h2 className='text-[30px] mb-4'>Send a message</h2>
-                <p>We're just a message away. Contact us anytime for questions about your coverage, claims support, or anything else we can help with.</p>
+                <p className='text-justify'>We're just a message away. Contact us anytime for questions about your coverage, claims support, or anything else we can help with.</p>
             </div>
             <div>
 
             {/* Contact Form, Submitted and Not */}
              {isSubmitted ? (
-                <div className="text-center border-green-200 py-4">
+                <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                   <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">
                     Message Sent Successfully!
@@ -146,8 +146,8 @@ const Contact = () => {
                 </div>
               ) : (
                 <div className='flex flex-col gap-2'>
-                <form onSubmit={handleSubmit} className='flex flex-col gap-4 items-center justify-center'>
-                    <div className='flex gap-6 w-full'>
+                <form onSubmit={handleSubmit} className='flex flex-col gap-4 items-center justify-center mx-4 md:mx-0'>
+                    <div className='flex flex-col md:flex-row gap-6 w-full'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label htmlFor="Name">
                                 Name
@@ -163,7 +163,7 @@ const Contact = () => {
                             {errors.company && <span className="text-red-500/60 text-sm">{errors.company}</span>}
                         </div>
                     </div>
-                    <div className='flex gap-6 w-full'>
+                    <div className='flex gap-6 w-full flex-col md:flex-row'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label htmlFor="subject">
                                 Subject
@@ -186,7 +186,7 @@ const Contact = () => {
                             <textarea name='message' placeholder='Write a message' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-sm px-2.5 py-1 resize-none h-20' value={formData.message} onChange={handleChange}></textarea>
                             {errors.message && <span className="text-red-500/60 text-sm">{errors.message}</span>}
                     </div>
-                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-6 py-2 rounded-sm w-fit mt-2'>
+                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-8 py-3 rounded-sm w-fit mt-2'>
                         {isSubmitting ? 'Sending...' : 'Send Message'}
                     </button>
                 </form>

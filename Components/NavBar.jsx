@@ -36,14 +36,18 @@ const NavBar = () => {
             </Link>
             {/* Desktop menu */}
             <ul className='hidden lg:flex gap-6 text-[16px] font-medium'>
-                <li className="relative flex gap-1 items-center cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md" onClick={toggleHealthPlans}>
+                <li className={`relative flex gap-1 items-center cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/business') || isActive('/retail') ? 'text-[#49A5EF]' : ''}`} onClick={toggleHealthPlans}>
                         Health Plans 
                         {healthPlansOpen ? <FaChevronUp className='text-[.7rem]'/> : <FaChevronDown className='text-[.7rem]'/>}
                     {healthPlansOpen && (
                         <div className='absolute top-10 left-0 bg-white shadow-lg rounded-md py-4 pl-1 z-10 w-full'>
                             <ul className='flex flex-col gap-3 text-[15px]'>
-                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/business') ? 'text-[#49A5EF]' : ''}`}>Business Plan</li>
-                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/retail') ? 'text-[#49A5EF]' : ''}`}>Retail Plan</li>
+                                <Link href="/business">
+                                    <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md text-[#000000] ${isActive('/business') ? 'text-[#49A5EF]' : ''}`}>Business Plan</li>
+                                </Link>
+                                <Link href="/retail">
+                                    <li className={`py-1 px-2 hover:bg-[#c9e3f866] text-[#000000] rounded-md ${isActive('/retail') ? 'text-[#49A5EF]' : ''}`}>Retail Plan</li>
+                                </Link>
                             </ul>
                         </div>
                     )}
@@ -58,14 +62,18 @@ const NavBar = () => {
                         About Us
                     </li>
                 </Link>
-                <li className={`relative flex gap-1 items-center cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/resources') ? 'text-[#49A5EF]' : ''}`} onClick={toggleResources}>
+                <li className={`relative flex gap-1 items-center cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/blog') || isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`} onClick={toggleResources}>
                     Resources
                     {resourcesOpen ? <FaChevronUp className='text-[.7rem]'/> : <FaChevronDown className='text-[.7rem]'/>}
                     {resourcesOpen && (
                         <div className='absolute top-10 left-0 bg-white shadow-lg rounded-md py-4 pl-1 z-10 w-full'>
                             <ul className='flex flex-col gap-3 text-[15px]'>
-                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/blog') ? 'text-[#49A5EF]' : ''}`}>Blog</li>
-                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`}>FAQs</li>
+                                <Link href="/blog">
+                                    <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md text-[#000000] ${isActive('/blog') ? 'text-[#49A5EF]' : ''}`}>Blog</li>
+                                </Link>
+                                <Link href="/FAQs">
+                                    <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md text-[#000000] ${isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`}>FAQs</li>
+                                </Link>
                             </ul>
                         </div>
                     )}
@@ -95,7 +103,7 @@ const NavBar = () => {
             {menuOpen && (
                 <div className='flex flex-col absolute top-18 left-0 right-0 bg-white shadow-lg lg:hidden h-screen px-4 py-2 md:px-10'>
                     <ul className='flex flex-col gap-6 md:gap-10 py-6 text-[18px] md:text-[20px] font-medium'>
-                        <li className="flex flex-col gap-2 cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md">
+                        <li className={`flex flex-col gap-2 cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md ${isActive('/business') || isActive('/retail') ? 'text-[#49A5EF]' : ''}`}>
                             <span onClick={toggleHealthPlans} className='flex justify-between items-center'>
                                 Health Plans
                                 {healthPlansOpen ? <FaChevronUp className='text-[.8rem] md:text-[1rem]'/> : <FaChevronDown className='text-[.8rem] md:text-[1rem]'/>}
@@ -103,8 +111,12 @@ const NavBar = () => {
                             {healthPlansOpen && (
                                 <div className='flex flex-col bg-white shadow-lg rounded-md py-4 pl-1 z-10 w-full'>
                                     <ul className='flex flex-col gap-3 text-[16px] md:text-[18px]'>
-                                        <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/business') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Business Plan</li>
-                                        <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/retail') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Retail Plan</li>
+                                        <Link href="/business">
+                                            <li className={`py-1 px-2 hover:bg-[#c9e3f866] text-[#000000] rounded-md ${isActive('/business') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Business Plan</li>
+                                        </Link>
+                                        <Link href="/retail">
+                                            <li className={`py-1 px-2 hover:bg-[#c9e3f866] text-[#000000] rounded-md ${isActive('/retail') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Retail Plan</li>
+                                        </Link>
                                     </ul>
                                 </div>
                             )}
@@ -119,7 +131,7 @@ const NavBar = () => {
                                 About Us
                             </li>
                         </Link>
-                        <li className="flex flex-col gap-2 cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md">
+                        <li className={`flex flex-col gap-2 cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md ${isActive('/blog') || isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`}>
                             <span onClick={toggleResources} className='flex justify-between items-center'>
                                 Resources
                                 {resourcesOpen ? <FaChevronUp className='text-[.8rem] md:text-[1rem]'/> : <FaChevronDown className='text-[.8rem] md:text-[1rem]'/>}
@@ -127,8 +139,12 @@ const NavBar = () => {
                                 {resourcesOpen && (
                                     <div className='flex flex-col bg-white shadow-lg rounded-md py-4 pl-1 z-10 w-full'>
                                         <ul className='flex flex-col gap-3 text-[16px] md:text-[18px]'>
-                                            <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/blog') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Blog</li>
-                                            <li className={`py-1 px-2 hover:bg-[#c9e3f866] rounded-md ${isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>FAQs</li>
+                                            <Link href="/blog">
+                                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] text-[#000000] rounded-md ${isActive('/blog') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>Blog</li>
+                                            </Link>
+                                            <Link href="/FAQs">
+                                                <li className={`py-1 px-2 hover:bg-[#c9e3f866] text-[#000000] rounded-md ${isActive('/FAQs') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>FAQs</li>
+                                            </Link>
                                         </ul>
                                     </div>
                                 )}

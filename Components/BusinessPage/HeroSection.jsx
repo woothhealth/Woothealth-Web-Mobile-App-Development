@@ -4,6 +4,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const HeroSection = () => {
  
@@ -25,9 +26,11 @@ const HeroSection = () => {
             <h2 className='lg:text-[47px] md:text-[45px] text-[38px] leading-10 font-bold'>Health benefit that keep your team healthy and your business thriving</h2>
             <p className='text-[1.2rem] md:text-[1.4rem] lg:text-lg'>Flexible plans designed for business of every size</p>
           </div>
-          <button className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
-            GET QUOTE <FaArrowRight/>
-          </button>
+          <Link href="/quote">
+            <button className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
+              GET QUOTE <FaArrowRight/>
+            </button>
+          </Link>
         </div>
       </div>
     </section>

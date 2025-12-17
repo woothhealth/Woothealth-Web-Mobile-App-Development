@@ -40,7 +40,7 @@ const pricingplans = [
 ]
 const Pricing = () => {
   return (
-    <section className='py-6md:py-10 flex flex-col items-center justify-center text-center gap-6'>
+    <section className='py-6md:py-10 flex flex-col items-center justify-center text-center gap-6' id='pricing'>
         <div className='text-[#120052] px-6'>
             <h2 className='text-[32px] md:text-[42px] font-semibold mb-2'>
                 Simple pricing for every lifestyle

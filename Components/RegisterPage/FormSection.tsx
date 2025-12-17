@@ -1,8 +1,8 @@
 'use client'
 
-import { checkCustomRoutes } from 'next/dist/lib/load-custom-routes'
+
 import React, { useState } from 'react'
-import { FaCheckCircle, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaCheckCircle } from 'react-icons/fa'
 import { FaPhone } from 'react-icons/fa6'
 
 const FormSection = () => {
@@ -11,11 +11,8 @@ const FormSection = () => {
       lastName: '',
       phoneNumber: '',
       email: '',
-      company: '',
-      companyAddress: '',
-      employeeNumber: '',
       state: '',
-      message: '',
+      address: '',
       check: false
     });
     const [errors, setErrors] = useState({
@@ -23,11 +20,8 @@ const FormSection = () => {
       lastName: '',
       phoneNumber: '',
       email: '',
-      company: '',
-      companyAddress: '',
-      employeeNumber: '',
       state: '',
-      message: '',
+      address: '',
       check: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,11 +45,8 @@ const FormSection = () => {
       lastName: '',
       phoneNumber: '',
       email: '',
-      company: '',
-      companyAddress: '',
-      employeeNumber: '',
       state: '',
-      message: '',
+      address: '',
       check: '' };
       let hasError = false;
   
@@ -75,24 +66,12 @@ const FormSection = () => {
         newErrors.email = 'Field not filled';
         hasError = true;
       }
-      if (!formData.company.trim()) {
-        newErrors.company = 'Field not filled';
-        hasError = true;
-      }
-      if (!formData.companyAddress.trim()) {
-        newErrors.companyAddress = 'Field not filled';
-        hasError = true;
-      }
-      if (!formData.employeeNumber.trim()) {
-        newErrors.employeeNumber = 'Field not filled';
-        hasError = true;
-      }
       if (!formData.state.trim()) {
         newErrors.state = 'Field not filled';
         hasError = true;
       }
-      if (!formData.message.trim()) {
-        newErrors.message = 'Field not filled';
+      if (!formData.address.trim()) {
+        newErrors.address = 'Field not filled';
         hasError = true;
       }
       if (!formData.check) {
@@ -113,16 +92,13 @@ const FormSection = () => {
         setIsSubmitted(true);
         // Reset form after successful submission
         setFormData({
-          firstName: '',
-          lastName: '',
-          phoneNumber: '',
-          email: '',
-          company: '',
-          companyAddress: '',
-          employeeNumber: '',
-          state: '',
-          message: '',
-          check: false
+            firstName: '',
+            lastName: '',
+            phoneNumber: '',
+            email: '',
+            state: '',
+            address: '',
+            check: false
         });
       }, 1500);
     };
@@ -132,21 +108,21 @@ const FormSection = () => {
         <div className='relative flex flex-col items-center justify-center '>
             <div className='absolute top-0 bg-[#120052] py-14 px-8 w-full'>
             </div>
-            <div className='absolute formDiv overflow-y-scroll h-screen md-h-full top-0 bg-[#FFFFFF] rounded-3xl py-10 px-8 md:px-16 w-[90%] md:w-[70%]'>
+            <div className='absolute formDiv overflow-y-scroll h-screen md-h-full top-0 bg-[#FFFFFF] rounded-3xl py-10 px-8 lg:px-16 w-[90%] lg:w-[70%]'>
                 {isSubmitted ? (
                 <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                   <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">
-                    Message Sent Successfully!
+                    Registration Successful!
                   </h3>
-                  <p className=" mb-4">
+                  <p className=" mb-6">
                     Thank you for contacting us. We'll get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => setIsSubmitted(false)}
-                    className="bg-[#49A5EF]/780 text-white px-5 py-3 rounded-sm"
+                    className="bg-[#49A5EF]/780 text-white px-10 font-semibold py-3 rounded-sm"
                   >
-                    Get Another Quote
+                    Login
                   </button>
                 </div>
               ) : (
@@ -184,30 +160,7 @@ const FormSection = () => {
                             {errors.email && <span className="text-red-500/60 text-sm">{errors.email}</span>}
                         </div>
                     </div>
-                      <div className='flex flex-col md:flex-row gap-6 w-full'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="company">
-                                Company Name
-                            </label>
-                            <input type="text" name='company' id="company" placeholder='Enter Your Company Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formData.company} onChange={handleChange}/>
-                            {errors.company && <span className="text-red-500/60 text-sm">{errors.company}</span>}
-                        </div>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="company">
-                                Company Address
-                            </label>
-                            <input type="text" name='companyAddress' id="companyAddress" placeholder='Enter your Company Address' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formData.companyAddress} onChange={handleChange}/>
-                            {errors.companyAddress && <span className="text-red-500/60 text-sm">{errors.companyAddress}</span>}
-                        </div>
-                    </div>
                     <div className='flex gap-6 w-full flex-col md:flex-row'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="employeeNumber">
-                                Employee Number
-                            </label>
-                            <input type="number" placeholder='How many employees do you have?' name='employeeNumber' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="employeeNumber" value={formData.employeeNumber} onChange={handleChange} />
-                            {errors.employeeNumber && <span className="text-red-500/60 text-sm">{errors.employeeNumber}</span>}
-                        </div>
                         <div className='flex flex-col gap-2 w-full'>
                             <label className='font-semibold' htmlFor="state">
                                 State
@@ -215,13 +168,13 @@ const FormSection = () => {
                             <input type="state" name='state' placeholder='Enter State' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="state" value={formData.state} onChange={handleChange} />
                             {errors.state && <span className="text-red-500/60 text-sm">{errors.state}</span>}
                         </div>
-                    </div>
-                    <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="message">
-                                Message
+                        <div className='flex flex-col gap-2 w-full'>
+                            <label className='font-semibold' htmlFor="address">
+                                Address
                             </label>
-                            <textarea name='message' placeholder='Write a message' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-4 resize-none h-30 placeholder:text-sm' value={formData.message} onChange={handleChange}></textarea>
-                            {errors.message && <span className="text-red-500/60 text-sm">{errors.message}</span>}
+                            <textarea  placeholder='Enter your Address' name='address' className='resize-none h-20 bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-3 placeholder:text-sm' id="address" value={formData.address} onChange={handleChange} ></textarea>
+                            {errors.address && <span className="text-red-500/60 text-sm">{errors.address}</span>}
+                        </div>
                     </div>
                     <div className='w-full'>
                       <div className='flex items-center gap-2'>
@@ -231,7 +184,7 @@ const FormSection = () => {
                       {errors.check && <span className="text-red-500/60 text-sm">{errors.check}</span>}
                     </div>
 
-                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-10 py-4 font-semibold rounded-sm w-fit mt-2'>
+                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit mt-1'>
                         {isSubmitting ? 'Sending...' : 'SUBMIT'}
                     </button>
                 </form>

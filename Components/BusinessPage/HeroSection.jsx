@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,7 +17,7 @@ const HeroSection = () => {
           width={500} 
           height={100} 
           className='absolute top-0 left-0 object-cover w-full h-full -z-10' 
-          priority 
+          priority
         />
         <div className='flex flex-col gap-6'>
           <div className='sect'></div>

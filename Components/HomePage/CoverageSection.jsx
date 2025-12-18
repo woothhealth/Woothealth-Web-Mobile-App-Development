@@ -11,7 +11,7 @@ const CoverageSection = () => {
     <section className='flex flex-col items-center justify-center pt-16 pb-8 lg:px-[68px] md:px-10 px-6'>
         <div className='flex flex-col items-center text-center w-full'>
             <h2 className='text-[30px] md:text-[35px] max-w-3xl font-medium text-[#49A5EF] leading-tight'>
-                Comprehensive coverage. Transparent pricing. Exceptional care — all in one place.
+                Comprehensive coverage, Transparent pricing, Exceptional care. All in one place.
             </h2>
             <div className='flex md:gap-10 gap-8 flex-col md:flex-row mt-6 md:mt-10 w-full items-center justify-center'>
                 {coverageImages.map((src, index) => {

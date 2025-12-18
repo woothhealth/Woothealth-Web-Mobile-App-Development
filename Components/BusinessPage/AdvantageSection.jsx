@@ -1,21 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
 
-const advantage = [
-    {
-        image: '/images/business/advantage1.png',
-        title: "Beyond basic coverage",
-        description: "We don't just meet expectations—we exceed them. With innovative tools, personalized support, and a commitment to your team's total wellness, Woot Health delivers healthcare that goes further.",
-        description2: "Every business gets a dedicated account manager and access to our 24/7 support team. Real people, real solutions, whenever you need us."
-    },
-    {
-        image: '/images/business/advantage2.png',
-        title: "Healthcare That Works Harder",
-        description: "Standard plans give you coverage. We give you peace of mind. From 24/7 support to cutting-edge telemedicine, we're redefining what employee health benefits should be.",
-        description2: "When you choose Woot Health, you gain more than an insurance provider—you gain a partner who understands Nigerian businesses. We know your challenges, we speak your language, and we're committed to making healthcare accessible, affordable, and stress-free for companies like yours. Your success is our mission."
-    }
-]
-
 const AdvantageSection = () => {
   return (
     <section className='py-14 lg:px-[68px] md:px-10 px-6 bg-[#49A5EF] text-[#FFFFFF] flex flex-col items-center justify-center text-center'>
@@ -27,7 +12,7 @@ const AdvantageSection = () => {
                     </div>
                     <div className='text-justify'>
                         <h4 className='md:text-[28px] text-[26px] font-semibold md:mb-4 mb-2'>Beyond basic coverage</h4>
-                        <p className='md:text-[20px] text-[16px]'>We don't just meet expectations—we exceed them. With innovative tools, personalized support, and a commitment to your team's total wellness, Woot Health delivers healthcare that goes further.</p>
+                        <p className='md:text-[20px] text-[16px]'>We don't just meet expectations, we exceed them. With innovative tools, personalized support, and a commitment to your team's total wellness, Woot Health delivers healthcare that goes further.</p>
                         <p className='text-[16px] md:text-[20px] mt-2'>Every business gets a dedicated account manager and access to our 24/7 support team. Real people, real solutions, whenever you need us.</p>
                     </div>
                     <div className='md:hidden block'>
@@ -38,7 +23,7 @@ const AdvantageSection = () => {
                     <div className='text-justify'>
                         <h4 className='md:text-[28px] text-[26px] font-semibold md:mb-4 mb-2'>Healthcare That Works Harder</h4>
                         <p className='md:text-[20px] text-[16px]'>Standard plans give you coverage. We give you peace of mind. From 24/7 support to cutting-edge telemedicine, we're redefining what employee health benefits should be.</p>
-                        <p className='md:text-[20px] text-[16px] mt-2'>When you choose Woot Health, you gain more than an insurance provider—you gain a partner who understands Nigerian businesses. We know your challenges, we speak your language, and we're committed to making healthcare accessible, affordable, and stress-free for companies like yours. Your success is our mission.</p>
+                        <p className='md:text-[20px] text-[16px] mt-2'>When you choose Woot Health you gain more than an insurance provider, you gain a partner who understands Nigerian businesses. We know your challenges, we speak your language, and we're committed to making healthcare accessible, affordable, and stress-free for companies like yours. Your success is our mission.</p>
                     </div>
                     <div className='flex items-center justify-end'>
                         <Image width={500}height={100} src='/WH_3.png' alt={`Woot's advantage`} className='object-contain w-fit md:h-[450px]' priority />

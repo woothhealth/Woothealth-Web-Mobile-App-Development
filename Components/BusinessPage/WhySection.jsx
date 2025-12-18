@@ -1,4 +1,3 @@
-import { title } from 'process'
 import React from 'react'
 import { LuHeadset } from 'react-icons/lu'
 import { TbWorldPin } from 'react-icons/tb'
@@ -20,7 +19,7 @@ const features2 = [
   {
     img: "/icon_wallet.png",
     title: "Telemedicine Access",
-    description: "Healthcare on your schedule. Your team can consult with doctor from anywhere, anytime—perfect for busy schedules and remote work."
+    description: "Healthcare on your schedule. Your team can consult with doctor from anywhere, anytime, perfect for busy schedules and remote work."
   },
   {
       icon: <LuHeadset />,

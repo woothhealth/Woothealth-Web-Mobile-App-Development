@@ -13,7 +13,7 @@ const BenefitSection = () => {
         {
             icon: <FaHandHoldingMedical/>,
             title: 'Fast Claims Processing',
-            text: `Your claims approved in days, not weeks — because you shouldn't have to wait for what's yours.` 
+            text: `Your claims approved in days not weeks, because you shouldn't have to wait for what's yours.` 
         },
         {
             icon: <LuHeadset/>,
@@ -31,7 +31,7 @@ const BenefitSection = () => {
                 The benefits we offer you
             </p>
             <p className='md:max-w-sm leading-tight text-[17px] md:text-[16px] text-justify'>
-                Quality care shouldn't break the bank. Our affordable plans give you peace of mind and easy access to the care you deserve, with flexible payment options that fit your schedule.
+                Quality care shouldn&lsquo;t break the bank. Our affordable plans give you peace of mind and easy access to the care you deserve, with flexible payment options that fit your schedule.
             </p>
         </div>
         <div className='grid md:grid-cols-3 grid-cols-1 items-center mt-12 md:mt-8 gap-6'>

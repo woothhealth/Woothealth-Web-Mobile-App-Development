@@ -23,10 +23,10 @@ const MainFaq = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-22">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-20 h-[65svh]">
 
         {/* Left Div: For user to select category they want */}
-        <aside className="md:col-span-1 space-y-3">
+        <aside className="md:col-span-1 space-y-3 overflow-y-auto custom-scrollbar pr-3">
           {faqData.categories.map((category) => (
             <button
               key={category.id}
@@ -50,10 +50,10 @@ const MainFaq = () => {
             {activeCategory?.title || "Select a category"}
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4 text-justify ">
             {(activeCategory?.faqs ?? []).length ? (
               (activeCategory.faqs ?? []).slice(0, 10).map((faq) => (
-                <article key={faq.index}>
+                <article key={faq.index} className="border-b border-[#B6B6B9] pb-3">
                   <button className="font-medium text-lg w-full flex items-center justify-between" onClick={() => toggleFAQ(faq.index)}
                   aria-expanded={openIndex === faq.index}>
                     <span>{faq.question}</span>
@@ -65,12 +65,12 @@ const MainFaq = () => {
                   <div
                     className={`faq-answer transition-all duration-200 overflow-hidden ${
                       openIndex === faq.index
-                        ? "max-h-[800px] opacity-100 mt-2"
+                        ? "max-h-[800px] opacity-100 mt-2.5"
                         : "max-h-0 opacity-0"
                     }`}
                     aria-hidden={openIndex === faq.index ? "false" : "true"}
                   >
-                    <p className="text-gray-700">{faq.answer}</p>
+                    <p className="text-gray-700 ml-2 max-w-xl">{faq.answer}</p>
                   </div>
                 </article>
               ))
@@ -80,7 +80,23 @@ const MainFaq = () => {
           </div>
         </main>
       </div>
+      <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #234b6b;
+            border-radius: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #364153;
+          }
+        `}</style>
     </section>
+
   );
 }
 

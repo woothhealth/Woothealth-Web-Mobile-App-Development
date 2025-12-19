@@ -9,7 +9,7 @@ const HeroSection = () => {
  
   return (
     <section className='relative h-[90svh] flex flex-col justify-center items-start lg:px-16 md:px-10 px-4 text-[#FFFFFF] gap-8 overflow-hidden'>
-      <div className='transition-all duration-1000 ease-in-out'
+      <div className='transition-all duration-800 ease'
       >
         <Image 
           src='/Business_img.png' 

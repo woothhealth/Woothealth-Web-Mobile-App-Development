@@ -57,8 +57,8 @@ const NavBar = () => {
                         Providers
                     </li>
                 </Link>
-                <Link href="/about-us">
-                    <li className={`cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/about-us') ? 'text-[#49A5EF]' : ''}`}>
+                <Link href="/about">
+                    <li className={`cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/about') ? 'text-[#49A5EF]' : ''}`}>
                         About Us
                     </li>
                 </Link>
@@ -126,8 +126,8 @@ const NavBar = () => {
                                 Providers
                             </li>
                         </Link>
-                        <Link href="/about-us">
-                            <li className={`cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md ${isActive('/about-us') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>
+                        <Link href="/about">
+                            <li className={`cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md ${isActive('/about') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>
                                 About Us
                             </li>
                         </Link>

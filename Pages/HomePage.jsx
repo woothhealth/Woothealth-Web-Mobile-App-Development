@@ -7,10 +7,12 @@ import ProviderSection from '../Components/HomePage/ProviderSection'
 import TestimonySection from '../UI/TestimonySection'
 import FAQ from '../UI/FAQ'
 import HomeArticle from '../Components/HomePage/HomeArticle'
+import Talk from '@/UI/Talk'
 
 const HomePage = () => {
   return (
     <>
+        <Talk/>
         <HomeSection />
         <CoverageSection />
         <BenefitSection />

@@ -46,6 +46,10 @@ button {
   pointer-events: none;
 }
 
+.chat {
+  background: linear-gradient(to bottom, #49A5EF 20%, #FFFFFF);
+}
+
 li {
   cursor: pointer;
 }

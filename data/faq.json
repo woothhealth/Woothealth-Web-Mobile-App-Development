@@ -1,0 +1,181 @@
+{
+  "title": "Woot Health Frequently Asked Questions",
+  "lastUpdated": "2025-12-01",
+  "categories": [
+    {
+      "id": 1,
+      "title": "About Woot Health",
+      "faqs": [
+        {
+          "index": 1,
+          "question": "What is Woot Health?",
+          "answer": "Woot Health is a health technology platform that gives individuals and families access to affordable healthcare through retail and business health plans, telemedicine, and a nationwide provider network."
+        },
+        {
+          "index": 2,
+          "question": "Who can use Woot Health?",
+          "answer": "Anyone can sign up, including individuals, families, freelancers, students, and small business owners."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Retail Health Plan",
+      "faqs": [
+        {
+          "index": 3,
+          "question": "What does the Woot Health retail plan include?",
+          "answer": "Retail plans offer access to telemedicine, diagnostics, prescriptions, hospital services, and preventive care depending on the plan selected."
+        },
+        {
+          "index": 4,
+          "question": "How long is the plan valid?",
+          "answer": "Plans are valid for 12 months from the date of purchase."
+        },
+        {
+          "index": 5,
+          "question": "Can I upgrade or change my plan?",
+          "answer": "Yes. You can request a plan upgrade at any time from your dashboard. Once activated, your health plan resets and starts a new cycle."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Wallet & Top-Up System",
+      "faqs": [
+        {
+          "index": 6,
+          "question": "What is the Woot Wallet?",
+          "answer": "The Woot Wallet is a pre-funded digital wallet used to pay for services once your plan limit is exhausted."
+        },
+        {
+          "index": 7,
+          "question": "How do I top up my wallet?",
+          "answer": "Wallet top-ups can be done via the app or dashboard using card payments and bank transfers."
+        },
+        {
+          "index": 8,
+          "question": "What happens when my plan limit finishes?",
+          "answer": "You can continue accessing services by paying through your Woot Wallet."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Telemedicine / Virtual Consultations",
+      "faqs": [
+        {
+          "index": 9,
+          "question": "How do I book a virtual consultation?",
+          "answer": "Log into your account, select Consult a Doctor, choose a time, and confirm your appointment."
+        },
+        {
+          "index": 10,
+          "question": "What types of doctors are available?",
+          "answer": "General practitioners, mental health professionals, and other specialists depending on availability."
+        },
+        {
+          "index": 11,
+          "question": "Are virtual consultations available 24/7?",
+          "answer": "Yes, telemedicine services are available round the clock."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Provider Network",
+      "faqs": [
+        {
+          "index": 12,
+          "question": "How do I find a hospital or provider near me?",
+          "answer": "Use the provider search on the website or app to filter by location, specialty, or service type."
+        },
+        {
+          "index": 13,
+          "question": "Can I walk into any hospital?",
+          "answer": "Only hospitals within the Woot provider network are covered. Out-of-network visits are paid through the Woot Wallet."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Reimbursements",
+      "faqs": [
+        {
+          "index": 14,
+          "question": "How do I submit a reimbursement request?",
+          "answer": "Upload your receipt, medical report, and required documents through your dashboard or app."
+        },
+        {
+          "index": 15,
+          "question": "How long does it take to process claims?",
+          "answer": "Claims are typically reviewed within 10–15 working days."
+        },
+        {
+          "index": 16,
+          "question": "Can I get reimbursed for out-of-pocket expenses?",
+          "answer": "Yes, provided the expenses fall under your plan coverage and supporting documents are submitted. Reimbursement is based on the agreed tariff."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Account & Dependents",
+      "faqs": [
+        {
+          "index": 17,
+          "question": "Can I add family members to my plan?",
+          "answer": "Yes, dependents can be added from your dashboard under Add Dependents."
+        },
+        {
+          "index": 18,
+          "question": "How do I reset my password?",
+          "answer": "Click Forgot Password on the login page and follow the instructions sent to your email."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Data Protection & Security",
+      "faqs": [
+        {
+          "index": 19,
+          "question": "Is my health data safe?",
+          "answer": "Yes. Woot Health complies with global health data standards and uses encryption to protect your information."
+        },
+        {
+          "index": 20,
+          "question": "Do you share my data with anyone?",
+          "answer": "Data is shared only with healthcare providers involved in your care and never for marketing without consent."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Customer Support",
+      "faqs": [
+        {
+          "index": 21,
+          "question": "How do I reach customer support?",
+          "answer": "Customer support is available via live chat, email, or the support section on the app."
+        },
+        {
+          "index": 22,
+          "question": "What are your support hours?",
+          "answer": "Support is available 24/7."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "General Experience",
+      "faqs": [
+        {
+          "index": 23,
+          "question": "What makes Woot Health different from other providers?",
+          "answer": "Woot Health combines affordability, digital access, nationwide provider reach, transparent pricing, and a wallet system that keeps users covered even after plan limits are used."
+        }
+      ]
+    }
+  ]
+}

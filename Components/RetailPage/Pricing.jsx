@@ -63,7 +63,7 @@ const Pricing = () => {
                                 ))}
                             </ul>
                         </div>
-                        <Link href="/contact" className='mx-auto'>
+                        <Link href="/register" className='mx-auto'>
                             <button className='bg-[#49A5EF] text-white px-8 py-3 rounded-full w-fit'>
                                 Choose {plan.name}
                             </button>

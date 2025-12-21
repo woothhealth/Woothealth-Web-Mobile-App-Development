@@ -59,6 +59,34 @@ public/              # Static assets
 styles/              # CSS files
 ```
 
+## Forgot / Reset Password (Added)
+
+This project now includes a "Forgot Password" flow (frontend + lightweight server helpers) implemented for demo purposes.
+
+Features:
+- A forgot password form at: `/auth/forgot-password` (email input only)
+- Server API endpoints:
+  - `POST /api/auth/forgot` — accepts { email } and creates a one-hour token and logs/sends a reset link
+  - `POST /api/auth/reset` — accepts { token, password } to validate token and update the user's password
+- Reset page: `/auth/reset-password/[token]` — set a new password and then you'll be redirected to login
+
+Notes & setup:
+- This uses a simple JSON file store in `data/users.json` and `data/passwordResetTokens.json` for demo/testing purposes. Replace with your database in production.
+- To send real email, provide SMTP env variables in `.env`:
+  - `EMAIL_SMTP_HOST`, `EMAIL_SMTP_PORT`, `EMAIL_SMTP_USER`, `EMAIL_SMTP_PASS`, `EMAIL_FROM`
+- Example `.env.example` added.
+
+How to test locally:
+1. Install new dependencies: `npm install`
+2. Start dev server: `npm run dev`
+3. Visit `/auth/forgot-password` and request a reset. If SMTP is not configured, the reset link will be printed in server logs.
+
+Security notes:
+- Tokens expire in 1 hour.
+- Passwords are hashed with `bcryptjs` when reset.
+
+If you want, I can wire this up to your real user database or add email templates and rate limiting next.
+
 ## Available Scripts
 
 - `npm run dev` - Start development server

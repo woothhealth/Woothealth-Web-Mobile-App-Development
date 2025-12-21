@@ -1,34 +1,43 @@
 import React from 'react'
-import { FaHandHoldingMedical,FaSuitcaseMedical } from 'react-icons/fa6';
-import { LuHeadset } from 'react-icons/lu';
+import { MdSpeed } from "react-icons/md";
+import Link from 'next/link';
+import { PiLightbulbFilamentBold, PiPersonArmsSpreadLight } from "react-icons/pi";
+import { IoShieldCheckmarkOutline } from "react-icons/io5";
+import { RiShakeHandsLine } from "react-icons/ri";
+import { FaArrowRight } from "react-icons/fa6";
 
 const BenefitSection = () => {
 
     const benefits = [
         {
-            icon: <FaSuitcaseMedical/>,
-            title: 'Comprehensive Health Plans',
+            icon: <PiPersonArmsSpreadLight/>,
+            title: 'Accessibility',
+            text: 'We make healthcare simple, affordable, and available to all.'
+        },
+        {
+            icon: <MdSpeed/>,
+            title: 'Speed',
+            text: `We ensure claimsand services are deliverable quickly, without unnecessary delays.` 
+        },
+        {
+            icon: <IoShieldCheckmarkOutline/>,
+            title: 'Trust',
+            text: 'We operate with transparency and honesty, earning the confidence of our members.'
+        },
+        {
+            icon: <PiLightbulbFilamentBold/>,
+            title: 'Innovation',
             text: 'Our health plans offer healthcare services leveraging our partnership with world-class healthcare facilities.'
         },
         {
-            icon: <FaHandHoldingMedical/>,
-            title: 'Fast Claims Processing',
-            text: `Your claims approved in days not weeks, because you shouldn't have to wait for what's yours.` 
+            img: '/Core2.png',
+            title: 'Community',
+            text: `We built strong relationships with the people and businesses we serve.` 
         },
         {
-            icon: <LuHeadset/>,
-            title: '24/7 Customer Service Solutions',
-            text: 'We believe healthcare services should be instant, the reason behind having a contact centre that is well equipped to support the management of all healthcare needs.'
-        },
-        {
-            icon: <FaSuitcaseMedical/>,
-            title: 'Comprehensive Health Plans',
-            text: 'Our health plans offer healthcare services leveraging our partnership with world-class healthcare facilities.'
-        },
-        {
-            icon: <FaHandHoldingMedical/>,
-            title: 'Fast Claims Processing',
-            text: `Your claims approved in days not weeks, because you shouldn't have to wait for what's yours.` 
+            icon: <RiShakeHandsLine/>,
+            title: 'Compassion',
+            text: `We treat every customer as a person, not a policy number.` 
         }
     ]
   return (
@@ -38,14 +47,25 @@ const BenefitSection = () => {
         </h2>
         <div className='grid md:grid-cols-3 grid-cols-1 items-center mt-12 md:mt-8 gap-x-4'>
             {benefits.map((benefit, index) => (
-                <div key={index} className="text-justify md:p-6 md:h-60 flex flex-col gap-1">
-                    <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-14 w-14 md:text-xl text-2xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>
-                        {benefit.icon}
+                <div key={index} className="text-justify md:p-6 md:h-52 flex flex-col gap-1">
+                    <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-14 w-14 text-2xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>
+                        {benefit.icon ? (
+                            <div>
+                                {benefit.icon}
+                            </div>
+                        ) : (
+                            <img src={benefit.img} alt={benefit.title} style={{ width: 25, height: 25 }} />
+                        )}
                     </div>
                     <h3 className='font-semibold md:text-lg text-xl'>{benefit.title}</h3>
                     <p className='text-[1rem] md:text-base'>{benefit.text}</p>
                 </div>
             ))}
+        </div>
+        <div className="flex justify-end">
+            <Link href='/about/management' className='w-fit'>
+                <button className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></button>
+            </Link>
         </div>
     </section>
   )

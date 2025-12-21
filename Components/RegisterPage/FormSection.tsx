@@ -3,7 +3,6 @@
 
 import React, { useState } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
-import { FaPhone } from 'react-icons/fa6'
 
 const FormSection = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +40,7 @@ const FormSection = () => {
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      let newErrors = { firstName: '',
+      const newErrors = { firstName: '',
       lastName: '',
       phoneNumber: '',
       email: '',
@@ -116,7 +115,7 @@ const FormSection = () => {
                     Registration Successful!
                   </h3>
                   <p className=" mb-6">
-                    Thank you for contacting us. We'll get back to you within 24 hours.
+                    Thank you for contacting us. We&apos;ll get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => setIsSubmitted(false)}

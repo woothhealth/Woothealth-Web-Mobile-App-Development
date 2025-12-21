@@ -9,9 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.8",
     "embla-carousel-react": "^8.6.0",
     "next": "^16.1.0",
+    "nodemailer": "^6.10.1",
     "react": "19.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "19.2.0",

@@ -10,7 +10,7 @@ const AdvantageSection = () => {
                     <div className='hidden md:flex'>
                         <Image width={500}height={100} src='/WH_1.png' alt={`Woot's advantage`} className='object-contain w-fit h-[450px]' priority />
                     </div>
-                    <div className='text-justify'>
+                    <div className=''>
                         <h4 className='md:text-[28px] text-[26px] font-semibold md:mb-4 mb-2'>Beyond basic coverage</h4>
                         <p className='md:text-[20px] text-[16px]'>We don't just meet expectations, we exceed them. With innovative tools, personalized support, and a commitment to your team's total wellness, Woot Health delivers healthcare that goes further.</p>
                         <p className='text-[16px] md:text-[20px] mt-2'>Every business gets a dedicated account manager and access to our 24/7 support team. Real people, real solutions, whenever you need us.</p>
@@ -20,7 +20,7 @@ const AdvantageSection = () => {
                     </div>
                 </div>
                 <div className='grid md:grid-cols-2 grid-cols-1 gap-8 md:gap-0'>
-                    <div className='text-justify'>
+                    <div className=''>
                         <h4 className='md:text-[28px] text-[26px] font-semibold md:mb-4 mb-2'>Healthcare That Works Harder</h4>
                         <p className='md:text-[20px] text-[16px]'>Standard plans give you coverage. We give you peace of mind. From 24/7 support to cutting-edge telemedicine, we're redefining what employee health benefits should be.</p>
                         <p className='md:text-[20px] text-[16px] mt-2'>When you choose Woot Health you gain more than an insurance provider, you gain a partner who understands Nigerian businesses. We know your challenges, we speak your language, and we're committed to making healthcare accessible, affordable, and stress-free for companies like yours. Your success is our mission.</p>

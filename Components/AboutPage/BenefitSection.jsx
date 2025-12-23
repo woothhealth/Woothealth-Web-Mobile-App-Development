@@ -62,7 +62,7 @@ const BenefitSection = () => {
                 </div>
             ))}
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-10 md:mt-0">
             <Link href='/about/management' className='w-fit'>
                 <button className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></button>
             </Link>

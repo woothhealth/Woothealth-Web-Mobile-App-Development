@@ -21,7 +21,7 @@ const ResetForm = ({ token }: Props) => {
 
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/reset', {
+      const res = await fetch('', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
@@ -38,7 +38,7 @@ const ResetForm = ({ token }: Props) => {
 
   const handleOk = () => {
     setSuccess(false)
-    router.push('/auth/login')
+    router.push('/login')
   }
 
   return (

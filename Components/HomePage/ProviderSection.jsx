@@ -13,6 +13,7 @@ const ProviderSection = () => {
             <p className='md:max-w-2xl text-[1rem] md:text-[1.1rem] mb-2'>
                 Finding quality healthcare close to home shouldn't be a hassle. Woot Health gives you access to Nigeria's largest network of providers, so you can choose the care that's right for you and your loved ones.
             </p>
+            
             <button className='bg-[#FFFFFF] py-3 px-10 text-[#120052] flex gap-1.5 items-center font-semibold'>
                 FIND PROVIDER <FaArrowRight/>
             </button>

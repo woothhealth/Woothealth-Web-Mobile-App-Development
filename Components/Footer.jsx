@@ -1,14 +1,15 @@
 import React from 'react'
 import Image from 'next/image'
-import { FaAppStoreIos, FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarker, FaPhoneAlt, FaStar } from 'react-icons/fa'
-import { FaFacebook, FaGooglePlay, FaHeart, FaX, FaXTwitter } from 'react-icons/fa6'
-import { DiAppstore } from 'react-icons/di'
+import { FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarker, FaPhoneAlt, FaStar } from 'react-icons/fa';
+import { FaApple, FaGooglePlay, FaHeart, FaX, FaXTwitter } from 'react-icons/fa6';
+import { DiAppstore } from 'react-icons/di';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
     <section className='bg-[#120052] text-[#FFFFFF] text-[0.9rem] py-10'>
-        <div className='flex flex-col items-center justify-center mx-18 bg-[#FAFAFA] mb-8 rounded-4xl h-50 text-[#000000]'>
-            <div className='flex text-xs gap-6'>
+        <div className='flex flex-col items-center space-y-6 justify-center mx-10 md:mx-18 bg-[#FAFAFA] mb-8 rounded-4xl py-16 text-[#000000]'>
+            <div className='flex flex-col md:flex-row text-xs md:gap-6'>
                 <div className='flex'>
                     <div className='h-5 w-5 bg-linear-to-r from-[#17C9FB] to-[#1A74E8] rounded-sm flex items-center justify-center mr-2'>
                         <DiAppstore className='text-lg font-extrabold'/>
@@ -18,24 +19,46 @@ const Footer = () => {
                     </p>
                 </div>
                 <div className='flex items-center'>
-                    <FaGooglePlay className='text-sm font-extrabold mr-2'/>
+                    <Image src='/playstore_icon.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-4 w-fit font-extrabold mr-2'/>
                     <p className='flex items-center'>
                         4.8 <FaStar className='mx-1'/> on Play Store <span className='font-extralight ml-1'>500k reviews</span>
                     </p>
                 </div>
             </div>
-            <h2 className='text-[25px] font-extrabold'>
-                Healthcare that fits your everyday life
-            </h2>
-            <button className='px-20 py-3'>
-                Get Started
-            </button>
-            <div>
-                <div>
-
+            <div className='flex flex-col items-center space-y-6'>
+                <h2 className='text-[25px] font-extrabold'>
+                    Healthcare that fits your everyday life
+                </h2>
+                <Link href='/register' className='w-fit'>
+                    <button className='btn px-20 py-3'>
+                        Get Started
+                    </button>
+                </Link>
+            </div>
+            <div className='flex gap-3 items-center'>
+                <div className='flex flex-col gap-6'>
+                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
+                        <div>
+                            <FaApple className='h-4 w-fit font-extrabold mr-2'/>    
+                        </div>
+                        <div className='-space-y-1'>
+                            <p className='text-xs font-extralight'>Download free on</p>
+                            <p className='text-lg'>Apple Store</p>
+                        </div>
+                    </div>
+                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
+                        <div>
+                            <Image src='/playstore_icon.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-4 w-fit font-extrabold mr-2'/>    
+                        </div>
+                        <div className='-space-y-1'>
+                            <p className='text-xs font-extralight'>Download free on</p>
+                            <p className='text-lg'>Play Store</p>
+                        </div>
+                    </div>
                 </div>
-                <div className='border-dashed border-2 h-10 w-30'>
-
+                <div className='flex gap-3 items-center border-dashed border-2 h-fit w-fit p-6 gap-8'>
+                    <p className='text-lg w-34'>Scan to Download WootHealth app</p>
+                    <Image src='/QR_code.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-48 w-fit font-extrabold mr-2'/>
                 </div>
             </div>
         </div>

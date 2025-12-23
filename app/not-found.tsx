@@ -1,9 +1,14 @@
 import Link from 'next/link'
 import React from 'react'
-import { FaExclamationTriangle, FaTools } from 'react-icons/fa'
+import { FaExclamationTriangle } from 'react-icons/fa'
+import "@/styles/globals.css";
+import NavBar from '@/Components/NavBar';
+import SmallFooter from '@/Components/SmallFooter';
 
 const notFound = () => {
   return (
+    <>
+    <NavBar/>
     <section className='sect flex items-center justify-center text-[#ededed] py-10 relative'>
         <div className='flex flex-col z-10 gap-4 items-center w-180'>
         <FaExclamationTriangle className='text-yellow-400 h-40 w-auto mb-5'/>
@@ -18,6 +23,8 @@ const notFound = () => {
         </Link>
       </div>
     </section>
+    <SmallFooter/>
+    </>
   )
 }
 

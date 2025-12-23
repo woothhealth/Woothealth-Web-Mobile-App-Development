@@ -126,7 +126,7 @@ const TestimonySecond = () => {
         <div className="relative md:hidden overflow-x-auto max-w-full custom-scrollbar" ref={scrollRef}>
           <div className="flex gap-4 px-4">
             {testimonials.map((item) => (
-              <div key={item.id} className="relative shrink-0 w-80 border border-[#E1E1E2] rounded-4xl p-4 h-70">
+              <div key={item.id} className="relative shrink-0 w-80 border border-[#E1E1E2] rounded-4xl p-4 h-72">
                 <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
                   <img 
                     src={item.image} 

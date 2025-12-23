@@ -66,9 +66,9 @@ const Footer = () => {
 
             {/* Mobile */}
             <div className='flex gap-3 items-center md:hidden flex-col'>
-                <div className='flex gap-3 items-center border-dashed border-2 h-fit w-fit p-6 gap-8'>
-                    <p className='text-lg w-34'>Scan to Download WootHealth app</p>
-                    <Image src='/QR_code.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-48 w-fit font-extrabold mr-2'/>
+                <div className='flex gap-5 items-center border-dashed border-2 h-fit w-fit p-6'>
+                    <p className='text-xs w-14'>Scan to Download WootHealth app</p>
+                    <Image src='/QR_code.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-20 w-fit font-extrabold mr-2'/>
                 </div>
                 <div className='flex gap-6 w-fit'>
                     <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
@@ -77,7 +77,7 @@ const Footer = () => {
                         </div>
                         <div className='-space-y-1'>
                             <p className='text-xs font-extralight'>Download free on</p>
-                            <p className='text-lg'>Apple Store</p>
+                            <p className='text-base'>Apple Store</p>
                         </div>
                     </div>
                     <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
@@ -86,7 +86,7 @@ const Footer = () => {
                         </div>
                         <div className='-space-y-1'>
                             <p className='text-xs font-extralight'>Download free on</p>
-                            <p className='text-lg'>Play Store</p>
+                            <p className='text-base'>Play Store</p>
                         </div>
                     </div>
                 </div>

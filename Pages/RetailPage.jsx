@@ -5,10 +5,12 @@ import TestimonySecond from '@/UI/TestimonySecond'
 import FAQ from '@/UI/FAQ'
 import WhySection from '@/Components/RetailPage/WhySection'
 import Pricing from '@/Components/RetailPage/Pricing'
+import Talk from '@/UI/Talk'
 
 const RetailPage = () => {
   return (
     <>
+        <Talk/>
         <HeroSection/>
         <WhySection/>
         <Pricing/>

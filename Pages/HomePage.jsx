@@ -7,6 +7,7 @@ import ProviderSection from '../Components/HomePage/ProviderSection'
 import TestimonySection from '../UI/TestimonySection'
 import FAQ from '../UI/FAQ'
 import HomeArticle from '../Components/HomePage/HomeArticle'
+import WalletSection from '../Components/HomePage/WalletSection'
 import Talk from '@/UI/Talk'
 
 const HomePage = () => {
@@ -15,6 +16,7 @@ const HomePage = () => {
         <Talk/>
         <HomeSection />
         <CoverageSection />
+        <WalletSection/>
         <BenefitSection />
         <AboutSection />
         <ProviderSection />

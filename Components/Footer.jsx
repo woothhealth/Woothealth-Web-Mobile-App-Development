@@ -25,12 +25,12 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-            <div className='flex flex-col items-center space-y-6 text-center'>
-                <h2 className='text-[25px] font-extrabold'>
+            <div className='flex flex-col items-center space-y-2 md:space-y-6 text-center'>
+                <h2 className='md:text-[25px] font-extrabold text-[20px]'>
                     Healthcare that fits your everyday life
                 </h2>
                 <Link href='/register' className='w-fit'>
-                    <button className='btn px-20 py-3 text-lg'>
+                    <button className='btn md:px-20 px-14 py-3 text-lg'>
                         Get Started
                     </button>
                 </Link>
@@ -70,23 +70,23 @@ const Footer = () => {
                     <p className='text-xs w-14'>Scan to Download WootHealth app</p>
                     <Image src='/QR_code.png' width={200} height={100} loading='lazy' alt='Playstore icon' className='h-20 w-fit font-extrabold mr-2'/>
                 </div>
-                <div className='flex gap-6 w-fit'>
-                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
+                <div className='flex space-x-2 w-fit'>
+                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-2'>
                         <div>
                             <FaApple className='h-4 w-fit font-extrabold mr-2'/>    
                         </div>
                         <div className='-space-y-1'>
-                            <p className='text-xs font-extralight'>Download free on</p>
-                            <p className='text-base'>Apple Store</p>
+                            <p className='text-[11px] font-extralight'>Download free on</p>
+                            <p className='text-[14px]'>Apple Store</p>
                         </div>
                     </div>
-                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-4'>
+                    <div className='flex items-center text-[#FFFFFF] bg-[#000000] rounded-lg py-2 px-2'>
                         <div>
                             <Image src='/playstore_icon.png' width={200} height={100} loading='eager' alt='Playstore icon' className='h-4 w-fit font-extrabold mr-2'/>    
                         </div>
                         <div className='-space-y-1'>
-                            <p className='text-xs font-extralight'>Download free on</p>
-                            <p className='text-base'>Play Store</p>
+                            <p className='text-[11px] font-extralight'>Download free on</p>
+                            <p className='text-[14px]'>Play Store</p>
                         </div>
                     </div>
                 </div>
@@ -118,13 +118,13 @@ const Footer = () => {
                         <ul className='flex flex-col gap-3 ml-2'>
                             <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
                             <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
-                            <address className='flex gap-3 items-center'><FaMapMarker/>Oregun-Ikeja, Lagos, Nigeria</address>
                         </ul>
+                        <address className='flex gap-3 items-center ml-2 cursor-pointer'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                     </div>
                     <div className='md:col-span-3'>
                         <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
                         <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
-                        <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
+                        <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         
                         <div className='mt-8 flex gap-4'>
                             <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
@@ -169,8 +169,8 @@ const Footer = () => {
                             <ul className='flex flex-col gap-3 ml-2 text-sm'>
                                 <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
                                 <li className='flex gap-2 items-center text-[0.83rem]'><FaEnvelope /> support@woothealth .com</li>
-                                <address className='flex gap-3 items-center'><FaMapMarker/>Oregun-Ikeja, Lagos, Nigeria</address>
                             </ul>
+                            <address className='flex ml-2 cursor-pointer gap-2 text-[0.83rem] items-center'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                         </div>
                     </div>
                     <div className='col-span-2'>
@@ -178,7 +178,7 @@ const Footer = () => {
                         <p className='text-base mb-4'>
                             Healthcare that works for your everyday life
                         </p>
-                        <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
+                        <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         
                         <div className='mt-8 flex gap-4'>
                             <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>

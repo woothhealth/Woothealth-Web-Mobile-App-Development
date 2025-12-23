@@ -32,13 +32,13 @@ const Footer = () => {
                 <ul className='flex flex-col gap-3 ml-2'>
                     <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
                     <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
-                    <address className='flex gap-3 items-center'><FaMapMarker/>Oregun-Ikeja, Lagos, Nigeria</address>
                 </ul>
+                <address className='flex gap-3 items-center ml-2'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
             </div>
             <div className='md:col-span-3'>
                 <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
                 <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
-                <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
+                <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                 
                 <div className='mt-8 flex gap-4'>
                     <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
@@ -83,8 +83,8 @@ const Footer = () => {
                     <ul className='flex flex-col gap-3 ml-2 text-sm'>
                         <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
                         <li className='flex gap-2 items-center text-[0.83rem]'><FaEnvelope /> support@woothealth .com</li>
-                        <address className='flex gap-3 items-center'><FaMapMarker/>Oregun-Ikeja, Lagos, Nigeria</address>
                     </ul>
+                    <address className='flex gap-3 items-center ml-2'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                 </div>
             </div>
             <div className='col-span-2'>
@@ -92,7 +92,7 @@ const Footer = () => {
                 <p className='text-base mb-4'>
                     Healthcare that works for your everyday life
                 </p>
-                <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> from Nigeria</p>
+                <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                 
                 <div className='mt-8 flex gap-4'>
                     <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>

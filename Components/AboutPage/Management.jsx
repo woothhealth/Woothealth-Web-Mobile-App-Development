@@ -4,9 +4,9 @@ import Image from 'next/image'
 const Management = () => {
   return (
     <section className='py-6 md:py-16 px-6 lg:px-[68px] md:px-10 flex flex-col items-center'>
-        <h2 className='text-3xl mb-8'>Our Management Team</h2>
+        <h2 className='text-start text-3xl lg:text-3xl mb-6 lg:mb-8'>Our Management Team</h2>
         <div className='flex flex-col gap-10'>
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Image src='/Team_1.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
                 </div>
@@ -28,7 +28,11 @@ const Management = () => {
                 </div>
             </div>
 
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+                <div className='flex justify-end lg:hidden'>
+                    <Image src='/Team_2.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
+
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Adediwin Olugbenga</h3>
@@ -44,12 +48,12 @@ const Management = () => {
                     </div>
                 </div>
                 
-                <div className='flex justify-end'>
+                <div className='hidden lg:flex justify-end'>
                     <Image src='/Team_2.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
             </div>
 
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Image src='/Team_3.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
                 </div>
@@ -72,7 +76,11 @@ const Management = () => {
                 </div>
             </div>
 
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+                <div className='flex lg:hidden'>
+                    <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
+
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Dr. Tracy Isimemhen</h3>
@@ -89,13 +97,14 @@ const Management = () => {
                             As Head of Operations at Woot Health, Tracy leads core operations, provider coordination, and internal workflows, with a clear goal: building systems that scale smoothly and deliver real value to members and partners.
                         </p>
                     </div>
-                </div>
-                <div className='flex justify-end'>
+                    <div className='hidden lg:flex justify-end'>
                     <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
+                </div>
+                
             </div>
 
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Image src='/Team5.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
                 </div>
@@ -121,7 +130,10 @@ const Management = () => {
                 </div>
             </div>
 
-            <div className='grid grid-cols-2'>
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+                <div className='flex justify-end lg:hidden'>
+                    <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Alfred Blessing</h3>
@@ -139,7 +151,7 @@ const Management = () => {
                         </p>
                     </div>
                 </div>
-                <div className='flex justify-end'>
+                <div className='hidden lg:flex justify-end'>
                     <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
             </div>

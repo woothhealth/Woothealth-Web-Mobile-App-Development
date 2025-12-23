@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import active from './@active'
-import claimS
 
 
 export const metadata: Metadata = {
@@ -34,9 +32,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
+      <body>
         {children}
       </body>
     </html>

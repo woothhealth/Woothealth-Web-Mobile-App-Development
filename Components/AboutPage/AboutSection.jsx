@@ -5,7 +5,7 @@ const goal = [
     {
         icon: <LuHeartPulse />,
         title: "Our Mission",
-        desc: 'To redefine health insurance through technology, speed, amd trust-delivering healthcare solutions that fit the lives of everyday Nigerians.'
+        desc: 'To redefine health insurance through technology, speed, and trust-delivering health care solutions that fit the lives of everyday Nigerians.'
     },
     {
         icon: <LuScanEye/>,

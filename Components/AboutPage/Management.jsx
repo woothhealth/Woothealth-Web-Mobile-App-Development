@@ -1,5 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
+import Link from 'next/link'
 
 const Management = () => {
   return (
@@ -15,7 +17,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Onyekachukwu Chukwudi</h3>
                         <p className='text-lg'>Founder / CEO</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Onyekachukwu Chukwudi is the Founder and CEO of Woot Health, a digital health insurance company committed to making quality healthcare simple, accessible, and affordable. A graduate of Mathematics and Computer Science from the National Open University of Nigeria, he brings strong analytical and technical insight into building modern health solutions.
                         </p>
@@ -38,7 +40,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Adediwin Olugbenga</h3>
                         <p className='text-lg'>Co-Founder</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Mr. Olugbenga Adediwin is a 2001 graduate of Political Science from the University of Jos, Plateau state, Nigeria. He also has an MBA from the University of Hull, United Kingdom in 2007. He began his professional career with Industrial and General Insurance Company Limited in 2002.
                         </p>
@@ -62,7 +64,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Deborah Thompson</h3>
                         <p className='text-lg'>Product Lead</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Deborah is a product leader with a knack for turning complex healthcare challenges into simple, human-centered solutions. She began her journey in customer support, where she mastered the art of listening deeply, understanding user pain points, and translating them into products that truly serve people.
                         </p>
@@ -86,7 +88,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Dr. Tracy Isimemhen</h3>
                         <p className='text-lg'>Operations Manager</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Isimemhen Tracy Okhomoime is an operations leader with over 5 years of experience building and scaling healthcare and health-tech teams and systems. She brings a strong mix of people leadership, growth execution, and operational structure, with a deep understanding of what it takes to turn ambitious ideas into reliable, everyday delivery.
                         </p>
@@ -97,11 +99,11 @@ const Management = () => {
                             As Head of Operations at Woot Health, Tracy leads core operations, provider coordination, and internal workflows, with a clear goal: building systems that scale smoothly and deliver real value to members and partners.
                         </p>
                     </div>
-                    <div className='hidden lg:flex justify-end'>
-                    <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
-                </div>
                 </div>
                 
+                <div className='hidden lg:flex justify-end'>
+                    <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
@@ -113,7 +115,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Josephine Ibukunoluwa</h3>
                         <p className='text-lg'>Customer Service Lead</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Josephine Ibukunoluwa Eniayeju is an experienced customer success leader with a strong background in retention strategy, client relationship management, and end-to-end customer operations within the health-tech ecosystem. Over the past five years, she has managed high-value portfolios exceeding ₦4.7B, led cross-functional customer teams, and delivered consistently strong retention and revenue outcomes through structured, data-informed execution.
                         </p>
@@ -139,7 +141,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Alfred Blessing</h3>
                         <p className='text-lg'>Providers and Tariff Unit Lead</p>
                     </div>
-                    <div className='flex flex-col gap-3 text-justify'>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
                         <p>
                             Alfred Blessing leads the Providers and Tariff Unit at Woot Health, one of Nigeria’s fastest-growing health insurers. She holds an Accounting degree from Yaba College of Technology and has solid experience in tariff management, provider relations, billing and cost control. Her leadership is organised and service focused. 
                         </p>
@@ -155,6 +157,12 @@ const Management = () => {
                     <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
             </div>
+        </div>
+
+        <div className="flex lg:justify-end justify-center mt-10 md:mt-0">
+            <Link href='/aboutp' className='w-fit'>
+                <button className="btn px-6 py-3">About Woot Health</button>
+            </Link>
         </div>
     </section>
   )

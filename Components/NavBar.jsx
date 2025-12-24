@@ -84,9 +84,11 @@ const NavBar = () => {
                     </li>
                 </Link>
             </ul>
+            <Link href='/login' className='w-fit'>
             <button className='btn hidden lg:block w-[120px] h-[38px]'>
                 Login
             </button>
+            </Link>
 
             {/* Hamburger for Mobile */}
             <div 
@@ -155,9 +157,11 @@ const NavBar = () => {
                             </li>
                         </Link>
                     </ul>
-                    <button className='btn w-full h-12 bg-[#49A5EF] text-white rounded-full font-semibold mt-2' onClick={toggleMenu}>
-                        Login
-                    </button>
+                    <Link href='/login' className='w-fit'>
+                        <button className='btn w-full h-12 bg-[#49A5EF] text-white rounded-full font-semibold mt-2' onClick={toggleMenu}>
+                            Login
+                        </button>
+                    </Link>
                 </div>
             )}
         </nav>

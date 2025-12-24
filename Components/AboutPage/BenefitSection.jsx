@@ -17,7 +17,7 @@ const BenefitSection = () => {
         {
             icon: <MdSpeed/>,
             title: 'Speed',
-            text: `We ensure claimsand services are deliverable quickly, without unnecessary delays.` 
+            text: `We ensure claims and services are deliverable quickly, without unnecessary delays.` 
         },
         {
             icon: <IoShieldCheckmarkOutline/>,
@@ -47,7 +47,7 @@ const BenefitSection = () => {
         </h2>
         <div className='grid md:grid-cols-3 grid-cols-1 items-center lg:mt-12 mt-8 md:mt-8 space-x-4 space-y-6'>
             {benefits.map((benefit, index) => (
-                <div key={index} className="text-justify md:p-6 md:h-52 flex flex-col gap-1">
+                <div key={index} className="lg:text-justify md:p-6 md:h-52 flex flex-col gap-1">
                     <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-14 w-14 text-2xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>
                         {benefit.icon ? (
                             <div>
@@ -62,7 +62,7 @@ const BenefitSection = () => {
                 </div>
             ))}
         </div>
-        <div className="flex justify-end mt-10 md:mt-0">
+        <div className="flex lg:justify-end justify-center mt-10 md:mt-0">
             <Link href='/about/management' className='w-fit'>
                 <button className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></button>
             </Link>

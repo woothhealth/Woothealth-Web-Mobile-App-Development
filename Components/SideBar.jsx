@@ -10,31 +10,32 @@ import { GrPlan } from "react-icons/gr";
 import { IoMdSettings } from "react-icons/io";
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const path = [
     {
         name: 'Overview',
-        url: '/overview',
+        url: '/dashboard',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'My Plans',
-        url: '/plans',
+        url: 'dashboard/plans',
         icon: <GrPlan/>
     },
     {
         name: 'Wallet',
-        url: '/wallet',
+        url: 'dashboard/wallet',
         icon: <FaWallet/>
     },
     {
         name: 'Providers',
-        url: '/providers',
+        url: 'dashboard/providers',
         icon: <ImLocation2/>
     },
     {
         name: 'Telemedicine',
-        url: '/telemedicine',
+        url: 'dashboard/telemedicine',
         icon: <FaTv/>
     }
 ]
@@ -42,12 +43,12 @@ const path = [
 const path2 = [
     {
         name: 'Profile',
-        url: '/profile',
+        url: 'dashboard/profile',
         icon: <FaUserAlt/>
     },
     {
         name: 'Settings',
-        url: '/settings',
+        url: 'dashboard/settings',
         icon: <IoMdSettings/>
     },
     {
@@ -58,74 +59,93 @@ const path2 = [
 ]
 
 const SideBar = () => {
-    const [istoggle, setIsToggle] = useState(false);
+    const [isToggle, setIsToggle] = useState(false);
 
     const click = () => {
-        setIsToggle(!istoggle)
+        setIsToggle(!isToggle)
     }
 
+    const pathname = usePathname()
+
   return (
-    <section className='sticky left-0 top-0 px-6 h-screen w-[20vw] border-r border-[#D9D9D9] py-8'>
-        <div className='flex flex-col gap-10 h-full'>
+    <section className='sticky left-0 top-0 px-6 h-screen w-fit border-r border-[#D9D9D9] py-8'>
+        {!isToggle && 
+        <>
+        <div className='flex flex-col gap-10 h-full w-[20vw]'>
             <div className='flex justify-between items-center'>
                 <Image src='/Logo2.png' height={100} width={500} alt='WootHealth Logo' className='h-10 w-fit' loading='eager' />
-                <GoSidebarExpand className='w-6 h-6 text-[#00000066]' />
+                <GoSidebarExpand className='w-6 h-6 text-[#00000066]' onClick={click} />
             </div>
             <div className='flex flex-col gap-2'>
-                {path.map((path, index) => (
-                    <div key={index} className='flex gap-4 py-3 items-center text-[#B6B6B9] px-3'>
-                        <div className='text-xl'>
-                            {path.icon}
+                {path.map((path, index) => {
+                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
+                return (
+                    <Link key={index} href={path.url}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                            <div className='text-xl'>
+                                {path.icon}
+                            </div>
+                            {path.name}
                         </div>
-                        <Link href={path.url}>{path.name}</Link>
-                    </div>
-                ))}
+                    </Link>
+                )})}
             </div>
             <div className='flex flex-col gap-2 h-full'>
                 {path2.map((path, index) => {
                     const last = index === 2;
+                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
                     return (
-                        <div key={index} className={`flex gap-4 py-2 items-center text-[#B6B6B9] px-3 ${last ? 'mt-10' : ''}`}>
-                            <div className='text-xl'>
-                                {path.icon}
-                            </div>
-                            <Link href={path.url}>{path.name}</Link>
-                        </div>
-                )})}
-            </div>
-
-            {istoggle && (
-                <>
-                    <div className='flex justify-between items-center'>
-                        <Image src='/Logo2.png' height={100} width={500} alt='WootHealth Logo' className='h-10 w-fit' loading='eager' />
-                        <GoSidebarExpand className='w-6 h-6 text-[#00000066]' />
-                    </div>
-                    <div className='flex flex-col gap-2'>
-                        {path.map((path, index) => (
-                            <div key={index} className='flex gap-4 py-3 items-center text-[#B6B6B9] px-3'>
+                        <Link key={index} href={path.url}>
+                            <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-amber-500 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
                                 <div className='text-xl'>
                                     {path.icon}
                                 </div>
-                                <Link href={path.url}>{path.name}</Link>
+                                {path.name}
                             </div>
-                        ))}
+                        </Link>
+                )})}
+            </div>
+        </div>
+        </>
+        }
+       {isToggle && (
+            <>
+            <div className='flex flex-col gap-10 h-full w-fit'>
+                    <div className='flex justify-between items-center'>
+                        <Image src='/Dashboard_image.jpg' height={100} width={500} alt='WootHealth Logo' className='h-10 w-fit' loading='eager' />
+                        <GoSidebarCollapse className='w-6 h-6 text-[#00000066]' onClick={click} />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        {path.map((path, index) => {
+                        const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
+                        return (
+                            <Link key={index} href={path.url}>
+                                <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                    <div className='text-xl'>
+                                        {path.icon}
+                                    </div>
+                                </div>
+                            </Link>
+                        )})}
                     </div>
                     <div className='flex flex-col gap-2 h-full'>
                         {path2.map((path, index) => {
                             const last = index === 2;
+                            const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
                             return (
-                                <div key={index} className={`flex gap-4 py-2 items-center text-[#B6B6B9] px-3 ${last ? 'mt-10' : ''}`}>
-                                    <div className='text-xl'>
-                                        {path.icon}
+                                <Link key={index} href={path.url}>
+                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-amber-500 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
+                                        <div className='text-xl'>
+                                            {path.icon}
+                                        </div>
                                     </div>
-                                    <Link href={path.url}>{path.name}</Link>
-                                </div>
+                                </Link>
                         )})}
                     </div>
-                </>
-            )
-            }
-        </div>
+            </div>
+            </>
+        )
+        }
     </section>
   )
 }

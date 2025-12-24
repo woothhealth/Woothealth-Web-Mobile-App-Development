@@ -8,7 +8,7 @@ import Link from 'next/link';
 const Footer = () => {
   return (
     <section className='bg-[#120052] text-[#FFFFFF] text-[0.9rem] py-10'>
-        <div className='flex flex-col items-center space-y-6 justify-center mx-5 md:mx-18 bg-[#FAFAFA] mb-8 rounded-4xl py-16 text-[#000000]'>
+        <div className='flex flex-col items-center space-y-6 justify-center mx-6 md:mx-18 bg-[#FAFAFA] mb-8 rounded-4xl py-16 text-[#000000]'>
             <div className='flex flex-col md:flex-row text-xs md:gap-6'>
                 <div className='flex'>
                     <div className='h-5 w-5 bg-linear-to-r from-[#17C9FB] to-[#1A74E8] rounded-sm flex items-center justify-center mr-2'>
@@ -25,7 +25,7 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-            <div className='flex flex-col items-center space-y-2 md:space-y-6 text-center'>
+            <div className='flex flex-col items-center space-y-2 md:space-y-6 px-8 text-center'>
                 <h2 className='md:text-[25px] font-extrabold text-[20px]'>
                     Healthcare that fits your everyday life
                 </h2>
@@ -144,10 +144,10 @@ const Footer = () => {
                 </div>
         
                 {/* Mobile */}
-                <div className='grid grid-cols-2 gap-y-8 md:hidden'>
+                <div className='flex flex-col gap-y-8 md:hidden'>
                     <div>
-                        <h3 className='font-semibold text-lg mb-4'>Quick Links</h3>
-                        <ul className='flex flex-col gap-4 ml-2 text-sm'>
+                        <h3 className='font-semibold text-xl mb-4'>Quick Links</h3>
+                        <ul className='flex flex-col gap-4 ml-2 text-base'>
                             <li>Home</li>
                             <li>Providers</li>
                             <li>About Us</li>
@@ -158,24 +158,24 @@ const Footer = () => {
                     </div>
                     <div className='flex flex-col gap-6'>
                         <div>
-                            <h3 className='font-semibold text-lg mb-4'>Health Plans</h3>
-                            <ul className='flex flex-col gap-3 ml-2 text-sm'>
+                            <h3 className='font-semibold text-xl mb-4'>Health Plans</h3>
+                            <ul className='flex flex-col gap-3 ml-2 text-base'>
                                 <li>Business Plans</li>
                                 <li>Retail Plans</li>
                             </ul>
                         </div>
                         <div>
-                            <h3 className='font-semibold text-lg mb-4'>Contact Us</h3>
-                            <ul className='flex flex-col gap-3 ml-2 text-sm'>
-                                <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
-                                <li className='flex gap-2 items-center text-[0.83rem]'><FaEnvelope /> support@woothealth .com</li>
+                            <h3 className='font-semibold text-xl mb-4'>Contact Us</h3>
+                            <ul className='flex flex-col gap-3 ml-2 text-base'>
+                                <li className='flex gap-4 items-center'><FaPhoneAlt/>+234 0098762345</li>
+                                <li className='flex gap-4 items-center'><FaEnvelope /> support@woothealth.com</li>
                             </ul>
-                            <address className='flex ml-2 cursor-pointer gap-2 text-[0.83rem] items-center'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
+                            <address className='flex mt-3 ml-2 cursor-pointer gap-4 items-center'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                         </div>
                     </div>
-                    <div className='col-span-2'>
+                    <div className=''>
                         <Image src='/Logo2.png' width={500} height={100} alt="WootHealth Logo" className='w-auto h-8 mb-4' priority />
-                        <p className='text-base mb-4'>
+                        <p className='text-lg mb-4'>
                             Healthcare that works for your everyday life
                         </p>
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>

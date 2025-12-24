@@ -31,10 +31,22 @@ export default function DashboardLayout({
   welcome: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        {children}
-      </body>
-    </html>
+    <div className="container w-full">
+      <div>{welcome}</div>
+      <div className="grid grid-cols-4">
+        <div>{active}</div>
+        <div>{wallet}</div>
+        <div>{dependant}</div>
+        <div>{learn}</div>
+      </div>
+      <div>{children}</div>
+      <div>
+        <div>
+          <div>{claimsSummary}</div>
+          <div>{medical}</div>
+        </div>
+        <div>{payment}</div>
+      </div>
+    </div>
   );
 }

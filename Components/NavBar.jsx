@@ -157,7 +157,7 @@ const NavBar = () => {
                             </li>
                         </Link>
                     </ul>
-                    <Link href='/login' className='w-fit'>
+                    <Link href='/login' className='w-full'>
                         <button className='btn w-full h-12 bg-[#49A5EF] text-white rounded-full font-semibold mt-2' onClick={toggleMenu}>
                             Login
                         </button>

@@ -31,7 +31,7 @@ const Management = () => {
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className='flex justify-end lg:hidden'>
+                <div className='flex lg:hidden'>
                     <Image src='/Team_2.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
 
@@ -110,6 +110,7 @@ const Management = () => {
                 <div className=''>
                     <Image src='/Team5.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
                 </div>
+
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Josephine Ibukunoluwa</h3>
@@ -133,9 +134,10 @@ const Management = () => {
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className='flex justify-end lg:hidden'>
+                <div className='flex lg:hidden'>
                     <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
                 </div>
+
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Alfred Blessing</h3>
@@ -153,15 +155,42 @@ const Management = () => {
                         </p>
                     </div>
                 </div>
-                <div className='hidden lg:flex justify-end'>
+                <div className='hidden lg:flex lg:justify-end'>
                     <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
+            </div>
+            
+            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+                <div className=''>
+                    <Image src='/Team_7.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                </div>
+
+                <div className='flex flex-col gap-3'>
+                    <div className='text-[#120052]'>
+                        <h3 className='text-2xl font-semibold'>Oluwatobiloba John Odedeji</h3>
+                        <p className='text-lg'>Head of Strategy</p>
+                    </div>
+                    <div className='flex flex-col gap-3 lg:text-justify'>
+                        <p>
+                            Results-driven sales leader with a proven track record of driving revenue growth and optimizing team performance. 
+                        </p>
+                        <p>
+                            As Head of Strategy at WootHealth, leverages expertise in process optimization to propel organizational success.
+                        </p>
+                        <p>
+                            Previous experience includes driving growth at Ez Marketing, Ez Technologies, Ez Advisory, and Reliance Health. 
+                        </p>
+                        <p>
+                            Passionate about empowering teams with repeatable processes that enhance efficiency and fuel sustainable growth.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div className="flex lg:justify-end justify-center mt-10 md:mt-0">
+        <div className="flex mt-10">
             <Link href='/aboutp' className='w-fit'>
-                <button className="btn px-6 py-3">About Woot Health</button>
+                <button className="btn px-6 py-4 font-semibold">About Woot Health</button>
             </Link>
         </div>
     </section>

@@ -6,35 +6,77 @@ import { FaCheck } from 'react-icons/fa6'
 const pricingplans = [
     {
         id: 1,
-        name: "Starter",
-        price: "5,000",
+        name: "Core",
+        price: "6,200",
         features: [
-            "Clinic & GP consultations",
-            "Telemedicine access",
-            "Basic Medications",
-            "Limited diagnostics"
+            "GP Consultation",
+            "Emergency care",
+            "Telemedicine Consultation Covered",
+            "Immunizations",
+            "Optical Care",
+            "Dental Care",
+            "Antenatal Care"
         ]
     },
     {
         id: 2,
-        name: "Essential",
-        price: "15,000",
+        name: "Sync",
+        price: "9,500",
         features: [
-            "Everything in Starter",
-            "Specialist consultation",
-            "Expanded diagnostics",
-            "Emergency care"
+            "GP Consultation",
+            "Emergency care",
+            "Telemedicine Consultation Covered",
+            "Immunizations",
+            "Optical Care",
+            "Dental Care",
+            "Antenatal Care"
         ]
     },
     {
         id: 3,
-        name: "Premium",
-        price: "30,000",
+        name: "Nexus",
+        price: "20,700",
         features: [
-            "Full coverage",
-            "Surgery & advanced procedures",
-            "Mental health therapy",
-            "Maternity support"
+            "GP Consultation",
+            "Emergency care",
+            "Telemedicine Consultation Covered",
+            "Immunizations",
+            "Optical Care",
+            "Dental Care",
+            "Antenatal Care"
+        ]
+    },
+    {
+        id: 4,
+        name: "Quantum",
+        price: "539,400",
+        features: [
+            "GP Consultation",
+            "Emergency care",
+            "Telemedicine Consultation Covered",
+            "Immunizations",
+            "Optical Care",
+            "Dental Care",
+            "Antenatal Care",
+            "Gym",
+            "Spa"
+        ]
+    }
+    ,
+    {
+        id: 5,
+        name: "Iginite",
+        price: "1,190,000",
+        features: [
+            "GP Consultation",
+            "Emergency care",
+            "Telemedicine Consultation Covered",
+            "Immunizations",
+            "Optical Care",
+            "Dental Care",
+            "Antenatal Care",
+            "Gym",
+            "Spa"
         ]
     }
 ]
@@ -48,15 +90,15 @@ const Pricing = () => {
             <p className='md:text-[22px] text-[18px]'>Choose a plan that works for you. No hidden fees, ever.</p>
         </div>
         <div className='px-6 lg:px-20 py-10 lg:py-18 w-full bg-[#49A5EF] flex flex-col gap-8'>
-            <div className='grid lg:grid-cols-3 overflow-x-auto max-w-full md:grid-cols-2 grid-cols-1 gap-8'>
+            <div className='grid lg:grid-cols-3 max-w-full md:grid-cols-2 grid-cols-1 gap-8'>
                 {pricingplans.map((plan) => (
-                    <div key={plan.id} className='bg-[#FFFFFF] rounded-3xl text-[#000000] shadow-lg py-8 px-6 flex flex-col gap-6 h-full'>
+                    <div key={plan.id} className='bg-[#FFFFFF] rounded-3xl text-[#000000] shadow-lg py-8 px-6 flex flex-col gap-4 h-full'>
                         <div className='flex flex-col items-start'>
                             <h3 className='text-[24px] font-semibold mb-3 text-[#120052]'>{plan.name} Plan</h3>
-                            <p className='mb-6 text-[#120052] border-b pb-3 text-start w-full'>For as low as <span className='font-bold text-[20px]'> ₦{plan.price}</span>/ month</p>
-                            <ul className='mb-6 text-left'>
+                            <p className='mb-4 text-[#120052] border-b pb-3 text-start w-full'>For as low as <span className='font-bold text-[20px]'> ₦{plan.price}</span>/ month</p>
+                            <ul className='mb-4 text-left'>
                                 {plan.features.map((feature, index) => (
-                                    <li key={index} className='mb-2 flex items-center gap-4 text-[#120052]'>
+                                    <li key={index} className='mb-1 flex items-center gap-4 text-[#120052]'>
                                         <span className='text-[#FFFFFF] text-[9px] p-px inline-flex rounded-full bg-[#B6B6B9] font-bold'><FaCheck/></span>
                                      {feature}
                                     </li>
@@ -64,7 +106,7 @@ const Pricing = () => {
                             </ul>
                         </div>
                         <Link href="/register" className='mx-auto'>
-                            <button className='bg-[#49A5EF] text-white px-8 py-3 rounded-full w-fit'>
+                            <button className='bg-[#49A5EF] text-white px-8 py-3 rounded-full w-fit font-semibold'>
                                 Choose {plan.name}
                             </button>
                         </Link>

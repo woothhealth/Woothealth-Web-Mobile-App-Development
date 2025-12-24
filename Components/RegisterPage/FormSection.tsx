@@ -115,7 +115,7 @@ const FormSection = () => {
                     Registration Successful!
                   </h3>
                   <p className=" mb-6">
-                    Thank you for contacting us. We&apos;ll get back to you within 24 hours.
+                    Your account has been created successfully. Please refer to your email for your credientials to successfully Log in.
                   </p>
                   <button
                     onClick={() => setIsSubmitted(false)}

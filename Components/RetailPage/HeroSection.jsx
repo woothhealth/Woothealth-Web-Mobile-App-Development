@@ -3,7 +3,6 @@
 import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const HeroSection = () => {
  

@@ -54,7 +54,7 @@ const MainFaq = () => {
             {(activeCategory?.faqs ?? []).length ? (
               (activeCategory.faqs ?? []).slice(0, 10).map((faq) => (
                 <article key={faq.index} className="border-b border-[#B6B6B9] pb-3">
-                  <button className="font-medium text-lg w-full flex items-center justify-between" onClick={() => toggleFAQ(faq.index)}
+                  <button className="font-medium text-lg w-full flex items-center justify-between text-start" onClick={() => toggleFAQ(faq.index)}
                   aria-expanded={openIndex === faq.index}>
                     <span>{faq.question}</span>
                     <span>

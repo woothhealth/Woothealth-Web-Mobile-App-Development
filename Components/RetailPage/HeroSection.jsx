@@ -15,7 +15,7 @@ const HeroSection = () => {
           alt='Woot Retail Picture' 
           width={500} 
           height={100} 
-          className='absolute top-0 left-0 object-cover w-full h-full -z-10' 
+          className='absolute top-0 left-0 object-cover w-full h-full -z-10'
           priority
         />
         <div className='flex flex-col gap-6'>

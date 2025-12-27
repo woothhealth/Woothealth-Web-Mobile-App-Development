@@ -33,19 +33,22 @@ export default function DashboardLayout({
   return (
     <div className="container w-full bg-[#FAFAFA]">
       <div>{welcome}</div>
-      <div className="grid grid-cols-4 px-6">
+      <div className="grid grid-cols-4 px-4">
         <div>{active}</div>
         <div>{wallet}</div>
         <div>{dependant}</div>
         <div>{learn}</div>
       </div>
-      <div className="px-6">{children}</div>
-      <div className="px-6">
-        <div>
+      <div className="px-4">{children}</div>
+      <div className="px-4 flex gap-10">
+        <div className="w-[65%]">
           <div>{claimsSummary}</div>
           <div>{medical}</div>
         </div>
-        <div>{payment}</div>
+        <div className="">
+          <div>{payment}</div>
+          <div>{upcoming}</div>
+        </div>
       </div>
     </div>
   );

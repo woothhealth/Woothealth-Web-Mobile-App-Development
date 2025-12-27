@@ -31,16 +31,16 @@ export default function DashboardLayout({
   welcome: React.ReactNode;
 }>) {
   return (
-    <div className="container w-full">
+    <div className="container w-full bg-[#FAFAFA]">
       <div>{welcome}</div>
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-4 px-6">
         <div>{active}</div>
         <div>{wallet}</div>
         <div>{dependant}</div>
         <div>{learn}</div>
       </div>
-      <div>{children}</div>
-      <div>
+      <div className="px-6">{children}</div>
+      <div className="px-6">
         <div>
           <div>{claimsSummary}</div>
           <div>{medical}</div>

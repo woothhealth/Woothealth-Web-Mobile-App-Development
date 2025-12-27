@@ -6,7 +6,7 @@ import { PiHandWaving } from 'react-icons/pi'
 const page = () => {
   return (
     <section className=''>
-      <div className='flex justify-between items-center pr-6 py-6 border-b border-[#D9D9D9]'>
+      <div className='flex justify-between items-center px-6 py-6 border-b border-[#D9D9D9]'>
         <h2 className='text-[20px] font-bold'>OVERVIEW</h2>
         <div className='flex gap-5 items-center'>
           <div className='relative'>
@@ -24,7 +24,7 @@ const page = () => {
         </div>
       </div>
 
-      <div className='flex flex-col py-4'>
+      <div className='flex px-6 flex-col py-4'>
         <h4>Welcome back,</h4>
         <p className='text-[24px] font-semibold'>Quadri <PiHandWaving className='inline-flex text-[#FAD416]'/></p>
       </div>

@@ -16,7 +16,7 @@ export default function AboutLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased flex gap-6`}
+        className={`antialiased flex`}
       >
         <SideBar />
         {children}

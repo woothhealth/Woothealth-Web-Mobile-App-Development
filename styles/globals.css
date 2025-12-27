@@ -46,6 +46,10 @@ button {
   pointer-events: none;
 }
 
+.dsbGrad {
+  background: linear-gradient(#49A5EF, #6B7FED);
+}
+
 .chat {
   background: linear-gradient(to bottom, #49A5EF 5%, #FFFFFF);
 }

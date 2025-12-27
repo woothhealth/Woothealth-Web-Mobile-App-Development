@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
 import Link from 'next/link'
 
 const Management = () => {
@@ -10,7 +9,7 @@ const Management = () => {
         <div className='flex flex-col gap-10'>
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
-                    <Image src='/Team_1.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
+                    <Image src='/Team_1.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
@@ -32,7 +31,7 @@ const Management = () => {
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
-                    <Image src='/Team_2.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_2.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
 
                 <div className='flex flex-col gap-3'>
@@ -51,13 +50,13 @@ const Management = () => {
                 </div>
                 
                 <div className='hidden lg:flex justify-end'>
-                    <Image src='/Team_2.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_2.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
-                    <Image src='/Team_3.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
+                    <Image src='/Team_3.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
@@ -80,7 +79,7 @@ const Management = () => {
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
-                    <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_4.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
 
                 <div className='flex flex-col gap-3'>
@@ -102,15 +101,14 @@ const Management = () => {
                 </div>
                 
                 <div className='hidden lg:flex justify-end'>
-                    <Image src='/Team_4.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_4.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
-                    <Image src='/Team5.png' height={100} width={500} className='h-[28rem]' alt='Team Picture' />
+                    <Image src='/Team5.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
-
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <h3 className='text-2xl font-semibold'>Josephine Ibukunoluwa</h3>
@@ -135,7 +133,7 @@ const Management = () => {
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
-                    <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_6.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
 
                 <div className='flex flex-col gap-3'>
@@ -156,13 +154,13 @@ const Management = () => {
                     </div>
                 </div>
                 <div className='hidden lg:flex lg:justify-end'>
-                    <Image src='/Team_6.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_6.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
             </div>
             
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
-                    <Image src='/Team_7.png' height={100} width={500} className='h-112' alt='Team Picture' />
+                    <Image src='/Team_7.png' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
                 </div>
 
                 <div className='flex flex-col gap-3'>
@@ -190,7 +188,7 @@ const Management = () => {
 
         <div className="flex mt-10">
             <Link href='/aboutp' className='w-fit'>
-                <button className="btn px-6 py-4 font-semibold">About Woot Health</button>
+                <button className="btn px-10 py-4 font-semibold">About Woot Health</button>
             </Link>
         </div>
     </section>

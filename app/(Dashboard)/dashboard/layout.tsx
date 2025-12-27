@@ -41,7 +41,7 @@ export default function DashboardLayout({
       </div>
       <div className="px-4">{children}</div>
       <div className="px-4 flex gap-10">
-        <div className="w-[65%]">
+        <div className="w-[60%]">
           <div>{claimsSummary}</div>
           <div>{medical}</div>
         </div>

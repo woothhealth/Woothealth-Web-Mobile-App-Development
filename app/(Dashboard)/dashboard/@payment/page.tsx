@@ -25,7 +25,7 @@ const page = () => {
         <p className='flex items-center text-[#B57406]'><TbCurrencyNaira className='text-2xl'/>3,420</p>
       </div>
     </div>
-    <div className='btn rounded-xl flex justify-center py-3 text-lg items-center'>
+    <div className='btn cursor-pointer rounded-xl flex justify-center py-3 text-lg items-center'>
       <FaDownload className='mr-2'/> Download Receipts
     </div>
   </section>

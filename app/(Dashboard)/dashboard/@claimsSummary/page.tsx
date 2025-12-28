@@ -85,10 +85,10 @@ const page = () => {
                 <p className='text-[16px]'>{item.name}</p>
                 <div className='flex items-center text-sm text-[#00000080]'>
                   <p className=''>{item.type}</p>
-                  <span><GoDotFill className='text-xs'/></span>
+                  <span><GoDotFill className='text-xs ml-2 mr-0.5'/></span>
                   <p>{item.date}</p>
                 </div>
-                <p className='flex font-semibold'><TbCurrencyNaira className='text-2xl'/> {item.price}</p>
+                <p className='flex font-semibold items-center'><TbCurrencyNaira className='text-[1.35rem]'/> {item.price}</p>
               </div>
               <div className={`py-2 px-3 text-xs h-fit rounded-lg ${tagClasses}`}>{item.tag}</div>
             </div>

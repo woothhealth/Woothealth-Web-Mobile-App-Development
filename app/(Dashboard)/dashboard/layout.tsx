@@ -33,7 +33,7 @@ export default function DashboardLayout({
   return (
     <div className="container w-full bg-[#FAFAFA]">
       <div>{welcome}</div>
-      <div className="grid grid-cols-4 px-4">
+      <div className="grid grid-cols-4 ml-6">
         <div>{active}</div>
         <div>{wallet}</div>
         <div>{dependant}</div>

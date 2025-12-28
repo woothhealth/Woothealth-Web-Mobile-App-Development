@@ -31,7 +31,11 @@ export default function DashboardLayout({
   welcome: React.ReactNode;
 }>) {
   return (
-    <div className="container w-full bg-[#FAFAFA]">
+    <>
+    <div className="lg:hidden h-screen flex flex-col px-6 justify-center items-center text-center">
+      <p>Kind use Desktop Screen to be able to view this page</p>
+    </div>
+    <div className="container w-full bg-[#FAFAFA] hidden lg:block">
       <div>{welcome}</div>
       <div className="grid grid-cols-4 ml-6">
         <div>{active}</div>
@@ -41,15 +45,16 @@ export default function DashboardLayout({
       </div>
       <div className="px-4">{children}</div>
       <div className="px-4 flex gap-10">
-        <div className="w-[60%]">
+        <div className="w-[60%] space-y-4">
           <div>{claimsSummary}</div>
           <div>{medical}</div>
         </div>
-        <div className="w-[39%]">
+        <div className="w-[39%] space-y-4">
           <div>{payment}</div>
           <div>{upcoming}</div>
         </div>
       </div>
     </div>
+    </>
   );
 }

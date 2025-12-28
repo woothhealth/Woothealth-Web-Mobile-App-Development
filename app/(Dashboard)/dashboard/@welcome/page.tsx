@@ -11,7 +11,7 @@ const page = () => {
         <div className='flex gap-5 items-center'>
           <div className='relative'>
             <FaRegBell className='text-[22px]'/>
-            <div className='absolute right-0 -bottom-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center text-[0.65rem] font-bold text-[#FFFFFF]'>2</div>
+            <div className='absolute right-0 -top-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center text-[0.65rem] font-bold text-[#FFFFFF]'>2</div>
           </div>
           <div className='flex items-center gap-2'>
             <div className='w-10 h-10 bg-amber-700 rounded-full'></div>

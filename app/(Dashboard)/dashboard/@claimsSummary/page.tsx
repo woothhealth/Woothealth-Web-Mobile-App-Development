@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { GoDotFill } from 'react-icons/go'
 import { TbCurrencyNaira } from 'react-icons/tb'
@@ -71,7 +73,7 @@ const page = () => {
           <p>Failed</p>
         </div>
       </div>
-      <div className='flex flex-col gap-2 h-80 overflow-x-auto formDiv'>
+      <div className='flex flex-col gap-2 h-80 overflow-x-auto custom-scrollbar pr-2'>
         {summary.map((item, index) => {
           const idNum = Number(item.id);
           const isFirst = idNum === 1;
@@ -93,6 +95,23 @@ const page = () => {
           )
         })}
       </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+          margin-top: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #00000080;
+          border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #e0e0e0;
+        }
+      `}</style>
     </section>
   )
 }

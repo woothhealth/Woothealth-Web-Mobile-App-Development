@@ -47,7 +47,7 @@ const medic = [
 const page = () => {
   return (
     <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl'>
-      <h3 className='text-[20px]'>Medical Records</h3>
+      <h3 className='font-semibold text-[20px]'>Medical Records</h3>
       <div className='flex flex-col gap-2 h-60 overflow-x-auto custom-scrollbar pr-2'>
         {medic.map((item, index) => {
           const idNum = Number(item.id);

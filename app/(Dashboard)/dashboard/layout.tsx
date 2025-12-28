@@ -45,7 +45,7 @@ export default function DashboardLayout({
           <div>{claimsSummary}</div>
           <div>{medical}</div>
         </div>
-        <div className="">
+        <div className="w-[39%]">
           <div>{payment}</div>
           <div>{upcoming}</div>
         </div>

@@ -58,7 +58,7 @@ const summary = [
 const page = () => {
   return (
     <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl'>
-      <h3 className='text-[20px]'>Claims Summary</h3>
+      <h3 className='text-[20px] font-semibold'>Claims Summary</h3>
       <div className='grid grid-cols-3 gap-5'>
         <div className='flex flex-col justify-center text-center bg-[#D1FAE5] rounded-[10px] py-4'>
           <p className='text-[#10B981] text-[20px]'>12</p>

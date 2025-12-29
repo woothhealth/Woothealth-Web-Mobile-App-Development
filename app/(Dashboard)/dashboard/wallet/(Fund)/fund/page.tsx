@@ -2,7 +2,13 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>Fund page</div>
+    <section className='p-4'>
+      <div></div>
+      <p className='text-[20px]'>Fund your wallet for seamless healthcare payments</p>
+      <div>
+
+      </div>
+    </section>
   )
 }
 

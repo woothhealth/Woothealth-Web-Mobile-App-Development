@@ -5,6 +5,7 @@ import { CiBacon } from 'react-icons/ci'
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from 'react-icons/fa6'
 import Image from 'next/image'
 import { TbCurrencyNaira } from 'react-icons/tb'
+import Link from 'next/link'
 
 const Page = () => {
   const [showBalance, setShowBalance] = useState(false);
@@ -33,9 +34,11 @@ const Page = () => {
 
         <div className='space-y-6'>
           <div className='flex bg-[#FFFFFF] rounded-xl p-3 items-center justify-center gap-6'>
-            <button className='btn flex items-center py-2 px-6 gap-2'>
-              <FaPlus className=''/>Fund Wallet
-            </button>
+            <Link href='/dashboard/wallet/fund'>
+              <button className='btn flex items-center py-2 px-6 gap-2'>
+                <FaPlus className=''/>Fund Wallet
+              </button>
+            </Link>
             <button className='py-2 flex items-center px-6 border-2 gap-2 text-[0.9rem] border-[#49A5EF]'>
               <FaMinus/>Withdraw Funds
             </button>

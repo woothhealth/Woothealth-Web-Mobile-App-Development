@@ -1,0 +1,22 @@
+[
+  { "id": "TXN0001", "date": "2025-12-20T10:15:00Z", "description": "Salary Credit", "amount": 2500.00, "type": "credit", "status": "successful", "details": "Monthly salary for December." },
+  { "id": "TXN0002", "date": "2025-12-21T09:30:00Z", "description": "Grocery Store", "amount": -120.45, "type": "debit", "status": "successful", "details": "Groceries at MarketFresh." },
+  { "id": "TXN0003", "date": "2025-12-22T12:00:00Z", "description": "Subscription Payment", "amount": -9.99, "type": "debit", "status": "pending", "details": "Streaming service monthly fee." },
+  { "id": "TXN0004", "date": "2025-12-22T14:10:00Z", "description": "Refund", "amount": 45.00, "type": "credit", "status": "successful", "details": "Refund from retailer." },
+  { "id": "TXN0005", "date": "2025-12-23T08:50:00Z", "description": "Coffee Shop", "amount": -4.75, "type": "debit", "status": "successful", "details": "Morning coffee." },
+  { "id": "TXN0006", "date": "2025-12-23T11:40:00Z", "description": "Insurance Premium", "amount": -150.00, "type": "debit", "status": "failed", "details": "Monthly insurance failed due to insufficient funds." },
+  { "id": "TXN0007", "date": "2025-12-24T09:00:00Z", "description": "Gift Received", "amount": 100.00, "type": "credit", "status": "successful", "details": "Gift from family." },
+  { "id": "TXN0008", "date": "2025-12-24T16:30:00Z", "description": "Online Purchase", "amount": -59.99, "type": "debit", "status": "pending", "details": "Order #8342 - electronics accessory." },
+  { "id": "TXN0009", "date": "2025-12-25T10:00:00Z", "description": "Holiday Bonus", "amount": 300.00, "type": "credit", "status": "successful", "details": "Year-end holiday bonus." },
+  { "id": "TXN0010", "date": "2025-12-25T13:20:00Z", "description": "Pharmacy", "amount": -24.30, "type": "debit", "status": "successful", "details": "Prescription medication." },
+  { "id": "TXN0011", "date": "2025-12-26T09:15:00Z", "description": "Electricity Bill", "amount": -82.10, "type": "debit", "status": "successful", "details": "Monthly electricity bill." },
+  { "id": "TXN0012", "date": "2025-12-26T12:40:00Z", "description": "Sold Item", "amount": 60.00, "type": "credit", "status": "successful", "details": "Sold old bicycle on marketplace." },
+  { "id": "TXN0013", "date": "2025-12-27T15:10:00Z", "description": "Restaurant", "amount": -45.50, "type": "debit", "status": "failed", "details": "Dinner - payment failed." },
+  { "id": "TXN0014", "date": "2025-12-27T18:00:00Z", "description": "Top-up", "amount": 50.00, "type": "credit", "status": "pending", "details": "Mobile top-up in process." },
+  { "id": "TXN0015", "date": "2025-12-28T08:05:00Z", "description": "Transport", "amount": -2.75, "type": "debit", "status": "successful", "details": "Bus fare." },
+  { "id": "TXN0016", "date": "2025-12-28T10:20:00Z", "description": "Cinema", "amount": -15.00, "type": "debit", "status": "successful", "details": "Movie ticket." },
+  { "id": "TXN0017", "date": "2025-12-28T12:40:00Z", "description": "Dividend", "amount": 12.15, "type": "credit", "status": "successful", "details": "Quarterly dividend payout." },
+  { "id": "TXN0018", "date": "2025-12-28T14:00:00Z", "description": "Charity", "amount": -30.00, "type": "debit", "status": "successful", "details": "Donation to shelter." },
+  { "id": "TXN0019", "date": "2025-12-28T16:25:00Z", "description": "Service Fee", "amount": -3.00, "type": "debit", "status": "pending", "details": "Bank service fee pending." },
+  { "id": "TXN0020", "date": "2025-12-28T18:30:00Z", "description": "Cashback", "amount": 5.00, "type": "credit", "status": "successful", "details": "Card cashback reward." }
+]

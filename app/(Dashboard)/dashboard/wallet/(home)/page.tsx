@@ -39,9 +39,11 @@ const Page = () => {
                 <FaPlus className=''/>Fund Wallet
               </button>
             </Link>
-            <button className='py-2 flex items-center px-6 border-2 gap-2 text-[0.9rem] border-[#49A5EF]'>
-              <FaMinus/>Withdraw Funds
-            </button>
+            <Link href='/dashboard/wallet/withdraw'>
+              <button className='py-2 flex items-center px-6 border-2 gap-2 text-[0.9rem] border-[#49A5EF]'>
+                <FaMinus/>Withdraw Funds
+              </button>
+            </Link>
           </div>
           <div className='bg-[#FFFFFF] rounded-xl flex gap-3 p-3'>
             <Image src='/card_img.png' alt='card' width={100} height={100} className='h-10 object-contain' priority/>

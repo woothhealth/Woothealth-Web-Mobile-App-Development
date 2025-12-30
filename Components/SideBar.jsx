@@ -53,7 +53,7 @@ const path2 = [
     },
     {
         name: 'Logout',
-        url: '/logout',
+        url: '/login',
         icon: <RiLogoutBoxRLine/>
     }
 ]

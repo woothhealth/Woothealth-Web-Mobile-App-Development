@@ -21,7 +21,7 @@ const quick = [
   {
     icon: HiUsers,
     action: 'Add Member',
-    url: '/dashboard/member'
+    url: '/dashboard/plans/add-dependant'
   },
   {
     icon: BiSolidFile,

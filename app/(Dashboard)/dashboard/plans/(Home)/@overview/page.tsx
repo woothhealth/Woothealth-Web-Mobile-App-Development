@@ -34,7 +34,7 @@ const action = [
   },
   {
     name: 'Add Dependent',
-    url: '/dashboard/reimbursement'
+    url: '/dashboard/plans/add-dependant'
   }
 ]
 
@@ -47,7 +47,7 @@ const page = () => {
         {coverage.map((item, index) => (
           <div key={index} className='border border-[#D9D9D9] rounded-[10px] flex justify-between p-3'>
             <div className='flex gap-2 w-full'>
-              <div className='text-[#49A5EF] bg-[#D9D9D9] p-1 text-2xl h-fit rounded-[5px]'>
+              <div className='text-[#49A5EF] bg-[#D9D9D9] p-1.5 text-2xl h-fit rounded-[5px]'>
                 <item.icon/>
               </div>
               <div className='flex fex-col'>
@@ -70,7 +70,7 @@ const page = () => {
         <h3 className='text-lg font-semibold'>Quick Actions</h3>
         <div className='flex flex-col gap-3'>
           {action.map((item, index) => (
-            <Link key={index} href={item.url} className='p-2 border border-[#D9D9D9] flex justify-between items-center rounded-[10px] text-[18px]'>
+            <Link key={index} href={item.url} className='p-2 border border-[#D9D9D9] flex justify-between items-center rounded-[10px] text-[16px]'>
               {item.name}
               <FaChevronRight/>
             </Link>

@@ -130,15 +130,15 @@ const Page = () => {
     return (
       <>
     <section className='p-4'>
-      <div className='flex flex-col mt-4'>
+      <div className='flex flex-col'>
         <div className='flex flex-col gap-6'>
-          <div className='flex gap-2 text-[#49A5EF] bg-[#49A5EF05] border border-[#49A5EF] rounded-[10px] p-2 mt-3' style={{width: '50%'}}>
-            <div className='p-2 inline-flex rounded-full bg-[#49A5EF] h-fit text-[#FFFFFF] text-lg'>
+          <div className='flex gap-2 text-[#49A5EF] bg-[#49A5EF05] border border-[#49A5EF] rounded-[10px] p-2' style={{width: '50%'}}>
+            <div className='p-1.5 inline-flex rounded-full bg-[#49A5EF] h-fit text-[#FFFFFF] text-base'>
               <BiSolidFile/>
             </div>
             <div>
-              <h4 className='text-base'>Quick Tip</h4>
-              <p className='text-sm'>Claims are typically processed within 5-7 business days. Make sure all receipts are clear and legible.</p>
+              <h4 className='text-sm font-semibold'>Quick Tip</h4>
+              <p className='text-xs'>Claims are typically processed within 5-7 business days. Make sure all receipts are clear and legible.</p>
             </div>
           </div>
             <div className='' style={{width: '100%'}}>
@@ -234,8 +234,8 @@ const Page = () => {
                 </ul>
               )}
 
-              <div className='flex mt-8 gap-2 bg-[#FEF3C7] border border-[#B57406] rounded-[10px] px-3 py-4'>
-                <div className='text-[#B57406] text-sm'>
+              <div className='flex mt-8 gap-2 bg-[#FEF3C7] border border-[#B57406] rounded-[10px] px-2 py-4'>
+                <div className='text-[#B57406] text-sm font-semibold'>
                   Required:
                 </div>
                 <div>

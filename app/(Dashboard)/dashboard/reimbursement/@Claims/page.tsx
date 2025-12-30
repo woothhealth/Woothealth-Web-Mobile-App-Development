@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
 import { BiSolidFile } from 'react-icons/bi'
-import { FiUpload } from 'react-icons/fi'
+import { FiUpload, FiCamera } from 'react-icons/fi'
 
 const Page = () => {
 
@@ -14,25 +14,60 @@ const Page = () => {
     'application/pdf',
   ]
 
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({
         claimType: '',
         date: '',
         hospitalName: '',
         claimAmount: '',
         description: '',
+        files: [] as File[],
       });
   const [errors, setErrors] = useState({
         claimType: '',
         date: '',
         hospitalName: '',
         claimAmount: '',
-        description: ''
+        description: '',
+        files: '',
       });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
     
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
+
+    if (target.type === 'file' && target.files) {
+      const selectedFiles = Array.from(target.files);
+
+      for (const file of selectedFiles) {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+          setErrors((prev) => ({
+            ...prev,
+            files: 'Only PDF, JPG, and PNG files are allowed',
+          }));
+          return;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+          setErrors((prev) => ({
+            ...prev,
+            files: 'Each file must be under 10MB',
+          }));
+          return;
+        }
+      }
+
+      setErrors((prev) => ({ ...prev, files: '' }));
+      setFormData((prev) => ({
+        ...prev,
+        files: [...prev.files, ...selectedFiles],
+      }));
+      return;
+    }
+
       setFormData({
           ...formData,
           [e.target.name]: e.target.value
@@ -45,12 +80,8 @@ const Page = () => {
     
       const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const newErrors = { claimType: '',
-        date: '',
-        hospitalName: '',
-        claimAmount: '',
-        description: ''};
         let hasError = false;
+        const newErrors = { ...errors };
     
         if (!formData.claimType.trim()) {
           newErrors.claimType = 'Field not filled';
@@ -68,6 +99,10 @@ const Page = () => {
           newErrors.claimAmount = 'Field not filled';
           hasError = true;
         }
+        if (formData.files.length === 0) {
+          newErrors.files = 'Please upload at least one document';
+          hasError = true;
+        }
   
         setErrors(newErrors);
     
@@ -82,11 +117,12 @@ const Page = () => {
           setIsSubmitted(true);
           // Reset form after successful submission
           setFormData({
-              claimType: '',
-              date: '',
-              hospitalName: '',
-              claimAmount: '',
-              description: '',
+            claimType: '',
+            date: '',
+            hospitalName: '',
+            claimAmount: '',
+            description: '',
+            files: [],
           });
         }, 1500);
       };
@@ -109,11 +145,11 @@ const Page = () => {
               {isSubmitted ? (
                 <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                     <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
-                    <h3 className="text-xl  mb-2">
-                      Withdrawal form Successfully filled!
+                    <h3 className="text-xl mb-2">
+                      Claim Submitted Successfully
                     </h3>
-                    <p className=" mb-6">
-                      Your withdrawal request has been received and will be processed within the next 2-3 working days. Thank you
+                    <p className="mb-6">
+                      Your claim will be processed within 2–3 working days.
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
@@ -167,20 +203,52 @@ const Page = () => {
                     </button>
                 </form>
               </div>
-              <div className='flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px] py-4 px-6' style={{width: '50%'}}>
-                <p className='text-[18px] font-semibold'>Upload Document</p>
-                <div>
-                  <FiUpload/>
-                  <p>Upload Bills & Receipts</p>
-                  <p>PDF, JPG, PNG up to 10MB each</p>
-                  <input type="file" className='btn rounded-lg' />
+
+            {/* UPLOAD */}
+            <div className="bg-white p-6 rounded-lg space-y-4 h-fit" style={{width: '48%'}}>
+              <p className="text-[18px] font-semibold">Upload Document</p>
+              <div className='mt-12 flex flex-col items-center justify-center space-y-3'>
+                <FiUpload className='text-4xl'/>
+                <h4 className='font-semibold'>Upload Bills & Receipts</h4>
+                <p className='text-sm'>PDF, JPG, PNG up to 10MB each</p>
+              </div>
+              <input ref={uploadRef} type="file" multiple accept=".pdf,image/*" className="hidden" onChange={handleChange} />
+              <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleChange} />
+
+              <div className="flex items-center justify-center gap-4 mt-10">
+                <div onClick={() => uploadRef.current?.click()} className="btn rounded-[10px] px-8 py-2 flex gap-2 items-center cursor-pointer">
+                  <FiUpload /> Choose Files
+                </div>
+                <div onClick={() => cameraRef.current?.click()} className="px-6 rounded-[10px] py-2 flex gap-2 items-center bg-[#E5E7EB4D] cursor-pointer">
+                  <FiCamera /> Take Photos
                 </div>
               </div>
-              </div>
+
+              {errors.files && <p className="text-red-500/60 text-sm">{errors.files}</p>}
+
+              {formData.files.length > 0 && (
+                <ul className="text-sm">
+                  {formData.files.map((file, i) => (
+                    <li key={i}>• {file.name}</li>
+                  ))}
+                </ul>
               )}
+
+              <div className='flex mt-8 gap-2 bg-[#FEF3C7] border border-[#B57406] rounded-[10px] px-3 py-4'>
+                <div className='text-[#B57406] text-sm'>
+                  Required:
+                </div>
+                <div>
+                  <p className='text-sm text-[#F59E0B]'>Original bills, payment receipts, prescriptions (if applicable)</p>
+                </div>
               </div>
             </div>
-        </div>
+
+          </div>
+        )}
+      </div>
+      </div>
+      </div>
     </section>
     </>
   )

@@ -21,8 +21,8 @@ export default function ReimbursementLayout({
           <div>
             <nav className="" style={{width: '50%'}}>
               <ul className="flex justify-between">
-                <li onClick={() => router.push('/dashboard/reimbursement')} className={`${pathname?.includes('reimbursement') ? 'border-blue-600 border-b' : ''}`}>Submit Claim</li>
-                <li onClick={() => router.push('/dashboard/reimbursement/track')} className={`${pathname?.includes('track') ? 'border-blue-600 border-b' : ''}`}>Track Claim</li>
+                <li onClick={() => router.push('/dashboard/reimbursement')} className={`text-[18px] font-semibold ${pathname?.includes('reimbursement') ? 'border-blue-600 border-b' : ''}`}>Submit Claim</li>
+                <li onClick={() => router.push('/dashboard/reimbursement/track')} className={`text-[18px] font-semibold ${pathname?.includes('track') ? 'border-blue-600 border-b' : ''}`}>Track Claim</li>
               </ul>
             </nav>
           </div>

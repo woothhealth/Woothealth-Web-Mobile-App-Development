@@ -1,0 +1,174 @@
+{
+  "title": "Learn About Woot Health",
+  "tagline": "Healthcare that actually works for you",
+  "introduction": "Woot Health is a digital health maintenance organization (HMO) built to make healthcare simple, accessible, and stress-free. We help you get quality medical care when you need it without long processes, confusion, or unnecessary delays.",
+  "sections": [
+    {
+      "id": 1,
+      "heading": "What We Do",
+      "content": "We connect you to trusted hospitals, doctors, and healthcare providers so you can focus on getting better, not figuring things out.",
+      "highlights": [
+        "Access quality healthcare services",
+        "Visit accredited partner hospitals",
+        "Enjoy faster care approvals",
+        "Manage your health plan from your phone"
+      ]
+    },
+    {
+      "id": 2,
+      "heading": "How Woot Health Works",
+      "content": "Woot Health simplifies healthcare by handling complex processes for you, so you can focus on getting the care you need.",
+      "steps": [
+        {
+          "step": 1,
+          "title": "Sign Up on the App",
+          "whatYouDo": [
+            "Download the Woot Health mobile app",
+            "Create an account using your phone number, email, and address",
+            "Complete basic personal details such as name, date of birth, and gender"
+          ],
+          "behindTheScenes": [
+            "Your account is securely created",
+            "Your profile is validated and stored",
+            "You gain access to available health plans"
+          ],
+          "outcome": "You now have an active Woot Health account"
+        },
+        {
+          "step": 2,
+          "title": "Choose a Health Plan",
+          "whatYouDo": [
+            "Browse available health plans within the app",
+            "View coverage details, benefits, hospital access, and pricing",
+            "Select a plan that fits your healthcare needs",
+            "Proceed to pay for the selected health plan"
+          ],
+          "behindTheScenes": [
+            "Your selected plan is assigned to your profile",
+            "Coverage rules and benefits are activated"
+          ],
+          "outcome": "Your health plan becomes active"
+        },
+        {
+          "step": 3,
+          "title": "Receive Your Woot Health ID",
+          "whatYouDo": [
+            "View your Woot Health ID directly in the app",
+            "Save or screenshot it for offline use"
+          ],
+          "behindTheScenes": [
+            "A unique, secure HMO ID is generated",
+            "Your ID is linked to your health plan and profile"
+          ],
+          "outcome": "You can now access care at Woot Health partner hospitals"
+        },
+        {
+          "step": 4,
+          "title": "Visit a Partner Hospital",
+          "whatYouDo": [
+            "Go to any Woot Health approved hospital",
+            "Present your Woot Health ID at reception"
+          ],
+          "behindTheScenes": [
+            "The hospital verifies your ID in the Woot Health system",
+            "Your coverage and eligibility are confirmed in real time"
+          ],
+          "outcome": "You are checked in and cleared to receive care"
+        },
+        {
+          "step": 5,
+          "title": "Receive Medical Care",
+          "whatYouDo": [
+            "See a doctor and receive treatment as covered by your plan"
+          ],
+          "behindTheScenes": [
+            "Required approvals are handled automatically",
+            "Your care details are logged securely"
+          ],
+          "outcome": "You receive treatment without unnecessary delays"
+        },
+        {
+          "step": 6,
+          "title": "Claims and Payments",
+          "whatYouDo": [
+            "Nothing extra is required from you, focus on recovery"
+          ],
+          "behindTheScenes": [
+            "The hospital submits claims to Woot Health",
+            "Claims are reviewed, validated, and paid",
+            "Any follow-up is handled directly with the provider"
+          ],
+          "outcome": "You enjoy a smooth, cashless healthcare experience"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "heading": "Why Choose Woot Health",
+      "highlights": [
+        "Simple and digital health management through the mobile app",
+        "Trusted hospitals within a growing verified provider network",
+        "Fast support through in-app assistance",
+        "Transparent care with clear plans and no hidden surprises"
+      ]
+    },
+    {
+      "id": 4,
+      "heading": "Your Health, Your Control",
+      "subsections": [
+        {
+          "title": "Manage Your Health from One Place",
+          "points": [
+            "View your health plan and benefits",
+            "Access your HMO ID at any time",
+            "See your healthcare activity and history",
+            "Receive important updates and alerts"
+          ]
+        },
+        {
+          "title": "Stay Informed",
+          "points": [
+            "Know when your plan is active",
+            "Get notified about changes, approvals, or updates",
+            "Understand your coverage before you need it"
+          ]
+        },
+        {
+          "title": "Flexibility That Fits Your Life",
+          "points": [
+            "Choose plans that suit your needs",
+            "Upgrade or change plans when available",
+            "Access care without being tied to one location"
+          ]
+        },
+        {
+          "title": "Peace of Mind",
+          "points": [
+            "Your data is securely stored and protected",
+            "Your healthcare records are always available",
+            "You are supported every step of the way"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "heading": "Our Promise to You",
+      "points": [
+        "Healthcare should be simple",
+        "Care should be accessible",
+        "Support should feel human"
+      ],
+      "closing": "Your health matters, and with Woot Health, you are always in control."
+    },
+    {
+      "id": 6,
+      "heading": "Need Help",
+      "content": "If you have questions or need support, our team is always ready to help.",
+      "actions": [
+        "Contact us through the app",
+        "Visit a partner hospital near you"
+      ]
+    }
+  ]
+}

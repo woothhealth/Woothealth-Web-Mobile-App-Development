@@ -11,7 +11,7 @@ const quick = [
   {
     icon: PiCardholderFill,
     action: 'Buy Plan',
-    url: '/dashboard/buy'
+    url: '/dashboard/buy-plans'
   },
   {
     icon: IoWallet,

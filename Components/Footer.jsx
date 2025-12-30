@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarker, FaPhoneAlt, FaStar } from 'react-icons/fa';
-import { FaApple, FaGooglePlay, FaHeart, FaX, FaXTwitter } from 'react-icons/fa6';
+import { FaApple, FaHeart, FaXTwitter } from 'react-icons/fa6';
 import { DiAppstore } from 'react-icons/di';
 import Link from 'next/link';
 
@@ -122,7 +122,7 @@ const Footer = () => {
                         <address className='flex gap-3 items-center ml-2 cursor-pointer'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                     </div>
                     <div className='md:col-span-3'>
-                        <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
+                        <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-10 mb-4' loading='lazy' />
                         <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         

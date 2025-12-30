@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>Default Upload page</div>
+    <div>Member page</div>
   )
 }
 

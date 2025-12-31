@@ -48,7 +48,7 @@ const page = () => {
             <div className=''>
                 {information.map((item, index) => {
                     const first = index === 0
-                    return(<div key={index} className={`grid grid-cols-2 py-4 border-b text-[16px] ${first ? 'border-t' : ''}`}>
+                    return(<div key={index} className={`grid grid-cols-2 py-4 border-b text-[16px] border-[#D9D9D9] ${first ? 'border-t border-[#D9D9D9]' : ''}`}>
                         <h3 className='font-semibold'>{item.tite}</h3>
                         <p>{item.sub}</p>
                     </div>)

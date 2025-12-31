@@ -1,21 +1,24 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { FaBookOpen } from 'react-icons/fa';
-import { FaArrowRightLong, FaCalendar } from 'react-icons/fa6';
+// import Link from 'next/link';
+// import { FaBookOpen } from 'react-icons/fa';
+// import { FaArrowRightLong, FaCalendar } from 'react-icons/fa6';
 
 const Providers = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [posts, setPosts] = useState([]);
+  // const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Mock blog posts data - In a real app, this would come from the admin dashboard
-  const mockPosts = [
-  ];
+  // const mockPosts = [
+  // ];
 
   const categories = [
+    "Provider Name",
+    "Address",
+    "State"
   ];
 
   const header = [
@@ -24,27 +27,27 @@ const Providers = () => {
     "State"
   ]
 
-  useEffect(() => {
-    // Simulate API call
-    const fetchPosts = async () => {
-      setLoading(true);
-      setTimeout(() => {
-        setPosts(mockPosts);
-        setLoading(false);
-      }, 800);
-    };
+  // useEffect(() => {
+  //   // Simulate API call
+  //   const fetchPosts = async () => {
+  //     setLoading(true);
+  //     setTimeout(() => {
+  //       setPosts(mockPosts);
+  //       setLoading(false);
+  //     }, 800);
+  //   };
 
-    fetchPosts();
-  }, []);
+  //   fetchPosts();
+  // }, []);
 
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || post.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // const filteredPosts = posts.filter(post => {
+  //   const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || post.category.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
+  //   return matchesSearch && matchesCategory;
+  // });
 
-  const featuredPost = posts.find(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured || searchTerm || selectedCategory !== 'all');
+  // const featuredPost = posts.find(post => post.featured);
+  // const regularPosts = filteredPosts.filter(post => !post.featured || searchTerm || selectedCategory !== 'all');
 
   return (
     <section className='p-4 my-4'>
@@ -114,12 +117,12 @@ const Providers = () => {
         </table>
         
       {/* Featured Post */}
-      {featuredPost && !searchTerm && selectedCategory === 'all' && (
+      {/* {featuredPost && !searchTerm && selectedCategory === 'all' && (
         <div></div>
-      )}
+      )} */}
 
       {/* Blog Posts Grid */}
-      <section className="section-padding">
+      {/* <section className="section-padding">
         <div className="container-custom">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -140,7 +143,7 @@ const Providers = () => {
             </div>
           ) : (
             <>
-              {regularPosts.length > 0 ? (
+              {/* {regularPosts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {regularPosts.map((post, index) => (
                     <article key={post.id} className="card-elegant hover-lift animate-fade-in">
@@ -194,7 +197,7 @@ const Providers = () => {
             </>
           )}
         </div>
-      </section>
+      </section> */}
       </section>
     </section>
   );

@@ -5,8 +5,8 @@ import { FaRegBell } from 'react-icons/fa6'
 const page = () => {
   return (
     <section className=''>
-      <div className='flex justify-between items-center px-6 py-6 bg-[#FFFFFF] border-b border-[#D9D9D9]'>
-        <h2 className='text-[20px] font-bold'>REIMBURSEMENT</h2>
+      <div className='flex justify-between items-center px-6 py-4 bg-[#FFFFFF] border-b border-[#D9D9D9]'>
+        <h2 className='text-[20px] font-bold'>BUY PLANS</h2>
         <div className='flex gap-5 items-center'>
           <div className='relative'>
             <FaRegBell className='text-[22px]'/>

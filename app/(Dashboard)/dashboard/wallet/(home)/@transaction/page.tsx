@@ -35,14 +35,14 @@ const Page = () => {
   }, [currentPage, filtered])
 
   const formatCurrency = (amt: number) => {
-    const nf = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+    const nf = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' })
     return nf.format(amt)
   }
 
   const statusClass = (status: Transaction['status']) => {
-    if (status === 'successful') return 'text-green-700 bg-green-50'
-    if (status === 'pending') return 'text-orange-700 bg-orange-50'
-    return 'text-red-700 bg-red-50'
+    if (status === 'successful') return 'text-green-700 bg-green-50 p-2'
+    if (status === 'pending') return 'text-orange-700 bg-orange-50 p-2'
+    return 'text-red-700 bg-red-50 p-2'
   }
 
   const handleTab = (t: typeof tab) => {
@@ -53,11 +53,11 @@ const Page = () => {
 
   return (
     <section className="p-4 my-4 bg-white rounded-2xl shadow-sm">
-      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="mb-4 flex flex-col md:flex-row md:items-center gap-10">
         <h2 className="text-lg font-semibold">Transaction History</h2>
 
         <div className="flex gap-2 items-center">
-          <div className="flex rounded-md bg-gray-100 p-1">
+          <div className="flex rounded-[10px] bg-gray-100 py-2 px-4">
             {['all', 'credit', 'debit', 'pending'].map((t) => (
               <button
                 key={t}
@@ -72,21 +72,21 @@ const Page = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full table-auto text-sm">
-          <thead>
-            <tr className="text-left text-xs text-gray-500">
-              <th className="p-3">Transaction ID</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Description</th>
-              <th className="p-3">Amount</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Details</th>
+        <table className="w-full table-auto text-[16px] text-center">
+          <thead className='bg-[#49A5EF1A] border-y border-[#49A5EF80]'>
+            <tr className="text-center text-[16px]">
+              <th className="px-3 py-5">Transaction ID</th>
+              <th className="px-3 py-5">Date</th>
+              <th className="px-3 py-5">Description</th>
+              <th className="px-3 py-5">Amount</th>
+              <th className="px-3 py-5">Status</th>
+              <th className="px-3 py-5">Details</th>
             </tr>
           </thead>
           <tbody>
             {pageData.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-500">
+                <td colSpan={6} className="p-6 text-center">
                   No transactions found.
                 </td>
               </tr>
@@ -94,11 +94,11 @@ const Page = () => {
 
             {pageData.map((t) => (
               <React.Fragment key={t.id}>
-                <tr className="border-t" onClick={() => setExpandedId(expandedId === t.id ? null : t.id)}>
-                  <td className="p-3 font-medium">{t.id}</td>
-                  <td className="p-3 text-gray-600">{new Date(t.date).toLocaleString()}</td>
+                <tr className="border-b border-[#D9D9D9]">
+                  <td className="p-3">{t.id}</td>
+                  <td className="p-3">{new Date(t.date).toLocaleString()}</td>
                   <td className="p-3">{t.description}</td>
-                  <td className={`p-3 ${t.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(t.amount)}</td>
+                  <td className={`p-3 `}>{formatCurrency(t.amount)}</td>
                   <td className="p-3">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusClass(t.status)}`}>
                       {t.status.charAt(0).toUpperCase() + t.status.slice(1)}

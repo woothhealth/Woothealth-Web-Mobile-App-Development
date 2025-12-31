@@ -93,7 +93,7 @@ const Providers = () => {
                 ))}
               </select>
             </div>
-            <button className='btn rounded-sm px-16 py-2'>
+            <button value='submit' className='btn rounded-sm px-16 py-2'>
               Search
             </button>
           </div>

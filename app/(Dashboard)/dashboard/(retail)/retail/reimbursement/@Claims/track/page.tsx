@@ -57,7 +57,7 @@ const summary = [
 
 const page = () => {
   return (
-    <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl' style={{width: '50%'}}>
+    <section className='md:p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl w-full md:w-1/2'>
       <div className='flex flex-col gap-2 h-90 overflow-x-auto custom-scrollbar pr-2'>
         {summary.map((item, index) => {
           const idNum = Number(item.id);

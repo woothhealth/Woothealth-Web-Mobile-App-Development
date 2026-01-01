@@ -4,7 +4,7 @@ import { TbCurrencyNaira } from 'react-icons/tb'
 
 const page = () => {
   return (
-  <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl'>
+  <section className='py-4 md:p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl'>
     <h3 className='font-semibold text-[20px]'>Payments</h3>
     <div className='bg-[#FEF3C780] border border-[#B57406] rounded-lg flex justify-between items-center py-3 px-4'>
       <div className='flex flex-col gap-1'>

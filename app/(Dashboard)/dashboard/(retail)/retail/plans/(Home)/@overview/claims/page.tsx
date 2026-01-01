@@ -60,7 +60,7 @@ const page = () => {
     <section className='flex gap-4'>
       <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-full space-y-4">
         <h3 className='text-lg font-semibold'>Recent Claims</h3>
-        <div className='grid grid-cols-2 gap-3 h-80 overflow-x-auto custom-scrollbar pr-2'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-3 h-80 overflow-x-auto custom-scrollbar pr-2'>
           {summary.map((item, index) => {
             const idNum = Number(item.id);
             const isFirst = idNum === 1;

@@ -37,7 +37,7 @@ const page = () => {
     <section className='flex gap-4'>
       <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-full space-y-4">
         <h3 className='text-lg font-semibold'>Coverage Summary</h3>
-        <div className='grid grid-cols-3 gap-3'>
+        <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
           {benefit.map((item, index) => (
             <div key={index} className='bg-[#F8F9FA] rounded-[10px] flex gap-2 p-2'>
               <IoMdCheckmarkCircleOutline className='text-lg text-[#10B981]'/>

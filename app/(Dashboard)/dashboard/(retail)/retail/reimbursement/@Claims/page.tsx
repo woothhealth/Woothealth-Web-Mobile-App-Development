@@ -129,10 +129,10 @@ const Page = () => {
   
     return (
       <>
-    <section className='p-4'>
+    <section className='py-4 md:p-4'>
       <div className='flex flex-col'>
         <div className='flex flex-col gap-6'>
-          <div className='flex gap-2 text-[#49A5EF] bg-[#49A5EF05] border border-[#49A5EF] rounded-[10px] p-2' style={{width: '50%'}}>
+          <div className='flex gap-2 text-[#49A5EF] bg-[#49A5EF05] border border-[#49A5EF] rounded-[10px] p-2 md:w-1/2'>
             <div className='p-1.5 inline-flex rounded-full bg-[#49A5EF] h-fit text-[#FFFFFF] text-base'>
               <BiSolidFile/>
             </div>
@@ -141,8 +141,8 @@ const Page = () => {
               <p className='text-xs'>Claims are typically processed within 5-7 business days. Make sure all receipts are clear and legible.</p>
             </div>
           </div>
-            <div className='' style={{width: '100%'}}>
-              {isSubmitted ? (
+          <div className='w-full'>
+            {isSubmitted ? (
                 <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                     <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
                     <h3 className="text-xl mb-2">
@@ -159,8 +159,8 @@ const Page = () => {
                     </button>
                   </div>
                 ) : (
-                <div className='flex gap-10'>
-                  <div className='flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px] py-4 px-6' style={{width: '50%'}}>
+                <div className='flex flex-col md:flex-row gap-10'>
+                  <div className='flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px] py-4 md:px-6 md:w-1/2 '>
                   <p className='text-[18px] font-semibold'>Claims Details</p>
                   <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
                     <div className='flex flex-col gap-2 w-full'>
@@ -198,14 +198,14 @@ const Page = () => {
                       <textarea name='description' placeholder='Add any additional details about your claim' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm resize-none' id="description" value={formData.description} onChange={handleChange} />
                     </div>
                     
-                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3  rounded-sm mt-3'>
+                    <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3  rounded-sm mt-3 hidden md:block'>
                       {isSubmitting ? 'Sending...' : 'Continue'}
                     </button>
                 </form>
               </div>
 
             {/* UPLOAD */}
-            <div className="bg-white p-6 rounded-lg space-y-4 h-fit" style={{width: '48%'}}>
+            <div className="bg-white md:p-6 rounded-lg space-y-4 h-fit md:w-[48%]">
               <p className="text-[18px] font-semibold">Upload Document</p>
               <div className='mt-12 flex flex-col items-center justify-center space-y-3'>
                 <FiUpload className='text-4xl'/>
@@ -223,9 +223,7 @@ const Page = () => {
                   <FiCamera /> Take Photos
                 </div>
               </div>
-
               {errors.files && <p className="text-red-500/60 text-sm">{errors.files}</p>}
-
               {formData.files.length > 0 && (
                 <ul className="text-sm">
                   {formData.files.map((file, i) => (
@@ -242,6 +240,10 @@ const Page = () => {
                   <p className='text-sm text-[#F59E0B]'>Original bills, payment receipts, prescriptions (if applicable)</p>
                 </div>
               </div>
+
+              <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 rounded-sm mt-6 w-full md:hidden block'>
+                {isSubmitting ? 'Sending...' : 'Continue'}
+              </button>
             </div>
 
           </div>

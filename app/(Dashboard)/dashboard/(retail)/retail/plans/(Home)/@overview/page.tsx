@@ -22,26 +22,26 @@ const coverage = [
 const action = [
   {
     name: 'Reimbursement',
-    url: '/dashboard/reimbursement'
+    url: '/dashboard/retail/reimbursement'
   },
   {
     name: 'Find a Provider',
-    url: '/dashboard/providers'
+    url: '/dashboard/retail/providers'
   },
   {
     name: 'Upgrade Plan',
-    url: '/dashboard/buy-plans'
+    url: '/dashboard/retail/buy-plans'
   },
   {
     name: 'Add Dependent',
-    url: '/dashboard/plans/add-dependant'
+    url: '/dashboard/retail/plans/add-dependant'
   }
 ]
 
 const page = () => {
   return (
-    <section className='flex gap-4'>
-      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-[65%] space-y-4">
+    <section className='flex flex-col md:flex-row gap-4'>
+      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 md:w-[65%] space-y-4">
         <h3 className='text-lg font-semibold'>Coverage Summary</h3>
         <div className='flex flex-col gap-3'>
         {coverage.map((item, index) => (
@@ -66,7 +66,7 @@ const page = () => {
         </div>
       </div>
 
-      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 space-y-4 w-[33%]">
+      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 space-y-4 md:w-[33%]">
         <h3 className='text-lg font-semibold'>Quick Actions</h3>
         <div className='flex flex-col gap-3'>
           {action.map((item, index) => (

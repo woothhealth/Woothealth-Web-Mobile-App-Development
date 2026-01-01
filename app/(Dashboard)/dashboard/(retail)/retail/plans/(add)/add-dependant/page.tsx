@@ -82,14 +82,14 @@ const Page = () => {
   
     return (
       <>
-    <section className='p-4'>
-      <Link href='/dashboard/plans' className='border p-1 rounded-full inline-flex'>
+    <section className='py-4 md:p-4'>
+      <Link href='/dashboard/retail/plans' className='border p-1 rounded-full inline-flex'>
         <FaArrowLeft className='text-2xl'/>
       </Link>
-      <div className='flex flex-col justify-center items-center mt-6'>
-        <div className='flex flex-col gap-6' style={{width: '32rem'}}>
-          <p className='text-[18px]'>Add famiy members to your health coverage</p>
-            <div className='pt-8 pb-10 px-6 bg-[#FFFFFF] rounded-[10px]'>
+      <div className='flex flex-col md:justify-center md:items-center mt-6'>
+        <div className='flex flex-col gap-6 md:w-lg'>
+          <p className='text-[18px] text-center md:text-start'>Add famiy members to your health coverage</p>
+            <div className='pt-3 md:pt-8 pb-10 px-6 bg-[#FFFFFF] rounded-[10px]'>
               {isSubmitted ? (
                   <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                     <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
@@ -127,7 +127,7 @@ const Page = () => {
                       <label className='font-semibold' htmlFor="gender">
                         Gender
                       </label>
-                      <select name='gender' id="gender" className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formData.gender} onChange={handleChange}>
+                      <select name='gender' id="gender" className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 selection:bg-black' value={formData.gender} onChange={handleChange}>
                         <option value="Select gender">Select Gender</option>
                         <option value="male">Male</option>
                         <option value="Female">Female</option>

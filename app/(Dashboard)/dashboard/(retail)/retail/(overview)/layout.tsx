@@ -34,19 +34,19 @@ export default function DashboardLayout({
     <>
     <div className="container w-full bg-[#FAFAFA]">
       <div>{welcome}</div>
-      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-0 lg:ml-6 mx-auto overflow-x-auto w-[95%]  md:overflow-hidden formDiv">
+      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-0 lg:ml-6 mx-auto overflow-x-auto w-[95%] formDiv">
         <div>{active}</div>
         <div>{wallet}</div>
         <div>{dependant}</div>
         <div>{learn}</div>
       </div>
       <div className="px-4">{children}</div>
-      <div className="px-4 flex gap-10">
-        <div className="w-[60%] space-y-4">
+      <div className="px-4 flex flex-col md:flex-row gap-4 md:gap-10">
+        <div className="md:w-[60%] md:space-y-4">
           <div>{claimsSummary}</div>
           <div>{medical}</div>
         </div>
-        <div className="w-[39%] space-y-4">
+        <div className="md:w-[39%] md:space-y-4">
           <div>{payment}</div>
           <div>{upcoming}</div>
         </div>

@@ -9,7 +9,7 @@ export default function AddDependantLayout({
 }>) {
   return (
     <>
-    <div className="container w-full bg-[#FAFAFA] hidden lg:block">
+    <div className="w-full bg-[#FAFAFA]">
       <div>{header}</div>
       <div className="px-4">{children}</div>
     </div>

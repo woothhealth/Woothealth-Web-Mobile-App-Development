@@ -9,6 +9,7 @@ export default function AboutLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <html lang='en'>
     <body className={`antialiased`}>
       <NavBar />
       <AuthProvider>
@@ -16,5 +17,6 @@ export default function AboutLayout({
       </AuthProvider>
       <SmallFooter />
     </body>
+    </html>
   );
 }

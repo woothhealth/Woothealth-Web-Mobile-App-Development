@@ -82,11 +82,11 @@ const pricingplans = [
 ]
 const page = () => {
   return (
-<section className='p-4'>
-      <Link href='/dashboard' className='border p-1 rounded-full inline-flex'>
+<section className='py-4 md:p-4'>
+      <Link href='/dashboard/retail' className='border p-1 rounded-full inline-flex'>
         <FaArrowLeft className='text-2xl'/>
       </Link>
-        <div className='py-10 w-full flex flex-col gap-8'>
+        <div className='py-10 md:w-full w-[90%] mx-auto md:mx-0 flex flex-col gap-8'>
             <div className='grid lg:grid-cols-3 max-w-full md:grid-cols-2 grid-cols-1 gap-8'>
                 {pricingplans.map((plan) => (
                     <div key={plan.id} className='bg-[#FFFFFF] rounded-[10px] text-[#000000] shadow-lg flex flex-col gap-4 h-full pb-8'>

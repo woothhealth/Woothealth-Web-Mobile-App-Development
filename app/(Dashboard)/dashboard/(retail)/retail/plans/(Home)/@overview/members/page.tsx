@@ -44,7 +44,7 @@ const page = () => {
     <section className='flex gap-4'>
       <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-full space-y-4">
         <h3 className='text-lg font-semibold'>Coverage Members</h3>
-        <div className='grid grid-cols-3 gap-3'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
           {members.map((item, index) => {
             const main = item.role === 'Primary'
             return (

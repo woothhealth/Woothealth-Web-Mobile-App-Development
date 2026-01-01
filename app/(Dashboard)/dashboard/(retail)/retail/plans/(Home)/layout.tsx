@@ -19,7 +19,7 @@ export default function PlansLayout({
     <>
     <div className="w-full bg-[#FAFAFA]">
       <div className="sticky top-0">{header}</div>
-      <div className="flex flex-col px-6 py-4 gap-4">
+      <div className="flex flex-col md:px-6 py-4 gap-4">
         <div>{active}</div>
           <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-1 w-full">
             <nav className="">

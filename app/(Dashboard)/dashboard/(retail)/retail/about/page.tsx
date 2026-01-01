@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import faqData from "../../../../data/about.json";
+import faqData from "../../../../../../data/about.json";
 import React from "react";
 
 type Step = {

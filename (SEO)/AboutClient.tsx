@@ -1,5 +1,5 @@
 import aboutData from "@/data/about.json";
-import AboutClient from "@/app/(Dashboard)/dashboard/about/page";
+import AboutClient from "@/app/(Dashboard)/dashboard/(retail)/retail/about/page";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

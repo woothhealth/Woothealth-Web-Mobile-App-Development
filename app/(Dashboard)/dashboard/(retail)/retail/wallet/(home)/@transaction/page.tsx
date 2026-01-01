@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react'
-import transactionsData from '../../../../../../data/transactions.json'
+import transactionsData from '../../../../../../../../data/transactions.json'
 
 type Transaction = {
   id: string

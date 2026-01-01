@@ -20,8 +20,8 @@ export default function FundWalletLayout({
 }>) {
   return (
     <>
-    <div className="container w-full hidden lg:block">
-      <div>{header}</div>
+    <div className="w-full">
+      <div className="sticky top-0">{header}</div>
       <div className="p-4 w-full">
         <div className="flex gap-6">
             <div className="w-[65%]">{upcoming}</div>

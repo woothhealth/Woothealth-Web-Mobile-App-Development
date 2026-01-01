@@ -69,18 +69,18 @@ li {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #d6dbf8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #464646;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #535252;
 }
 
 .formDiv::-webkit-scrollbar {
-        display: none;
+  display: none;
 }

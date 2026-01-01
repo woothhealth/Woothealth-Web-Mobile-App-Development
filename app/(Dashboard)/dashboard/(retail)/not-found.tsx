@@ -12,7 +12,7 @@ const notFound = () => {
         <p className='text-xl font-bold text-center'>
           This is page is not available.
         </p>
-        <Link href={'/'}>
+        <Link href={'/dashboard/retail'}>
           <button className='btn px-20 py-3 font-semibold'>
             Go Back
           </button>

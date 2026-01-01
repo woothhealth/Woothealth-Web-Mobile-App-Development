@@ -15,27 +15,27 @@ import { usePathname } from 'next/navigation';
 const path = [
     {
         name: 'Overview',
-        url: '/dashboard',
+        url: '/dashboard/retail',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'My Plans',
-        url: '/dashboard/plans',
+        url: '/dashboard/retail/plans',
         icon: <GrPlan/>
     },
     {
         name: 'Wallet',
-        url: '/dashboard/wallet',
+        url: '/dashboard/retail/wallet',
         icon: <FaWallet/>
     },
     {
         name: 'Providers',
-        url: '/dashboard/providers',
+        url: '/dashboard/retail/providers',
         icon: <ImLocation2/>
     },
     {
         name: 'Telemedicine',
-        url: '/dashboard/telemedicine',
+        url: '/dashboard/retail/telemedicine',
         icon: <FaTv/>
     }
 ]
@@ -43,12 +43,12 @@ const path = [
 const path2 = [
     {
         name: 'Profile',
-        url: '/dashboard/profile',
+        url: '/dashboard/retail/profile',
         icon: <FaUserAlt/>
     },
     {
         name: 'Settings',
-        url: '/dashboard/settings',
+        url: '/dashboard/retail/settings',
         icon: <IoMdSettings/>
     },
     {
@@ -68,7 +68,7 @@ const SideBar = () => {
     const pathname = usePathname()
 
   return (
-    <section className='sticky left-0 top-0 px-6 h-screen w-fit border-r border-[#D9D9D9] py-8'>
+    <section className='hidden lg:block lg:sticky lg:left-0 lg:top-0 px-6 h-screen w-fit border-r border-[#D9D9D9] py-8'>
         {!isToggle && 
         <>
         <div className='flex flex-col gap-10 h-full w-[20vw]'>
@@ -78,7 +78,7 @@ const SideBar = () => {
             </div>
             <div className='flex flex-col gap-2'>
                 {path.map((path, index) => {
-                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard")
+                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
@@ -93,7 +93,7 @@ const SideBar = () => {
             <div className='flex flex-col gap-2 h-full'>
                 {path2.map((path, index) => {
                     const last = index === 2;
-                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
+                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                     return (
                         <Link key={index} href={path.url}>
                             <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-amber-500 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
@@ -112,16 +112,16 @@ const SideBar = () => {
             <>
             <div className='flex flex-col gap-10 h-full w-fit'>
                     <div className='flex justify-between items-center gap-4'>
-                        <Image src='/Dashboard_image.png' height={100} width={500} alt='WootHealth Logo' className='h-9 w-fit' loading='eager' />
+                        <Image src='/Woot_collapse.png' height={100} width={500} alt='WootHealth Logo' className='h-9 w-fit' loading='eager' />
                         <GoSidebarCollapse className='text-3xl text-[#00000066] cursor-pointer' onClick={click} />
                     </div>
                     <div className='flex flex-col gap-2'>
                         {path.map((path, index) => {
-                        const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard")
+                        const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                         return (
                             <Link key={index} href={path.url}>
-                                <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
-                                    <div className='text-xl'>
+                                <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                    <div className='text-2xl'>
                                         {path.icon}
                                     </div>
                                 </div>
@@ -134,8 +134,8 @@ const SideBar = () => {
                             const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
                             return (
                                 <Link key={index} href={path.url}>
-                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-amber-500 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
-                                        <div className='text-xl'>
+                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
+                                        <div className='text-2xl'>
                                             {path.icon}
                                         </div>
                                     </div>

@@ -53,7 +53,7 @@ const Providers = () => {
     <section className='p-4 my-4'>
         <section className='flex items-center flex-col py-8 text-[#120052] text-center space-y-2 px-4'>
             <h2 className='text-[35px] font-bold'>Find Quality Healthcare Near You</h2>
-            <p className='text-lg' style={{width: '43rem'}}>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>
+            <p className='text-lg md:w-[43rem]'>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>
         </section>
       {/* Search and Filter */}
       <section className="pb-10">
@@ -103,8 +103,8 @@ const Providers = () => {
         </div>
       </section>
 
-      <section className="w-[85%] mx-auto">
-        <table className='grid grid-cols-3 rounded-t-2xl bg-[#49A5EF] items-start px-6'>
+      <section className="md:w-[85%] mx-auto">
+        <table className='grid grid-cols-3 rounded-t-2xl bg-[#49A5EF] items-start md:px-6'>
           {header.map((head, index) => {
             return (<thead key={index} className='text-[#FFFFFF] py-3 text-lg'>
               <tr>

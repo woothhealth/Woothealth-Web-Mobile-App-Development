@@ -91,12 +91,12 @@ const Page = () => {
   
     return (
       <>
-    <section className='p-4'>
-      <Link href='/dashboard/wallet' className='border p-1 rounded-full inline-flex'>
+    <section className='py-4 md:p-4'>
+      <Link href='/dashboard/retail/wallet' className='border p-1 rounded-full inline-flex'>
         <FaArrowLeft className='text-2xl'/>
       </Link>
-      <div className='flex flex-col justify-center items-center mt-6'>
-        <div className='flex flex-col gap-6' style={{width: '32rem'}}>
+      <div className='flex flex-col md:justify-center md:items-center mt-4 md:mt-6'>
+        <div className='flex flex-col gap-6 md:w-lg'>
           <p className='text-[18px]'>Complete the form below to withdraw your funds. Processing typically takes 3-5 business days.</p>
             <div className='pt-8 pb-10 px-6 bg-[#FFFFFF] rounded-[10px]'>
               {isSubmitted ? (

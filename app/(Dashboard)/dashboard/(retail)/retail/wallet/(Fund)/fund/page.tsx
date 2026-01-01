@@ -57,7 +57,7 @@ const Page = () => {
 
   return (
     <section className='p-4'>
-      <Link href='/dashboard/wallet' className='border p-1 rounded-full inline-flex'>
+      <Link href='/dashboard/retail/wallet' className='border p-1 rounded-full inline-flex'>
         <FaArrowLeft className='text-2xl'/>
       </Link>
       <div className='flex flex-col justify-center items-center mt-6'>

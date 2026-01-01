@@ -52,7 +52,7 @@ const Page = () => {
   }
 
   return (
-    <section className="p-4 my-4 bg-white rounded-2xl shadow-sm">
+    <section className="py-4 md:p-4 my-4 bg-white rounded-2xl shadow-sm">
       <div className="mb-4 flex flex-col md:flex-row md:items-center gap-10">
         <h2 className="text-lg font-semibold">Transaction History</h2>
 
@@ -71,7 +71,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto custom-scrollbar pb-4">
         <table className="w-full table-auto text-[16px] text-center">
           <thead className='bg-[#49A5EF1A] border-y border-[#49A5EF80]'>
             <tr className="text-center text-[16px]">
@@ -178,6 +178,22 @@ const Page = () => {
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #00000080;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #e0e0e0;
+        }
+      `}</style>
     </section>
   )
 }

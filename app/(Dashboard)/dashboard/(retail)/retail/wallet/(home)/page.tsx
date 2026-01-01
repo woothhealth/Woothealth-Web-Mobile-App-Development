@@ -14,9 +14,9 @@ const Page = () => {
   const masked = '*'.repeat(balance.length);
 
   return (
-    <section className='p-4 my-4 rounded-2xl'>
-      <div className='flex w-full gap-8'>
-        <div className='relative flex flex-col px-5 py-6 bg-[#49A5EF1A] text-[#49A5EF] rounded-lg space-y-4' style={{width: '55%'}}>
+    <section className='py-4 md:p-4 my-4 rounded-2xl'>
+      <div className='flex flex-col md:flex-row w-full gap-8'>
+        <div className='relative flex flex-col px-5 py-6 bg-[#49A5EF1A] text-[#49A5EF] rounded-lg space-y-4 md:w-[55%]'>
           <div className='flex justify-between text-[20px] items-center'>
             <h4 className=''>Current Balance</h4>
             <div className='cursor-pointer'>
@@ -34,12 +34,12 @@ const Page = () => {
 
         <div className='space-y-6'>
           <div className='flex bg-[#FFFFFF] rounded-xl p-3 items-center justify-center gap-6'>
-            <Link href='/dashboard/wallet/fund'>
+            <Link href='/dashboard/retail/wallet/fund'>
               <button className='btn flex items-center py-2 px-6 gap-2'>
                 <FaPlus className=''/>Fund Wallet
               </button>
             </Link>
-            <Link href='/dashboard/wallet/withdraw'>
+            <Link href='/dashboard/retail/wallet/withdraw'>
               <button className='py-2 flex items-center px-6 border-2 gap-2 text-[0.9rem] border-[#49A5EF]'>
                 <FaMinus/>Withdraw Funds
               </button>

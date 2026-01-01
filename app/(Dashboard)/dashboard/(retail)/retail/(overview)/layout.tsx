@@ -34,7 +34,7 @@ export default function DashboardLayout({
     <>
     <div className="container w-full bg-[#FAFAFA]">
       <div>{welcome}</div>
-      <div className="grid grid-cols-4 ml-6">
+      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-0 lg:ml-6 mx-auto overflow-x-auto w-[95%]  md:overflow-hidden formDiv">
         <div>{active}</div>
         <div>{wallet}</div>
         <div>{dependant}</div>

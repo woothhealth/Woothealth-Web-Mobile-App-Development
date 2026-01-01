@@ -18,12 +18,12 @@ const Page = () => {
   return (
     <section>
       <div className='relative'>
-      <div className='flex justify-between items-center px-6 py-6 bg-[#FFFFFF] border-b border-[#D9D9D9]'>
+      <div className='flex justify-between items-center px-6 py-4 bg-[#FFFFFF] border-b border-[#D9D9D9]'>
         <div className='text-[20px] flex items-center gap-4'>
           <div className='block lg:hidden'>
             {!menuOpen ? <HiOutlineMenuAlt2 className='text-3xl cursor-pointer' onClick={openMenu}/> : <IoCloseOutline className='text-3xl cursor-pointer' onClick={openMenu} /> }
           </div>
-          <h2 className='font-bold'>MY PLANS</h2>
+          <h2 className='font-bold'>OVERVIEW</h2>
         </div>
         <div className='flex gap-5 items-center'>
           <div className='relative border rounded-full p-1'>
@@ -32,7 +32,7 @@ const Page = () => {
           </div>
           <div className='flex items-center gap-2'>
             <div className='w-10 h-10 bg-amber-700 rounded-full'></div>
-            <div className='leading-4'>
+            <div className='leading-4 hidden md:block'>
               <h3 className='font-bold'>Quadri Adekunle</h3>
               <p className='text-[14px]'>ID: 1306</p>
             </div>

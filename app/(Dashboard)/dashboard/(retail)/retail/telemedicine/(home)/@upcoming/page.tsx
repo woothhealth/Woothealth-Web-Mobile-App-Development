@@ -36,7 +36,7 @@ const session = [
 ]
 const page = () => {
   return (
-    <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px]'>
+    <section className='py-4 md:p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px]'>
       <h3 className='font-semibold text-[20px]'>Upcoming Sessions</h3>
       <div className='flex flex-col gap-3 overflow-x-auto custom-scrollbar pr-2' style={{height: '13rem'}}>
         {session.map((item, index) => {

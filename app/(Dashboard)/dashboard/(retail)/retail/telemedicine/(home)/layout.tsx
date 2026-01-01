@@ -23,9 +23,9 @@ export default function FundWalletLayout({
     <div className="w-full">
       <div className="sticky top-0">{header}</div>
       <div className="p-4 w-full">
-        <div className="flex gap-6">
-            <div className="w-[65%]">{upcoming}</div>
-            <div className="" style={{width: '35%'}}>{stats}</div>
+        <div className="flex flex-col md:flex-row gap-6">
+            <div className="md:w-[65%]">{upcoming}</div>
+            <div className="md:w-[45%]">{stats}</div>
         </div>
         <div className="">{search}</div>
       </div>

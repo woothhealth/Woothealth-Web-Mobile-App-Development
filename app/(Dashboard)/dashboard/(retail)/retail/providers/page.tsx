@@ -53,7 +53,7 @@ const Providers = () => {
     <section className='p-4 my-4'>
         <section className='flex items-center flex-col py-8 text-[#120052] text-center space-y-2 px-4'>
             <h2 className='text-[35px] font-bold'>Find Quality Healthcare Near You</h2>
-            <p className='text-lg md:w-[43rem]'>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>
+            <p className='text-lg md:w-172'>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>
         </section>
       {/* Search and Filter */}
       <section className="pb-10">

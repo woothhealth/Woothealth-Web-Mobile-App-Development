@@ -36,7 +36,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "app/(Dashboard)/dashboard/(retail)/retail/wallet/(home)/@transaction/page.jsx"
-  ],
+, "UI/FAQ.jsx"  ],
   "exclude": [
     "node_modules"
   ]

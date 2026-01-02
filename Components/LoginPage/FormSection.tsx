@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { FaCheckCircle } from 'react-icons/fa'
+import { API_BASE_URL } from '@/lib/api';
 
 
 const FormSection: React.FC = () => {
@@ -97,7 +98,7 @@ const FormSection: React.FC = () => {
     setErrors({})
 
     try {
-      const res = await fetch('https://woothealth.ekensloaded.com.ng/login', {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -200,10 +201,13 @@ const FormSection: React.FC = () => {
                       {errors.password}
                     </span>
                   )}
-                  <label>
-                    <input type="checkbox" name="rememberMe" onChange={handleChange} /> Remember me
-                  </label>
-                  <Link href='/forgot-password' className='text-end text-sm text-[#49A5EF]'>Forgot Password?</Link>
+                  <div className='flex justify-between mt-3 items-center'>
+                    <label>
+                      <input type="checkbox" name="rememberMe" onChange={handleChange} /> Remember me
+                    </label>
+                    <Link href='/forgot-password' className='text-end text-sm text-[#49A5EF]'>Forgot Password?</Link>
+
+                  </div>
                 </div>
 
                 <button
@@ -218,26 +222,6 @@ const FormSection: React.FC = () => {
           )}
         </div>
       </div>
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-20 space-y-4">
-      <input name="email" placeholder="Email" onChange={handleChange} />
-      {errors.email && <p>{errors.email}</p>}
-
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        onChange={handleChange}
-      />
-      {errors.password && <p>{errors.password}</p>}
-
-      
-
-      {errors.general && <p>{errors.general}</p>}
-
-      <button disabled={loading}>
-        {loading ? 'Signing in...' : 'Login'}
-      </button>
-    </form>
     </section>
   )
 }

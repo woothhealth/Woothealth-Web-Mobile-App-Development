@@ -9,7 +9,7 @@ const Contact = () => {
         {
             icon: <FaMapMarkerAlt/>,
             title: 'Location',
-            desc: 'Oregun-Ikeja, Lagos, Nigeria'
+            desc: '4 Adebayo Muniz close, Gbagada Phase 2, Lagos'
         },
         {
             icon: <FaEnvelope/>,

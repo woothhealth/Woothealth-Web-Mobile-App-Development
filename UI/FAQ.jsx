@@ -3,35 +3,14 @@
 import React, { useState } from 'react'
 import { FaChevronUp } from 'react-icons/fa';
 import { FaChevronDown } from 'react-icons/fa6';
+import faqData from "@/data/faq.json";
+
 
 const FAQ = () => {
-    const questions = [
-        {
-            ques: 'How does the Woot Wallet work?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        },
-        {
-            ques: 'Which hospitals can i access?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        },
-        {
-            ques: 'How fast is onboarding?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        },
-        {
-            ques: 'Can i get a plan for my family?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        },
-        {
-            ques: 'Do you cover emergencies?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        },
-        {
-            ques: 'How do i contact support?',
-            answer: 'You can top up anytime and use it to pay for treatments when your plan limit is exhausted.'
-        }
-    ]
+    const allFaqs = faqData.categories.flatMap( (category) => category.faqs);
 
+    const uiFaqs = allFaqs.slice(0, 6);
+    
     const [openIndex, setOpenIndex] = React.useState(null);
     
     const toggleFAQ = (index) => {
@@ -51,18 +30,18 @@ const FAQ = () => {
                     Frequently asked questions
                 </h3>
                 <div>
-                    {questions.map((question, index) => {
+                    {uiFaqs.map((faq) => {
                         const [istoggle, setIsToggle] = useState(false)
                         return (
-                            <div key={index} className='flex flex-col gap-3 py-4 border-b'>
-                                <div onClick={() => toggleFAQ(index)}>
+                            <div key={faq.index} className='flex flex-col gap-3 py-4 border-b'>
+                                <div onClick={() => toggleFAQ(faq.index)}>
                                     <h3 className='flex justify-between cursor-pointer items-center font-semibold text-[16px]' >
-                                        {question.ques} {openIndex === index ? <FaChevronUp className='text-[.7rem]'/> : <FaChevronDown className='text-[.7rem]'/>}
+                                        {faq.question} {openIndex === faq.index ? <FaChevronUp className='text-[.7rem]'/> : <FaChevronDown className='text-[.7rem]'/>}
                                     </h3>
                                 </div>
-                                {openIndex === index && (
+                                {openIndex === faq.index && (
                                     <div className="faq-answer">
-                                        <p className='text-[.9rem]'>{question.answer}</p>
+                                        <p className='text-[.9rem]'>{faq.answer}</p>
                                     </div>
                                 )}
                             </div>

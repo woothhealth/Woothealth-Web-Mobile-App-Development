@@ -29,7 +29,7 @@ const WalletSection = () => {
         <div className='flex lg:flex-row flex-col justify-center items-center space-y-8'>
             <div className='flex flex-col space-y-5 lg:w-[60%]'>
                 <h2 className='text-[#120052] text-[45px] leading-10 lg:text-[48px] font-bold'>Woot Wallet Advantage</h2>
-                <p className='lg:text-[32px] text-[21px] text-[#49A5EF] lg:max-w-2xl lg:leading-10 leading-8'>Top up your Woot Wallet and take control of your healthcare spending. Add money, Track your balance, and settle claims directly all from your phone.</p>
+                <p className='lg:text-[32px] text-[21px] text-[#49A5EF] lg:max-w-2xl lg:leading-10 leading-8'>Top up your Woot Wallet and take control of your healthcare spending. Add money, Track your balance, and do lots more just from your finger tips.</p>
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 w-[90%] lg:w-full mx-auto'>
                     {advantage.map((adv, index) => {
                         const first = index === 1;

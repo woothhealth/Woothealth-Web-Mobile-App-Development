@@ -94,7 +94,7 @@ const Page = () => {
 
             {pageData.map((t) => (
               <React.Fragment key={t.id}>
-                <tr className="border-b border-[#D9D9D9]">
+                <tr className="border-b border-[#D9D9D9] text-[13px] md:text-[15px]">
                   <td className="p-3">{t.id}</td>
                   <td className="p-3">{t.date}</td>
                   <td className="p-3">{t.description}</td>

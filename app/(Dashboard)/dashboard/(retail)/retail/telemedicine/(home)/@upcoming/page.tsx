@@ -38,27 +38,27 @@ const page = () => {
   return (
     <section className='py-4 md:p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-[10px]'>
       <h3 className='font-semibold text-[20px]'>Upcoming Sessions</h3>
-      <div className='flex flex-col gap-3 overflow-x-auto custom-scrollbar pr-2' style={{height: '13rem'}}>
+      <div className='flex flex-col gap-3 overflow-x-auto custom-scrollbar pr-2 md:h-52 h-48'>
         {session.map((item, index) => {
           const idNum = Number(item.id);
           const isFirst = idNum === 1;
           const tagClasses = isFirst ? 'bg-[#10B981]' : 'bg-[#B6B6B9]';
           return (
-            <div key={index} className='border border-[#D9D9D9] rounded-[10px] px-4 py-3 flex justify-between'>
-              <div className='flex gap-3'>
+            <div key={index} className='border border-[#D9D9D9] rounded-[10px] px-1 md:px-4 py-3 flex justify-between'>
+              <div className='flex gap-1 md:gap-3'>
                 <div className='relative h-14 w-14 rounded-full bg-cyan-300'>
                   <div className={`p-1 absolute right-0 bottom-0 border-3 border-[#FFFFFF] rounded-full ${tagClasses}`}></div>
                 </div>
                 <div className='flex flex-col gap-0.5'>
-                  <p className='text-[18px]'>{item.name}</p>
-                  <p className='text-[16px]'>{item.specialist}</p>
+                  <p className='text-[16px] md:text-[18px]'>{item.name}</p>
+                  <p className='text-[14px] md:text-[16px]'>{item.specialist}</p>
                 </div>
               </div>
               <div className='flex flex-col items-end gap-2'>
-                <div className='btn flex justify-center items-center gap-2 rounded-[10px] px-3 py-2 w-fit'>
+                <div className='btn flex justify-center items-center gap-1 md:gap-2 rounded-[10px] text-[12px] md:text-base px-3 py-2 w-fit'>
                   <PiVideoCameraFill/>Join Session
                 </div>
-                <div className='flex items-center text-sm text-[#00000080] gap-1'>
+                <div className='flex items-center text-xs md:text-sm text-[#00000080] gap-1'>
                   <LuClock4/>
                   <p>{item.day} at {item.time}</p>
                 </div>

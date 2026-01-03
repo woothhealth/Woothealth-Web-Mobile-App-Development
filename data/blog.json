@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "title": "LIVER: 10 FACTS ABOUT THE LIVER",
+    "image": "/Article1.png",
+    "content": "Regular physical activity helps improve heart health, boost mental wellbeing, and maintain a healthy weight. Exercising for at least 30 minutes daily can significantly reduce the risk of chronic diseases."
+  },
+  {
+    "id": "2",
+    "title": "Healthy Eating for a Strong Immune System",
+    "image": "/Article2.png",
+    "content": "A balanced diet rich in fruits, vegetables, lean proteins, and whole grains strengthens the immune system and improves overall health."
+  },
+  {
+    "id": "3",
+    "title": "Why Hydration Matters",
+    "image": "/Article3.png",
+    "content": "Drinking enough water helps regulate body temperature, supports digestion, and improves brain function. Proper hydration is essential for daily performance."
+  },
+  {
+    "id": "4",
+    "title": "Managing Stress for Better Health",
+    "image": "/Article4.png",
+    "content": "Chronic stress negatively impacts both physical and mental health. Practicing mindfulness, deep breathing, and regular exercise can help manage stress effectively."
+  },
+  {
+    "id": "5",
+    "title": "The Power of Quality Sleep",
+    "image": "/Article5.png",
+    "content": "Quality sleep supports brain function, emotional wellbeing, and physical health. Adults should aim for 7–9 hours of sleep each night."
+  },
+  {
+    "id": "6",
+    "title": "Benefits of Regular Health Checkups",
+    "image": "/Article6.png",
+    "content": "Routine health screenings help detect illnesses early, increasing the chances of effective treatment and long-term health."
+  },
+  {
+    "id": "7",
+    "title": "Mental Health Awareness",
+    "image": "/Article7.png",
+    "content": "Mental health is as important as physical health. Seeking support and maintaining healthy relationships improves overall wellbeing."
+  },
+  {
+    "id": "8",
+    "title": "Preventive Healthcare Tips",
+    "image": "/Article8.png",
+    "content": "Preventive care focuses on maintaining health and preventing diseases through lifestyle choices, vaccinations, and regular checkups."
+  }
+]

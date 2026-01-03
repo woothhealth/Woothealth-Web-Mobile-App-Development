@@ -60,7 +60,8 @@ const Toggle = ({ isOpen }) => {
     if (!isOpen) return null
   
     return (
-    <div className='absolute top-20 left-0 z-50 flex flex-col gap-10 h-screen bg-[#FFFFFF] w-[55%] px-4 py-6'>
+    <>
+    <div className='absolute top-20 left-0 z-50 flex flex-col gap-10 h-screen bg-[#FFFFFF] w-[65%] px-4 py-6'>
         <div className='flex flex-col gap-2'>
             {path.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
@@ -91,6 +92,8 @@ const Toggle = ({ isOpen }) => {
             )})}
         </div>
     </div>
+    <div className='absolute top-18 h-screen w-full bg-[#FFFFFF] opacity-25'></div>
+    </>
   )
 }
 

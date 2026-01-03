@@ -24,8 +24,8 @@ const page = () => {
         {session.map((item, index) => {
           return (
             <div key={index} className='border border-[#D9D9D9] rounded-[10px] px-4 py-3 flex justify-between'>
-              <p className='text-[18px]'>{item.title}</p>
-              <p className='text-[18px] font-semibold'>{item.num}</p>
+              <p className='text-[16px] md:text-[18px]'>{item.title}</p>
+              <p className='text-[16px] md:text-[18px] font-semibold'>{item.num}</p>
             </div>
           )
         })}

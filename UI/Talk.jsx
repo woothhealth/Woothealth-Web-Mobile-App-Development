@@ -6,7 +6,7 @@ import { HiOutlineChatAlt2 } from 'react-icons/hi';
 import { PiHandWavingFill, PiPaperPlaneRightFill } from 'react-icons/pi';
 
 const Talk = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
@@ -14,11 +14,8 @@ const Talk = () => {
 
   return (
     <div className="fixed bottom-5 right-5 z-40 flex flex-col items-center gap-2">
-      {isOpen ? <div className="shadow-lg bg-[#49A5EF] p-3 rounded-full" onClick={toggleChat}>
-        <HiOutlineChatAlt2 className="w-9 h-9 text-white cursor-pointer"/>
-      </div>
-      : 
-      <>
+      <div className='flex flex-col items-end gap-4'>
+        {isOpen &&
       <div className="shadow-lg chat py-8 px-6 rounded-4xl md:w-104 flex flex-col gap-6">
         <div className='flex justify-between items-center'>
             <div className='-space-x-4'>
@@ -41,8 +38,12 @@ const Talk = () => {
                 <PiPaperPlaneRightFill className="w-6 h-6 text-blue-600 cursor-pointer"/>
             </button>
         </form>
+      </div>}
+      <div className="shadow-lg bg-[#49A5EF] p-3 rounded-full w-fit" onClick={toggleChat}>
+        <HiOutlineChatAlt2 className="w-9 h-9 text-white cursor-pointer"/>
+      </div>   
       </div>
-      </>}
+      
     </div>
   )
 }

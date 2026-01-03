@@ -5,6 +5,7 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion } from 'motion/react'
 
 const NavBar = () => {
     const [healthPlansOpen, setHealthPlansOpen] = React.useState(false);

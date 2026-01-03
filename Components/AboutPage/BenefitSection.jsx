@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { MdSpeed } from "react-icons/md";
 import Link from 'next/link';
@@ -5,6 +7,8 @@ import { PiLightbulbFilamentBold, PiPersonArmsSpreadLight } from "react-icons/pi
 import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { RiShakeHandsLine } from "react-icons/ri";
 import { FaArrowRight } from "react-icons/fa6";
+import { Reveal } from '@/UI/Reveal';
+import { motion } from 'motion/react';
 
 const BenefitSection = () => {
 
@@ -42,12 +46,15 @@ const BenefitSection = () => {
     ]
   return (
     <section className='py-8 lg:px-[68px] md:px-10 px-6'>
+        <Reveal>
         <h2 className='text-[#120052] text-[35px] lg:text-[40px] font-semibold leading-tight'>
             Our Core Values
         </h2>
+        </Reveal>
         <div className='grid md:grid-cols-3 grid-cols-1 items-center lg:mt-12 mt-8 md:mt-8 space-x-4 space-y-6'>
             {benefits.map((benefit, index) => (
                 <div key={index} className="lg:text-justify md:p-6 md:h-52 flex flex-col gap-1">
+                    <Reveal>
                     <div className='bg-[#120052] md:w-[2.8rem] md:h-[2.8rem] h-14 w-14 text-2xl rounded-lg text-[#FFFFFF] flex items-center justify-center mb-3'>
                         {benefit.icon ? (
                             <div>
@@ -57,14 +64,23 @@ const BenefitSection = () => {
                             <img src={benefit.img} alt={benefit.title} style={{ width: 25, height: 25 }} />
                         )}
                     </div>
+                    </Reveal>
+                    <Reveal>
                     <h3 className='font-semibold md:text-lg text-xl'>{benefit.title}</h3>
+                    </Reveal>
+                    <Reveal>
                     <p className='text-[1rem] md:text-base'>{benefit.text}</p>
+                    </Reveal>
                 </div>
             ))}
         </div>
         <div className="flex lg:justify-end justify-center mt-10 md:mt-0">
             <Link href='/about/management' className='w-fit'>
-                <button className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></button>
+                <Reveal>
+                <motion.button
+                  whileTap={{scale: 0.95, transition: {delay: 0}}}
+                  className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></motion.button>
+                  </Reveal>
             </Link>
         </div>
     </section>

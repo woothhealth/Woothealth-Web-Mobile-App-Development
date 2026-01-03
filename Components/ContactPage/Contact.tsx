@@ -1,5 +1,6 @@
 'use client'
 
+import { Reveal } from '@/UI/Reveal'
 import React, { useState } from 'react'
 import { FaCheckCircle, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import { FaPhone } from 'react-icons/fa6'
@@ -102,13 +103,16 @@ const Contact = () => {
   return (
     <section className='grid md:grid-cols-2 grid-cols-1 gap-10 pt-10 pb-12 lg:px-[68px] md:px-10 px-6'>
         <div className='flex flex-col gap-6 md:px-4 px-0'>
+          <Reveal>
             <div className='border-b pb-6'>
                 <h2 className='text-[30px] mb-4'>Get in touch</h2>
                 <p>Reach out to our team with any inquiries. We're committed to providing you with prompt, helpful responses.</p>
             </div>
+          </Reveal>
             <div className='flex flex-col gap-5'>
                 {getInTouch.map((touch, index) => (
-                    <div key={index} className='flex gap-6 items-center'>
+                    <Reveal key={index}>
+                    <div className='flex gap-6 items-center'>
                         <div className='flex items-center justify-center bg-[#49A5EF] text-[#FFFFFF] h-10 w-10 rounded-full'>
                         {touch.icon}
                         </div>
@@ -117,14 +121,17 @@ const Contact = () => {
                             <p>{touch.desc}</p>
                         </div>
                     </div>
+                    </Reveal>
                 ))}
             </div>
         </div>
         <div className='md:px-5 flex flex-col gap-8 border-[#E5E7EB] border-b rounded-2xl pt-3 pb-6'>
+            <Reveal>
             <div>
                 <h2 className='text-[30px] mb-4'>Send a message</h2>
                 <p className='text-justify'>We're just a message away. Contact us anytime for questions about your coverage, claims support, or anything else we can help with.</p>
             </div>
+            </Reveal>
             <div>
 
             {/* Contact Form, Submitted and Not */}

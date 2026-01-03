@@ -3,6 +3,8 @@
 import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import Image from 'next/image';
+import { motion } from 'motion/react';
+import { Reveal } from '@/UI/Reveal';
 
 const HeroSection = () => {
  
@@ -21,13 +23,22 @@ const HeroSection = () => {
         <div className='flex flex-col gap-6'>
           <div className='sect'></div>
           <div className='flex flex-col gap-4 z-30 max-w-lg md:max-w-xl'>
+            <Reveal>
             <h2 className='lg:text-[47px] md:text-[45px] text-[40px] leading-12 font-bold'>Healthcare that works for your everyday life</h2>
+            </Reveal>
+            <Reveal>
             <p className='text-[1.2rem] md:text-[1.4rem] lg:text-lg'>Simple health insurance that protects you and your family</p>
+            </Reveal>
           </div>
           <a href='#pricing'>
-          <button className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
+          <motion.button
+              initial= {{opacity: 0 }}
+              animate={{opacity: 1, y: 0}}
+              transition={{delay: 0.8, duration: 0.3}}
+              whileTap={{scale: 0.95, transition: {delay: 0}}}
+              className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
             SEE OUR PLANS <FaArrowRight/>
-          </button>
+          </motion.button>
           </a>
         </div>
       </div>

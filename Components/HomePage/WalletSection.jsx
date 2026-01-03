@@ -5,6 +5,7 @@ import { MdOutlineShield, MdOutlineTrendingUp } from 'react-icons/md'
 import { GoDotFill } from 'react-icons/go'
 import { IoWalletOutline } from 'react-icons/io5'
 import { FaRegBell } from 'react-icons/fa6'
+import { Reveal } from '@/UI/Reveal'
 
 const advantage = [
     {
@@ -28,14 +29,19 @@ const WalletSection = () => {
     <section className='py-8 lg:px-[68px] md:px-10 px-6'>
         <div className='flex lg:flex-row flex-col justify-center items-center space-y-8'>
             <div className='flex flex-col space-y-5 lg:w-[60%]'>
-                <h2 className='text-[#120052] text-[45px] leading-10 lg:text-[48px] font-bold'>Woot Wallet Advantage</h2>
-                <p className='lg:text-[32px] text-[21px] text-[#49A5EF] lg:max-w-2xl lg:leading-10 leading-8'>Top up your Woot Wallet and take control of your healthcare spending. Add money, Track your balance, and do lots more just from your finger tips.</p>
+                <Reveal>
+                    <h2 className='text-[#120052] text-[45px] leading-10 lg:text-[48px] font-bold'>Woot Wallet Advantage</h2>
+                </Reveal>
+                <Reveal>
+                    <p className='lg:text-[32px] text-[21px] text-[#49A5EF] lg:max-w-2xl lg:leading-10 leading-8'>Top up your Woot Wallet and take control of your healthcare spending. Add money, Track your balance, and do lots more just from your finger tips.</p>
+                </Reveal>
+                <Reveal>
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 w-[90%] lg:w-full mx-auto'>
                     {advantage.map((adv, index) => {
                         const first = index === 1;
                         const second = index === 2;
                         return (
-                        <div key={index} className='flex gap-3'>
+                            <div key={index} className='flex gap-3'>
                             <div><adv.icon className={`text-[#10B981] text-3xl ${first ? 'text-[#49A5EF]' : ''} ${second ? 'text-[#8063E8]' : ''}`}/></div>
                             <div>
                                 <h3 className='font-bold'>{adv.title}</h3>
@@ -43,8 +49,9 @@ const WalletSection = () => {
                             </div>
                         </div>
                     )
-                    })}
+                })}
                 </div>
+                </Reveal>
             </div>
             <div className='lg:w-[40%] relative'>
                 <Image src='/Wallet_img.png' alt='WootHealth Wallet Image' width={200} height={100} className='object-cover w-full h-fit' />

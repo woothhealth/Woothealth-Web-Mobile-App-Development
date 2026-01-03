@@ -6,6 +6,7 @@ import { FaArrowRight } from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/UI/Reveal';
+import { motion } from 'motion/react';
 
 const slides = [
   {
@@ -58,9 +59,13 @@ function HeroSection() {
           </div>
         </Reveal>
           <Link href='/register' className='w-fit'>
-            <button className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
+            <motion.button              initial= {{opacity: 0 }}
+              animate={{opacity: 1, y: 0}}
+              transition={{delay: 0.8, duration: 0.3}}
+              whileTap={{scale: 0.95, transition: {delay: 0}}}
+             className='z-20 btn flex items-center gap-1.5 font-semibold px-8 py-3 md:py-4 md:px-12 lg:px-8 w-fit'>
               GET STARTED <FaArrowRight/>
-            </button>
+            </motion.button>
           </Link>
         </div>
       </div>

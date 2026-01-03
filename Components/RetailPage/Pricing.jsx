@@ -7,7 +7,8 @@ const pricingplans = [
     {
         id: 1,
         name: "Core",
-        price: "6,200",
+        price: "18,600",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -21,7 +22,8 @@ const pricingplans = [
     {
         id: 2,
         name: "Sync",
-        price: "9,500",
+        price: "28,500",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -35,7 +37,8 @@ const pricingplans = [
     {
         id: 3,
         name: "Nexus",
-        price: "20,700",
+        price: "62,100",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -50,6 +53,7 @@ const pricingplans = [
         id: 4,
         name: "Quantum",
         price: "539,400",
+        year: "annual",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -67,6 +71,7 @@ const pricingplans = [
         id: 5,
         name: "Iginite",
         price: "1,190,000",
+        year: "annual",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -95,7 +100,7 @@ const Pricing = () => {
                     <div key={plan.id} className='bg-[#FFFFFF] rounded-3xl text-[#000000] shadow-lg py-8 px-6 flex flex-col gap-4 h-full'>
                         <div className='flex flex-col items-start'>
                             <h3 className='text-[24px] font-semibold mb-3 text-[#120052]'>{plan.name} Plan</h3>
-                            <p className='mb-4 text-[#120052] border-b pb-3 text-start w-full'>For as low as <span className='font-bold text-[20px]'> ₦{plan.price}</span>/ month</p>
+                            <p className='mb-4 text-[#120052] border-b pb-3 text-start w-full'>For as low as <span className='font-bold text-[20px]'> ₦{plan.price}</span>/ {plan.year}</p>
                             <ul className='mb-4 text-left'>
                                 {plan.features.map((feature, index) => (
                                     <li key={index} className='mb-1 flex items-center gap-4 text-[#120052]'>

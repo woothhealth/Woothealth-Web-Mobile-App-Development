@@ -133,12 +133,12 @@ const Footer = () => {
                             <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
                                 <FaFacebookF className='text-lg text-black'/>
                             </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
-                                <FaInstagram className='text-lg text-black'/>
-                            </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                            <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                                <FaInstagram className='text-lg text-black'/> 
+                            </a>
+                            <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
                                 <FaXTwitter className='text-lg text-black'/>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -187,12 +187,12 @@ const Footer = () => {
                             <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
                                 <FaFacebookF className='text-lg text-black'/>
                             </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
-                                <FaInstagram className='text-lg text-black'/>
-                            </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
+                            <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                                <FaInstagram className='text-lg text-black'/> 
+                            </a>
+                            <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
                                 <FaXTwitter className='text-lg text-black'/>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>

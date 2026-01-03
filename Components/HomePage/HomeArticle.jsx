@@ -3,6 +3,7 @@ import { FaArrowRight } from 'react-icons/fa'
 import Image from 'next/image'
 import { Reveal } from '@/UI/Reveal'
 import Link from 'next/link'
+import blogs from "@/data/blog.json";
 
 const articleBlog = [
     {
@@ -29,7 +30,7 @@ const HomeArticle = () => {
                     <h3 className='text-[21px] md:w-sm leading-tight text-center md:text-start'>Explore articles, tips, and resources to help you and your team thrive</h3>
                     </Reveal>
                 </div>
-                <Link href='/'>
+                <Link href='/blog'>
                     <Reveal>
                     <button className='bg-[#FFFFFF] uppercase flex gap-1.5 items-center py-2 px-5 font-semibold text-[#000000]'>
                         Discover More <FaArrowRight/>
@@ -43,9 +44,9 @@ const HomeArticle = () => {
                     <div className='bg-[#FFFFFF] flex flex-col gap-2 items-center rounded-2xl'>
                         <Image src={post.image} width={500} height={100} alt='Blog Images' loading='lazy' className='w-full' />
                         <h3 className='text-[.9rem] p-2 font-semibold'>{post.text}</h3>
-                        <button className='btn flex gap-1 items-center p-3 md:py-2 md:px-3 mb-4 text-xs'>
+                        <Link href={`/blog`} className='btn flex gap-1 items-center p-3 md:py-2 md:px-3 mb-4 text-xs'>
                             READ MORE <FaArrowRight/>
-                        </button>
+                        </Link>
                     </div>
                     </Reveal>
                 ))}

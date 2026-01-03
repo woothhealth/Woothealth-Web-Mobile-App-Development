@@ -10,7 +10,7 @@ export default function BlogDetailPage({ params }: PageProps) {
   const otherBlogs = blogs.filter((b) => b.id !== params.id);
 
   if (!blog) {
-    return <p className="p-8">Blog not found</p>;
+    return <p className="font-semibold my-20 flex justify-center text-lg">Blog not found</p>;
   }
 
   return (

@@ -9,42 +9,48 @@ const testimonials = [
   {
     id: 1,
     name: "Abiodun Olaniyi",
-    role: "Starter plan",
+    role: "Core plan",
+    ini: "AO",
     quote: "Getting covered was so easy! I signed up in less than 10 minutes and had my insurance card the same day.",
     image: "https://picsum.photos/100/100?random=10"
   },
   {
     id: 2,
     name: "Amaka Johnson",
-    role: "Premium Plan",
+    role: "Sync Plan",
+    ini: "AJ",
     quote: "Affordable and reliable! I've used my coverage at three different hospitals, and each time the process was seamless. The monthly premium fits my budget perfectly, and I get quality healthcare when I need it.",
     image: "https://picsum.photos/100/100?random=11"
   },
   {
     id: 3,
     name: "Tunde Adebayo",
-    role: "Starter Plan",
+    role: "Nexus Plan",
+    ini: "TA",
     quote: "After comparing several insurance providers, Woot Health stood out. The transparent pricing, no hidden fees, and quick claim approvals make them the best. I've recommended them to all my friends.",
     image: "https://picsum.photos/100/100?random=12"
   },
   {
     id: 4,
     name: "Funmi Ajayi",
-    role: "Starter Plan",
+    role: "Nexus Plan",
+    ini: "FA",
     quote: "I needed insurance but didn't want to break the bank. Woot Health gave me exactly what I needed at a price I could afford.",
     image: "https://picsum.photos/100/100?random=13"
   },
   {
     id: 5,
     name: "Kunle Adeleke",
-    role: "Essential Plan",
+    role: "Core Plan",
+    ini: "KA",
     quote: "Signed up in minutes, got covered immediately. The app makes everything so easy.",
     image: "https://picsum.photos/100/100?random=14"
   },
   {
     id: 6,
-    name: "Abiodun Olaniyi",
-    role: "Starter Plan",
+    name: "Abiodun Taiwo",
+    role: "Sync Plan",
+    ini: "AT",
     quote: "Getting covered was so easy! I signed up in less than 10 minutes and had my insurance card the same day.",
     image: "https://picsum.photos/100/100?random=15"
   }
@@ -89,7 +95,7 @@ const TestimonySecond = () => {
 
         {/* Desktop scrollable */}
         <div className="hidden md:block relative mx-auto max-w-5xl">
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center ">
             {visibleTestimonialsDesktop.map((item) => (
               <div key={item.id} className="relative flex-1 max-w-sm border border-[#E1E1E2] rounded-4xl p-4 h-64">
                 <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
@@ -123,7 +129,7 @@ const TestimonySecond = () => {
         </div>
 
         {/* Mobile: Horizontal scrollable list */}
-        <div className="relative md:hidden overflow-x-auto max-w-full custom-scrollbar" ref={scrollRef}>
+        <div className="relative md:hidden overflow-x-auto max-w-full custom-scrollbar pb-4" ref={scrollRef}>
           <div className="flex gap-4 px-4">
             {testimonials.map((item) => (
               <div key={item.id} className="relative shrink-0 w-80 border border-[#E1E1E2] rounded-4xl p-4 h-72">

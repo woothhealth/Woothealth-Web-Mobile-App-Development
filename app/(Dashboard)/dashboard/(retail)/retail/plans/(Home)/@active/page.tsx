@@ -31,7 +31,7 @@ const page = () => {
         </p>
       </div>
       <div className='overflow-x-auto formDiv'>
-      <div className='flex md:justify-between md:w-full w-[90svh] gap-1'>
+      <div className='flex bg-black md:justify-between md:w-full w-[90%] gap-1'>
         <div className='flex flex-col gap-1 bg-[#49A5EF] rounded-[10px] justify-between px-4 py-3 w-40 md:w-50'>
           <p className='text-[16px] w-20'>Monthly Premium</p>
           <h3 className='flex items-end text-[20px] md:text-[22px]'><TbCurrencyNaira className='text-3xl md:text-4xl font-bold'/>34, 100</h3>

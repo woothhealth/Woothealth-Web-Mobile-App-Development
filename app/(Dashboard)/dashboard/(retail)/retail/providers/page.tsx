@@ -50,7 +50,7 @@ const Providers = () => {
   // const regularPosts = filteredPosts.filter(post => !post.featured || searchTerm || selectedCategory !== 'all');
 
   return (
-    <section className='p-4 my-4'>
+    <section className='py-4 md:p-4 my-4'>
         <section className='flex items-center flex-col py-8 text-[#120052] text-center space-y-2 px-4'>
             <h2 className='text-[35px] font-bold'>Find Quality Healthcare Near You</h2>
             <p className='text-lg md:w-172'>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>

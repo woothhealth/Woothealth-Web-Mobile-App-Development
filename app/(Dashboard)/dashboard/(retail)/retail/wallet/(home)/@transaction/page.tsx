@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react'
-import transactionsData from '../../../../../../../../data/transactions.json'
+import transactionsData from '@/data/transactions.json'
 
 type Transaction = {
   id: string
@@ -96,7 +96,7 @@ const Page = () => {
               <React.Fragment key={t.id}>
                 <tr className="border-b border-[#D9D9D9]">
                   <td className="p-3">{t.id}</td>
-                  <td className="p-3">{new Date(t.date).toLocaleString()}</td>
+                  <td className="p-3">{t.date}</td>
                   <td className="p-3">{t.description}</td>
                   <td className={`p-3 `}>{formatCurrency(t.amount)}</td>
                   <td className="p-3">
@@ -140,7 +140,7 @@ const Page = () => {
         </table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4 px-2 flex items-center justify-between">
         <div className="text-sm text-gray-600">
           Showing <span className="font-medium">{(currentPage - 1) * PAGE_SIZE + 1}</span> to <span className="font-medium">{Math.min(currentPage * PAGE_SIZE, filtered.length)}</span> of <span className="font-medium">{filtered.length}</span> transactions
         </div>

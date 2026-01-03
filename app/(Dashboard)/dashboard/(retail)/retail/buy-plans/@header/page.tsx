@@ -22,7 +22,7 @@ const Page = () => {
           <div className='block lg:hidden'>
             {!menuOpen ? <HiOutlineMenuAlt2 className='text-3xl cursor-pointer' onClick={openMenu}/> : <IoCloseOutline className='text-3xl cursor-pointer' onClick={openMenu} /> }
           </div>
-          <h2 className='font-bold'>BUY PLANS</h2>
+          <h2 className='font-bold'>PROVIDERS</h2>
         </div>
         <div className='flex gap-5 items-center'>
           <div className='relative border rounded-full p-1'>

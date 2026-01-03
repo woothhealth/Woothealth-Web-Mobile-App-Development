@@ -61,7 +61,7 @@ const page = () => {
                     {main ? <p className='bg-[#49A5EF1A] text-[#49A5EF] rounded-full px-2 py-1 w-fit text-sm'>{item.role}</p> : ""}
                   </div>
                 </div>
-                <div className='flex justify-between text-[15px]'>
+                <div className='flex justify-between text-[14px] md:text-[15px]'>
                   <p>Age: {item.age} years</p>
                   <p>ID: {item.id}</p>
                 </div>

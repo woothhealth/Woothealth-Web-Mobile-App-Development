@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import {  FaChevronDown } from 'react-icons/fa'
 import { FaRegBell } from 'react-icons/fa6'
 import { HiOutlineMenuAlt2 } from 'react-icons/hi'
-import { PiHandWaving } from 'react-icons/pi'
 import Toggle from '@/UI/Toggle'
 import { IoCloseOutline } from 'react-icons/io5'
 
@@ -17,7 +16,7 @@ const Page = () => {
   
   return (
     <section>
-      <div className='relative'>
+      <div className=''>
       <div className='flex justify-between items-center px-6 py-4 bg-[#FFFFFF] border-b border-[#D9D9D9]'>
         <div className='text-[20px] flex items-center gap-4'>
           <div className='block lg:hidden'>
@@ -41,11 +40,6 @@ const Page = () => {
         </div>
       </div>
       <Toggle isOpen={menuOpen} />
-      </div>
-
-      <div className='flex px-6 flex-col py-4'>
-        <h4>Welcome back,</h4>
-        <p className='text-[24px] font-semibold'>Quadri <PiHandWaving className='inline-flex text-[#FAD416]'/></p>
       </div>
     </section>
   )

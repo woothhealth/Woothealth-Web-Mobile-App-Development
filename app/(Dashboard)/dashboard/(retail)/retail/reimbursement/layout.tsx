@@ -16,7 +16,7 @@ export default function ReimbursementLayout({
   return (
     <>
     <div className="w-full bg-[#FAFAFA]">
-      <div>{header}</div>
+      <div className="sticky top-0">{header}</div>
       <div className="flex flex-col px-6 py-4 gap-4">
           <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-1 md:w-1/2">
             <nav className="">

@@ -119,10 +119,10 @@ const Page = () => {
                   <div className='flex flex-col gap-2'>
                   <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
                     <div className='flex flex-col gap-2 w-full'>
-                      <label htmlFor="amount"className='font-semibold'>
+                      <label htmlFor="amount" className='font-semibold'>
                         Amount to Withdraw
                       </label>
-                      <input type="number" placeholder='0.00' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="amount" name="amount" value={formData.amount} onChange={handleChange} />
+                      <input type="number" minLength={4} maxLength={20} placeholder='0.00' className='bg-[#F8F9FA] border appearance-none border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="amount" name="amount" value={formData.amount} onChange={handleChange} />
                       {errors.amount && <span className="text-red-500/60 text-sm">{errors.amount}</span>}
                     </div>
                     <div className='flex flex-col gap-2 w-full'>
@@ -140,7 +140,7 @@ const Page = () => {
                       <label className='font-semibold' htmlFor="accountNumber">
                         Account Number
                       </label>
-                      <input type="number" name='accountNumber' id="accountNumber" placeholder='0123456789' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formData.accountNumber} onChange={handleChange}/>
+                      <input type="tel" minLength={10} maxLength={12} name='accountNumber' id="accountNumber" placeholder='0123456789' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 appearance-none placeholder:text-sm' value={formData.accountNumber} onChange={handleChange}/>
                       {errors.accountNumber && <span className="text-red-500/60 text-sm">{errors.accountNumber}</span>}
                     </div>
                     <div className='flex flex-col gap-2 w-full'>

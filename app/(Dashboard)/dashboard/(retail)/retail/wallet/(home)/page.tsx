@@ -10,32 +10,32 @@ import Link from 'next/link'
 const Page = () => {
   const [showBalance, setShowBalance] = useState(false);
 
-  const balance = '1,000,000';
+  const balance = '0.00';
   const masked = '*'.repeat(balance.length);
 
   return (
     <section className='py-4 md:p-4 my-4 rounded-2xl'>
       <div className='flex flex-col md:flex-row w-full gap-8'>
-        <div className='relative flex flex-col px-5 py-6 bg-[#49A5EF1A] text-[#49A5EF] rounded-lg space-y-4 md:w-[55%]'>
+        <div className='md:relative flex flex-col px-5 py-6 bg-[#49A5EF1A] text-[#49A5EF] rounded-lg space-y-4 md:w-[55%]'>
           <div className='flex justify-between text-[20px] items-center'>
             <h4 className=''>Current Balance</h4>
             <div className='cursor-pointer'>
               {!showBalance ? <FaEyeSlash onClick={() => setShowBalance((prev) => !prev)}/> : <FaEye onClick={() => setShowBalance((prev) => !prev)}/>}
             </div>
           </div>
-          <div className='flex gap-4'>
+          <div className='flex justify-between'>
             <p className='text-[45px] font-semibold flex items-center'>
               <TbCurrencyNaira className='text-6xl'/>
               {showBalance ? masked : balance}
             </p>
-            <CiBacon className='text-9xl text-[#49A5EF4D] absolute bottom-1 right-0'/>
+            <CiBacon className='text-9xl text-[#49A5EF4D] md:absolute md:bottom-1 right-0'/>
           </div>
         </div>
 
         <div className='space-y-6'>
           <div className='flex bg-[#FFFFFF] rounded-xl p-3 items-center justify-center gap-6'>
             <Link href='/dashboard/retail/wallet/fund'>
-              <button className='btn flex items-center py-2 px-6 gap-2'>
+              <button className='btn flex items-center py-2 md:px-6 px-4 gap-2'>
                 <FaPlus className=''/>Fund Wallet
               </button>
             </Link>

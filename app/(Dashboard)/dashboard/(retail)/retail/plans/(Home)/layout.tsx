@@ -24,13 +24,13 @@ export default function PlansLayout({
           <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-1 w-full">
             <nav className="">
               <ul className="flex justify-between">
-                <li onClick={() => router.push('/dashboard/retail/plans')} className={`text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Overview</li>
+                <li onClick={() => router.push('/dashboard/retail/plans')} className={`text-[16px] md:text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Overview</li>
 
-                <li onClick={() => router.push('/dashboard/retail/plans/coverage')} className={`text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/coverage' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Coverage</li>
+                <li onClick={() => router.push('/dashboard/retail/plans/coverage')} className={`text-[16px] md:text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/coverage' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Coverage</li>
 
-                <li onClick={() => router.push('/dashboard/retail/plans/members')} className={`text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/members' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Members</li>
+                <li onClick={() => router.push('/dashboard/retail/plans/members')} className={`text-[16px] md:text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/members' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Members</li>
 
-                <li onClick={() => router.push('/dashboard/retail/plans/claims')} className={`text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/claims' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Claims</li>
+                <li onClick={() => router.push('/dashboard/retail/plans/claims')} className={`text-[16px] md:text-[18px] font-semibold py-2 px-2 ${pathname === '/dashboard/retail/plans/claims' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Claims</li>
               </ul>
             </nav>
           </div>

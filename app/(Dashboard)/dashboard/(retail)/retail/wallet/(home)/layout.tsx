@@ -19,7 +19,7 @@ export default function WalletLayout({
   return (
     <>
     <div className="w-full bg-[#FAFAFA]">
-      <div>{header}</div>
+      <div className="sticky top-0">{header}</div>
       <div className="px-4">{children}</div>
       <div className="px-4">{transaction}</div>
     </div>

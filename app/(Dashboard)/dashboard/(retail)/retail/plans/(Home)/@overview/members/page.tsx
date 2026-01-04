@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 
 const members = [
@@ -42,9 +44,9 @@ const members = [
 const page = () => {
   return (
     <section className='flex gap-4'>
-      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-full space-y-4">
+      <div className="bg-[#FFFFFF] px-4 md:px-6 rounded-[10px] py-3 w-full space-y-4">
         <h3 className='text-lg font-semibold'>Coverage Members</h3>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+        <div className='grid grid-cols-1 md:grid-cols-1 gap-3 md:w-[70%] overflow-y-auto h-70 pr-2 custom-scrollbar'>
           {members.map((item, index) => {
             const main = item.role === 'Primary'
             return (
@@ -53,8 +55,8 @@ const page = () => {
                   <div className='flex gap-1'>
                     <div className='rounded-full inline-flex p-5 bg-emerald-700 h-fit'></div>
                     <div>
-                      <h3 className='text-[16px] font-semibold'>{item.name}</h3>
-                      <p className='text-sm'>{item.role}</p>
+                      <h3 className='text-[14px] md:text-[16px] font-semibold'>{item.name}</h3>
+                      <p className='text-xs md:text-sm'>{item.role}</p>
                     </div>
                   </div>
                   <div>
@@ -70,6 +72,22 @@ const page = () => {
           })}
         </div>
       </div>
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+          margin-top: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #00000080;
+          border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #e0e0e0;
+        }
+      `}</style>
     </section>
   )
 }

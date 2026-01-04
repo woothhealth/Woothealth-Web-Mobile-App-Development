@@ -52,7 +52,7 @@ const Page = () => {
   }
 
   return (
-    <section className="py-4 md:p-4 my-4 bg-white rounded-2xl shadow-sm">
+    <section className="py-4 px-1 md:p-4 my-4 bg-white rounded-2xl shadow-sm">
       <div className="mb-4 flex flex-col md:flex-row md:items-center gap-10">
         <h2 className="text-lg font-semibold">Transaction History</h2>
 

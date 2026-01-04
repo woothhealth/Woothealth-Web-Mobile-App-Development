@@ -138,7 +138,7 @@ const Page = () => {
             </div>
             <div>
               <h4 className='text-sm font-semibold'>Quick Tip</h4>
-              <p className='text-xs'>Claims are typically processed within 5-7 business days. Make sure all receipts are clear and legible.</p>
+              <p className='text-xs'>Claims are typically processed within5-7 business days. Make sure all receipts are clear and legible. Please note that the maximum eligible age for enrollment is 65 years.</p>
             </div>
           </div>
           <div className='w-full'>

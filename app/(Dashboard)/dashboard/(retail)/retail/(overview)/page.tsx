@@ -25,7 +25,7 @@ const quick = [
   },
   {
     icon: BiSolidFile,
-    action: 'Reimbursement',
+    action: 'Reimburs ement',
     url: '/dashboard/retail/reimbursement'
   },
 ]
@@ -34,14 +34,14 @@ const page = () => {
     <section className='py-4 md:p-4 my-4 flex flex-col md:flex-row gap-6 md:gap-8 bg-[#FFFFFF] rounded-2xl'>
       <div className='md:w-[55%] space-y-5'>
         <h3 className='text-[20px] font-semibold'>Quick Actions</h3>
-        <div className='flex w-full md:w-fit justify-between items-center md:gap-10'>
+        <div className='flex w-full md:w-fit justify-between md:items-center md:gap-10'>
           {quick.map((item, index) => (
             <div key={index}>
-              <Link href={item.url} className='flex flex-col items-center gap-2'>
-                <div className='bg-[#49A5EF1A] border-[#49A5EF] border-2 p-4 w-fit rounded-full'>
-                  <item.icon className='text-[#49A5EF] text-3xl'/>
+              <Link href={item.url} className='flex flex-col items-center gap-2 text-center w-fit'>
+                <div className='bg-[#49A5EF1A] border-[#49A5EF] border-2 p-2 w-fit rounded-full'>
+                  <item.icon className='text-[#49A5EF] text-2xl md:text-3xl'/>
                 </div>
-                <p className='text-[15px] md:text-[16px]'>{item.action}</p>
+                <p className='text-[14px] md:text-[16px] w-15 text-center md:w-fit'>{item.action}</p>
               </Link>
             </div>
           ))}

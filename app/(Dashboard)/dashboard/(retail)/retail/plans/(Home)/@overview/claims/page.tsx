@@ -58,26 +58,26 @@ const summary = [
 const page = () => {
   return (
     <section className='flex gap-4'>
-      <div className="bg-[#FFFFFF] px-6 rounded-[10px] py-3 w-full space-y-4">
+      <div className="bg-[#FFFFFF] px-4 md:px-6 rounded-[10px] py-3 w-full space-y-4">
         <h3 className='text-lg font-semibold'>Recent Claims</h3>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-3 h-80 overflow-x-auto custom-scrollbar pr-2'>
+        <div className='grid grid-cols-1 md:grid-cols-1 gap-3 h-80 overflow-x-auto custom-scrollbar pr-2'>
           {summary.map((item, index) => {
             const idNum = Number(item.id);
             const isFirst = idNum === 1;
             const isThird = idNum === 3;
             const tagClasses = isFirst ? 'bg-[#D1FAE5] text-[#10B981]' : isThird ? 'bg-[#FEE2E2] text-[#EF4444]' : 'bg-[#FEF3C7] text-[#F59E0B]';
             return (
-              <div key={index} className='border border-[#D9D9D9] rounded-[10px] p-4 flex justify-between'>
+              <div key={index} className='border border-[#D9D9D9] rounded-[10px] p-2 md:p-4 flex justify-between'>
                 <div className='flex flex-col gap-1.5'>
-                  <p className='text-[16px]'>{item.name}</p>
-                  <div className='flex items-center text-sm text-[#00000080]'>
+                  <p className='text-[14px] md:text-[16px]'>{item.name}</p>
+                  <div className='flex items-center text-xs md:text-sm text-[#00000080]'>
                     <p className=''>{item.type}</p>
                     <span><GoDotFill className='text-xs ml-2 mr-0.5'/></span>
                     <p>{item.date}</p>
                   </div>
-                  <p className='flex font-semibold items-center'><TbCurrencyNaira className='text-[1.35rem]'/> {item.price}</p>
+                  <p className='flex font-semibold items-center text-[1rem] md:text-[1.35rem]'><TbCurrencyNaira className='text-[1.2rem] md:text-[1.35rem]'/> {item.price}</p>
                 </div>
-                <div className={`py-2 px-3 text-xs h-fit rounded-lg ${tagClasses}`}>{item.tag}</div>
+                <div className={`md:py-2 md:px-3 py-1 px-2 text-[10px] md:text-xs h-fit rounded-lg ${tagClasses}`}>{item.tag}</div>
               </div>
             )
           })}

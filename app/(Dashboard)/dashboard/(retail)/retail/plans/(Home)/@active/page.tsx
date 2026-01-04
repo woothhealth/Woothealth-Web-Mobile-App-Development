@@ -31,22 +31,22 @@ const page = () => {
         </p>
       </div>
       <div className='overflow-x-auto formDiv'>
-      <div className='flex md:justify-between md:w-full w-[90%] gap-1'>
-        <div className='flex flex-col gap-1 bg-[#49A5EF] rounded-[10px] justify-between px-4 py-3 w-40 md:w-50'>
-          <p className='text-[16px] w-20'>Monthly Premium</p>
+      <div className='flex md:justify-between md:w-full w-[90%] gap-4 h-30'>
+        <div className='flex flex-col gap-1 bg-[#49A5EF] rounded-[10px] justify-between px-4 py-3 w-full md:w-50'>
+          <p className='text-[16px] md:w-20 w-30'>Monthly Premium</p>
           <h3 className='flex items-end text-[20px] md:text-[22px]'><TbCurrencyNaira className='text-3xl md:text-4xl font-bold'/>34, 100</h3>
         </div>
-        <div className='flex flex-col gap-1 bg-[#49A5EF] justify-between rounded-[10px] px-4 py-3 md:w-50 w-40'>
-          <p className='text-[16px] w-20'>Covered Members</p>
+        <div className='flex flex-col gap-1 bg-[#49A5EF] justify-between rounded-[10px] px-4 py-3 md:w-50 w-fit'>
+          <p className='text-[16px] w-30 md:w-20'>Covered Members</p>
           <h3 className='flex items-end text-[22px] gap-1'><HiMiniUsers className='text-3xl font-bold'/>4</h3>
         </div>
-        <div className='flex flex-col justify-between gap-1 bg-[#49A5EF] rounded-[10px] px-4 py-3 md:w-50 w-40'>
-          <p className='text-[16px]'>Next Renewal</p>
-          <h3 className='text-[22px]'>Jan 10, 2025</h3>
+        <div className='flex flex-col justify-between gap-1 bg-[#49A5EF] rounded-[10px] px-4 py-3 md:w-50 w-fit'>
+          <p className='text-[16px] w-30'>Next Renewal</p>
+          <h3 className='text-[19px] md:text-[22px]'>Jan 10, 2025</h3>
         </div>
         <div className='flex flex-col gap-1 bg-[#49A5EF] rounded-[10px] justify-between px-4 py-3 md:w-50 w-40'>
-          <p className='text-[16px]'>Plan Type</p>
-          <h3 className='text-[20px] w-20'>Family Coverage</h3>
+          <p className='text-[16px] w-30'>Plan Type</p>
+          <h3 className='text-[18px] md:text-[20px] w-20'>Family Coverage</h3>
         </div>
       </div>
       </div>

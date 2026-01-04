@@ -43,15 +43,15 @@ const page = () => {
           const isFirst = idNum === 1;
           const tagClasses = isFirst ? 'bg-[#10B981]' : 'bg-[#B6B6B9]';
           return (
-            <div key={index} className='border border-[#D9D9D9] rounded-[10px] p-4 flex justify-between'>
+            <div key={index} className='border border-[#D9D9D9] rounded-[10px] md:p-4 p-2 flex justify-between'>
               <div className='flex gap-3'>
-                <div className='relative h-12 w-12 rounded-full bg-cyan-300'>
-                  <div className={`p-1 absolute right-0 bottom-0 border-3 border-[#FFFFFF] rounded-full ${tagClasses}`}></div>
+                <div className='h-12 w-12 rounded-full bg-cyan-300 flex items-end justify-end'>
+                  <span className={`p-1 border-3 border-[#FFFFFF] rounded-full ${tagClasses}`}></span>
                 </div>
                 <div className='flex flex-col gap-0.5'>
-                  <p className='text-[18px]'>{item.name}</p>
-                  <p className='text-[16px]'>{item.specialist}</p>
-                  <div className='flex items-center text-sm text-[#00000080] gap-1'>
+                  <p className='text-[16px] md:text-[18px]'>{item.name}</p>
+                  <p className='text-[14px] md:text-[16px]'>{item.specialist}</p>
+                  <div className='flex items-center text-xs md:text-sm text-[#00000080] gap-1'>
                     <LuClock4/>
                     <p>{item.day} at {item.time}</p>
                   </div>

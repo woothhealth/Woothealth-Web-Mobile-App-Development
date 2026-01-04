@@ -4,6 +4,7 @@ import React from 'react'
 import { CiCalendar } from 'react-icons/ci'
 import { FaRegFileAlt } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go'
+import { MdOutlineFileDownload } from 'react-icons/md'
 
 const medic = [
   {
@@ -65,14 +66,18 @@ const page = () => {
                     <CiCalendar/>
                     <p>{item.date}</p>
                   </div>
-                  <div className='flex items-center text-sm text-[#00000080]'>
+                  <div className='flex flex-col md:flex-row md:items-center text-xs text-[#00000080]'>
                     <p className=''>{item.doc}</p>
-                    <span><GoDotFill className='text-xs'/></span>
-                    <p>{item.location}</p>
+                    <p className='flex'>
+                    <span><GoDotFill className='inline-flex text-xs md:mx-1'/></span>
+                      {item.location}</p>
                   </div>
                 </div>
               </div>
-              <div className={`py-2 px-3 text-xs h-fit rounded-lg ${tagClasses}`}>{item.tag}</div>
+              <div className='flex justify-between flex-col items-center'>
+                <div className={`py-2 px-3 text-xs h-fit rounded-lg ${tagClasses}`}>{item.tag}</div>
+                <div className='text-xs flex items-center gap-2'>{item.size}MB <MdOutlineFileDownload/></div>
+              </div>
             </div>
           )
         })}

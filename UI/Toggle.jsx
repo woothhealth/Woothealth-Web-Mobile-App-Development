@@ -61,13 +61,13 @@ const Toggle = ({ isOpen }) => {
   
     return (
     <>
-    <div className='absolute top-20 left-0 z-50 flex flex-col gap-10 h-screen bg-[#FFFFFF] w-[65%] px-4 py-6'>
-        <div className='flex flex-col gap-2'>
+    <div className='absolute top-20 left-0 z-50 flex flex-col gap-6 h-screen bg-[#FFFFFF] w-[65%] px-4 py-6'>
+        <div className='flex flex-col gap-1'>
             {path.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -76,13 +76,13 @@ const Toggle = ({ isOpen }) => {
                     </Link>
             )})}
         </div>
-        <div className='flex flex-col gap-2 h-full'>
+        <div className='flex flex-col gap-1 h-full'>
             {path2.map((path, index) => {
                 const last = index === 2;
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-amber-500 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-10' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-8' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>

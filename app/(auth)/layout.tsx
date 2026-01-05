@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import NavBar from "@/Components/NavBar";
 import SmallFooter from "@/Components/SmallFooter";
-import { AuthProvider } from "@/context/Authcontext";
 
 export default function AboutLayout({
   children,
@@ -12,9 +11,7 @@ export default function AboutLayout({
     <html lang='en'>
     <body className={`antialiased`}>
       <NavBar />
-      <AuthProvider>
         {children}
-      </AuthProvider>
       <SmallFooter />
     </body>
     </html>

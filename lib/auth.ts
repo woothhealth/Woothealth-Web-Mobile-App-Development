@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./api";
 
 export async function loginUser (email: string, password: string, remeberMe: boolean) {
-    const res = await fetch(`${API_BASE_URL}/login`, {
+    const res = await fetch(`http://159.198.70.49:8080/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export async function registerUser(formData: {
       age: string;
       check: boolean;
 }) {
-    const res = await fetch(`${API_BASE_URL}/register`, {
+    const res = await fetch(`${API_BASE_URL}/signup`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

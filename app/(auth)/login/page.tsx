@@ -1,5 +1,5 @@
 import React from 'react'
-import LoginPage from '@/Pages/LoginPage'
+import LoginPage from '@/Hooks/LoginPage'
 
 const page = () => {
   return (

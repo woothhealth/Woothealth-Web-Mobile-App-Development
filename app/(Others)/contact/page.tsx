@@ -1,5 +1,5 @@
 import React from 'react'
-import ContactUs from '@/Pages/ContactUs'
+import ContactUs from '@/Hooks/ContactUs'
 
 const page = () => {
   return (

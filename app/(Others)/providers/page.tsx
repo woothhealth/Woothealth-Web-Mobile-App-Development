@@ -1,5 +1,5 @@
 import React from 'react'
-import ProvidersPage from '@/Pages/ProvidersPage'
+import ProvidersPage from '@/Hooks/ProvidersPage'
 
 const page = () => {
   return (

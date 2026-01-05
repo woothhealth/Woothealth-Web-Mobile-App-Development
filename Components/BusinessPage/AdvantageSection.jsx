@@ -12,7 +12,7 @@ const AdvantageSection = () => {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0'>
                     <Reveal>
                     <div className='hidden md:flex'>
-                        <Image width={500}height={100} src='/WH_1.png' alt={`Woot's advantage`} className='object-contain w-fit h-[450px]' priority />
+                        <Image width={500}height={100} src='/WH_1.webp' alt={`Woot's advantage`} className='object-contain w-fit h-[450px]' priority />
                     </div>
                     </Reveal>
                     <div className='md:text-justify'>
@@ -28,7 +28,7 @@ const AdvantageSection = () => {
                     </div>
                     <Reveal>
                     <div className='md:hidden block'>
-                        <Image width={500}height={100} src='/WH_1.png' alt={`Woot's advantage`} className='object-contain w-fit md:h-[450px]' priority />
+                        <Image width={500}height={100} src='/WH_1.webp' alt={`Woot's advantage`} className='object-contain w-fit md:h-[450px]' priority />
                     </div>
                     </Reveal>
                 </div>
@@ -46,7 +46,7 @@ const AdvantageSection = () => {
                     </div>
                     <Reveal>
                     <div className='flex items-center justify-end'>
-                        <Image width={500}height={100} src='/WH_3.png' alt={`Woot's advantage`} className='object-contain w-fit md:h-[450px]' priority />
+                        <Image width={500}height={100} src='/WH_3.webp' alt={`Woot's advantage`} className='object-contain w-fit md:h-[450px]' priority />
                     </div>
                     </Reveal>
                 </div>

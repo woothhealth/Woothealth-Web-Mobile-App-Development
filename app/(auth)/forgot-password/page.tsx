@@ -1,5 +1,5 @@
 import React from 'react'
-import ForgotPage from '@/Pages/ForgotPage'
+import ForgotPage from '@/Hooks/ForgotPage'
 
 const page = () => {
   return (

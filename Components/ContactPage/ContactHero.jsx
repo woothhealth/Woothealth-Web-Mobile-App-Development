@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 const ContactHero = () => {
   return (
     <section className='flex items-center justify-center relative h-[35svh] text-center px-16 md:px-0'>
-      <Image src='/ContactBg.png' alt='Background' width={500} height={100} className='absolute h-full w-full object-cover'/>
+      <Image src='/ContactBg.webp' alt='Background' width={500} height={100} className='absolute h-full w-full object-cover'/>
       <div className='absolute h-full w-full bg-black/50'></div>
       <div className='flex flex-col gap-1 items-center z-20 text-[#ffffff]'>
         <motion.h2

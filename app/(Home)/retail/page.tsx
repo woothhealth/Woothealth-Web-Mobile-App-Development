@@ -1,5 +1,5 @@
 import React from 'react'
-import RetailPage from '@/Pages/RetailPage'
+import RetailPage from '@/Hooks/RetailPage'
 
 const page = () => {
   return (

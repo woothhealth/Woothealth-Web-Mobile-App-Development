@@ -11,7 +11,7 @@ const AboutSection = () => {
   return (
     <section className='py-8'>
         <div className='relative flex justify-center items-center h-[50svh]'>
-          <Image src='/HomeAbout.png' width={500} height={100} alt='picture' className='absolute top-0 left-0 w-full h-full' loading='lazy' />
+          <Image src='/HomeAbout.webp' width={500} height={100} alt='picture' className='absolute top-0 left-0 w-full h-full' loading='lazy' />
             <div className='bg-[#FFFFFF]/50 md:h-[80%] h-[90%] md:w-[80%] w-[90%] flex flex-col items-center justify-center gap-2 md:gap-4 text-center z-20'>
               <Reveal>
                 <h3 className='text-2xl font-semibold'>Committed to Making Quality Healthcare Accessible to Every Nigerian</h3>

@@ -1,5 +1,5 @@
 import React from 'react'
-import FaqsPage from '@/Pages/FaqsPage'
+import FaqsPage from '@/Hooks/FaqsPage'
 
 const page = () => {
   return (

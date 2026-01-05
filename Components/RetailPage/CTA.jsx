@@ -14,7 +14,7 @@ const CTA = () => {
                 </button>
             </div>
             <div className='flex md:justify-end justify-start'>
-                <Image width={500} height={100} src='/WH_4.png' alt='Woot Get Quote Image' className='object-contain w-fit h-fit md:h-[450px]' priority />
+                <Image width={500} height={100} src='/WH_4.webp' alt='Woot Get Quote Image' className='object-contain w-fit h-fit md:h-[450px]' priority />
             </div>
         </div>
     </section>

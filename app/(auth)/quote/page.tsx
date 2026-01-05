@@ -1,5 +1,5 @@
 import React from 'react'
-import QuotePage from '@/Pages/QuotePage'
+import QuotePage from '@/Hooks/QuotePage'
 
 const page = () => {
   return (

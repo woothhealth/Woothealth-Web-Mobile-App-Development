@@ -14,7 +14,7 @@ const HeroSection = () => {
       <div className='transition-all duration-800 ease'
       >
         <Image 
-          src='/Business_img.png' 
+          src='/Business_img.webp' 
           alt='Woot Business Picture' 
           width={500} 
           height={100} 

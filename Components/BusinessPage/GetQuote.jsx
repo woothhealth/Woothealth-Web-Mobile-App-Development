@@ -30,7 +30,7 @@ const GetQuote = () => {
             </div>
             <Reveal>
             <div className='flex justify-end'>
-                <Image width={500} height={100} src='/WH_2.png' alt='Woot Get Quote Image' className='object-contain w-fit md:h-[450px]' priority />
+                <Image width={500} height={100} src='/WH_2.webp' alt='Woot Get Quote Image' className='object-contain w-fit md:h-[450px]' priority />
             </div>
             </Reveal>
         </div>

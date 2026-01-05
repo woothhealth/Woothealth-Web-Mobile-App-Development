@@ -2,49 +2,49 @@
   {
     "id": "1",
     "title": "LIVER: 10 FACTS ABOUT THE LIVER",
-    "image": "/Article1.png",
+    "image": "/Article1.jpg",
     "content": "Regular physical activity helps improve heart health, boost mental wellbeing, and maintain a healthy weight. Exercising for at least 30 minutes daily can significantly reduce the risk of chronic diseases."
   },
   {
     "id": "2",
     "title": "DIET: NUTRITION ESSENTIALS",
-    "image": "/Article2.png",
+    "image": "/Article2.jpg",
     "content": "A balanced diet rich in fruits, vegetables, lean proteins, and whole grains strengthens the immune system and improves overall health."
   },
   {
     "id": "3",
     "title": "FITNESS: A 30 DAYS CHALLENGE",
-    "image": "/Article3.png",
+    "image": "/Article3.jpg",
     "content": "Drinking enough water helps regulate body temperature, supports digestion, and improves brain function. Proper hydration is essential for daily performance."
   },
   {
     "id": "4",
     "title": "11 SIGNS OF BREAST CANCER",
-    "image": "/Article4.png",
+    "image": "/Article4.webp",
     "content": "Chronic stress negatively impacts both physical and mental health. Practicing mindfulness, deep breathing, and regular exercise can help manage stress effectively."
   },
   {
     "id": "5",
     "title": "MALERIA: TREATMENTS",
-    "image": "/Article5.png",
+    "image": "/Article5.webp",
     "content": "Quality sleep supports brain function, emotional wellbeing, and physical health. Adults should aim for 7–9 hours of sleep each night."
   },
   {
     "id": "6",
     "title": "ACL TEAR: SYMPTOMS, CAUSES",
-    "image": "/Article6.png",
+    "image": "/Article6.webp",
     "content": "Routine health screenings help detect illnesses early, increasing the chances of effective treatment and long-term health."
   },
   {
     "id": "7",
     "title": "WHY DO PEOPLE GET MIGRANES?",
-    "image": "/Article7.png",
+    "image": "/Article7.webp",
     "content": "Mental health is as important as physical health. Seeking support and maintaining healthy relationships improves overall wellbeing."
   },
   {
     "id": "8",
     "title": "5 RELAXING WORKOUTS FOR PREGNANCY",
-    "image": "/Article8.png",
+    "image": "/Article8.webp",
     "content": "Preventive care focuses on maintaining health and preventing diseases through lifestyle choices, vaccinations, and regular checkups."
   }
 ]

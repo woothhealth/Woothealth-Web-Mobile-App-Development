@@ -6,13 +6,16 @@ import { FaRegBell } from 'react-icons/fa6'
 import { HiOutlineMenuAlt2 } from 'react-icons/hi'
 import Toggle from '@/UI/Toggle'
 import { IoCloseOutline } from 'react-icons/io5'
+import { getDashboard } from '@/lib/dashboard'
 
-const Page = () => {
+const Page = async () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const openMenu = () => {
         setMenuOpen(!menuOpen);
   }
+
+  const data = await getDashboard();
   
   return (
     <section>
@@ -32,8 +35,8 @@ const Page = () => {
           <div className='flex items-center gap-1 md:gap-2'>
             <div className='w-10 h-10 bg-amber-700 rounded-full'></div>
             <div className='leading-4 hidden md:block'>
-              <h3 className='font-bold'>Quadri Adekunle</h3>
-              <p className='text-[14px]'>ID: 1306</p>
+              <h3 className='font-bold'>{data.firstName} {data.lastName}</h3>
+              <p className='text-[14px]'>ID: {data.userId}</p>
             </div>
           <FaChevronDown/>
           </div>

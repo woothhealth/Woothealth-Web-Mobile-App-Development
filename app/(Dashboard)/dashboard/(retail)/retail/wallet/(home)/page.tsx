@@ -47,7 +47,7 @@ const Page = () => {
             </Link>
           </div>
           <div className='bg-[#FFFFFF] rounded-xl flex gap-3 p-3'>
-            <Image src='/card_img.png' alt='card' width={100} height={100} className='h-10 object-contain' priority/>
+            <Image src='/card_img.webp' alt='card' width={100} height={100} className='h-10 object-contain' priority/>
             <div className='space-y-2'>
               <p className='text-[14px]'>Your account doesn&apos;t have an active payment card. Add a card to set up auto-renewal.</p>
               <button className='btn flex items-center py-2 px-4 text-sm gap-2'>

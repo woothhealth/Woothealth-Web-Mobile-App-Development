@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 const HeroSection = () => {
   return (
     <section className='flex items-center justify-center relative h-[35svh] text-center px-10 md:px-0'>
-      <Image src='/Faqs_img.png' alt='Background' width={500} height={100} className='absolute h-full w-full object-cover' loading='eager'/>
+      <Image src='/Faqs_img.webp' alt='Background' width={500} height={100} className='absolute h-full w-full object-cover' loading='eager'/>
       <div className='absolute h-full w-full bg-black/50'></div>
       <div className='flex flex-col gap-1 items-center z-20 text-[#ffffff]'>
         <motion.h2

@@ -1,5 +1,5 @@
 import React from 'react'
-import HomePage from '@/Pages/HomePage'
+import HomePage from '@/Hooks/HomePage'
 
 const page = () => {
   return (

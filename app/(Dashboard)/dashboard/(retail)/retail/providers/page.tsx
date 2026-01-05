@@ -11,10 +11,6 @@ const Providers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Mock blog posts data - In a real app, this would come from the admin dashboard
-  // const mockPosts = [
-  // ];
-
   const categories = [
     "Provider Name",
     "Address",
@@ -26,16 +22,6 @@ const Providers = () => {
     "Address",
     "State"
   ]
-
-  // useEffect(() => {
-  //   // Simulate API call
-  //   const fetchPosts = async () => {
-  //     setLoading(true);
-  //     setTimeout(() => {
-  //       setPosts(mockPosts);
-  //       setLoading(false);
-  //     }, 800);
-  //   };
 
   //   fetchPosts();
   // }, []);

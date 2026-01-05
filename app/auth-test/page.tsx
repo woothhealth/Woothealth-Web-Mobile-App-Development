@@ -11,7 +11,7 @@ export default function AuthTestPage() {
 
             <div>
                 <p>
-                    Server Env: {" "}
+                    Server Env : {" "}
                     {serverEnv ?? "X Not Detected"}
                 </p>
 

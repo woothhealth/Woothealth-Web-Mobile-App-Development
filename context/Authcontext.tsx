@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 
 type User = {
   email: string;
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const refreshSession = async () => {
       try {
-        const res = await fetch('https://woothealth.ekensloaded.com.ng/', {
+        const res = await fetch(`${API_BASE_URL}`, {
           credentials: 'include',
         });
 
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const logout = async () => {
-    await fetch('https://sampleurl.com/logout', {
+    await fetch(`${API_BASE_URL}`, {
       method: 'POST',
       credentials: 'include',
     });

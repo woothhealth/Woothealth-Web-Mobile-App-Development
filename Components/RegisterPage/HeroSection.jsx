@@ -6,7 +6,7 @@ const HeroSection = () => {
         {/* Hero section */}
         <div className='flex items-center justify-center text-center'>
             <div className='flex flex-col gap-4 px-6'>
-                <h2 className='font-bold text-5xl'>Tell us about you</h2>
+                <h2 className='font-bold text-4xl md:text-5xl'>Tell us about you</h2>
                 <p className='text-base md:w-xl'>Get in touch with our team today and discover how Woot Health can transform your healthcare experience.</p>
             </div>
         </div>

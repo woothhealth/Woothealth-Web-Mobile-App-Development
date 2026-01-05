@@ -7,7 +7,8 @@ const pricingplans = [
     {
         id: 1,
         name: "Core",
-        price: "6,200",
+        price: "102,300",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -21,7 +22,8 @@ const pricingplans = [
     {
         id: 2,
         name: "Sync",
-        price: "9,500",
+        price: "156,750",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -35,7 +37,8 @@ const pricingplans = [
     {
         id: 3,
         name: "Nexus",
-        price: "20,700",
+        price: "341,550",
+        year: "quarter",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -49,7 +52,8 @@ const pricingplans = [
     {
         id: 4,
         name: "Quantum",
-        price: "539,400",
+        price: "2,966,700",
+        year: "annual",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -61,12 +65,12 @@ const pricingplans = [
             "Gym",
             "Spa"
         ]
-    }
-    ,
+    },
     {
         id: 5,
         name: "Iginite",
-        price: "1,190,000",
+        price: "6,545,000",
+        year: "annual",
         features: [
             "GP Consultation",
             "Emergency care",
@@ -83,17 +87,14 @@ const pricingplans = [
 const page = () => {
   return (
 <section className='py-4 md:p-4'>
-      <Link href='/dashboard/retail' className='border p-1 rounded-full inline-flex'>
-        <FaArrowLeft className='text-2xl'/>
-      </Link>
-        <div className='my-6 md:w-[95%] mx-auto w-[85%] flex flex-col gap-8 overflow-x-auto formDiv'>
-            <div className='flex md:grid lg:grid-cols-3 md:grid-cols-2 gap-8'>
+        <div className='my-6 md:w-[90%] mx-auto w-[85%] flex flex-col gap-8 overflow-x-auto formDiv'>
+            <div className='flex gap-8 md:grid grid-cols-3'>
                 {pricingplans.map((plan) => (
                     <div key={plan.id} className='bg-[#FFFFFF] rounded-[10px] text-[#000000] shadow-lg h-full pb-8'>
-                        <div className='w-76 md:w-full flex flex-col gap-4'>
+                        <div className='w-76 md:w-fit flex flex-col gap-4'>
                           <div className='bg-[#49A5EFB2] rounded-t-[10px] text-[#FFFFFF] py-4 px-4'>
                             <h3 className='text-[24px] font-semibold mb-3'>Retail {plan.name}</h3>
-                            <p className=' text-start w-full flex flex-col leading-7'><span className='font-bold text-[30px]'> ₦{plan.price}</span>per year</p>
+                            <p className=' text-[#FFFFFF] text-start w-full flex flex-col'><span>For as low as</span> <span className='font-bold text-[20px]'> ₦{plan.price}/ {plan.year}</span></p>
                         </div>
                         <div className='flex flex-col items-start px-4 gap-2'>
                             <p className='text-lg font-semibold'>Benefits included:</p>

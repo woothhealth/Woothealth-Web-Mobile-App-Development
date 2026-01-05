@@ -1,8 +1,10 @@
 'use client'
 
 
+import { registerUser } from '@/lib/auth';
 import React, { useState } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
+import { LuEye, LuEyeClosed } from 'react-icons/lu';
 
 const FormSection = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +14,8 @@ const FormSection = () => {
       email: '',
       state: '',
       address: '',
+      password: '',
+      age: '',
       check: false
     });
     const [errors, setErrors] = useState({
@@ -21,10 +25,13 @@ const FormSection = () => {
       email: '',
       state: '',
       address: '',
+      password: '',
+      age: '',
       check: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const target = e.target as HTMLInputElement;
@@ -46,6 +53,8 @@ const FormSection = () => {
       email: '',
       state: '',
       address: '',
+      password: '',
+      age: '',
       check: '' };
       let hasError = false;
   
@@ -73,6 +82,13 @@ const FormSection = () => {
         newErrors.address = 'Field not filled';
         hasError = true;
       }
+      if (!formData.password.trim()) {
+        newErrors.password = 'Field not filled';
+        hasError = true;
+      }if (!formData.age.trim()) {
+        newErrors.age = 'Field not selected';
+        hasError = true;
+      }
       if (!formData.check) {
         newErrors.check = 'Field not checked';
         hasError = true;
@@ -84,8 +100,10 @@ const FormSection = () => {
   
       setIsSubmitting(true);
       
-      // Simulate form submission
-      setTimeout(() => {
+      try {
+        await registerUser(formData);
+
+        setTimeout(() => {
         console.log('Form submitted:', formData);
         setIsSubmitting(false);
         setIsSubmitted(true);
@@ -97,9 +115,16 @@ const FormSection = () => {
             email: '',
             state: '',
             address: '',
+            password: '',
+            age: '',
             check: false
         });
       }, 1500);
+      } catch (err: any) {
+        setErrors(err.message);
+      } finally{
+        setIsSubmitting(false)
+      }
     };
 
   return (
@@ -157,6 +182,34 @@ const FormSection = () => {
                             </label>
                             <input type="email" name='email' placeholder='Email' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="email" value={formData.email} onChange={handleChange} />
                             {errors.email && <span className="text-red-500/60 text-sm">{errors.email}</span>}
+                        </div>
+                    </div>
+                    <div className='flex flex-col md:flex-row gap-6 w-full'>
+                        <div className='flex flex-col gap-2 w-full'>
+                            <label className='font-semibold' htmlFor="password">
+                              Choose your Password
+                            </label>
+                            <div className='relative'>
+                            <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='Enter Your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' value={formData.password} onChange={handleChange}/>
+                            <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
+                              {showPassword ? <LuEyeClosed/> : <LuEye/>}
+                            </button>
+                            </div>
+                            {errors.password && <span className="text-red-500/60 text-sm">{errors.password}</span>}
+                        </div>
+                        <div className='flex flex-col gap-2 w-full'>
+                            <label className='font-semibold' htmlFor="age">
+                              Age
+                            </label>
+                            <select name='age' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="age" value={formData.age} onChange={handleChange}>
+                              <option value="Select Age">Select your age</option>
+                              <option value="18-25">18-25</option>
+                              <option value="26-35">26-35</option>
+                              <option value="35-45">36-45</option>
+                              <option value="46-60">46-60</option>
+                              <option value="61">61+</option>
+                            </select>
+                            {errors.age && <span className="text-red-500/60 text-sm">{errors.age}</span>}
                         </div>
                     </div>
                     <div className='flex gap-6 w-full flex-col md:flex-row'>

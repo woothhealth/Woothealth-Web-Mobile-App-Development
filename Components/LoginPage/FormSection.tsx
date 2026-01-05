@@ -5,23 +5,24 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { FaCheckCircle } from 'react-icons/fa'
 import { API_BASE_URL } from '@/lib/api';
+import { getCurrentUser, loginUser } from '@/lib/auth';
+import { LuEye, LuEyeClosed } from 'react-icons/lu';
 
+type FormData = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+type Errors = {
+  email?: string;
+  password?: string;
+  general?: string;
+}
 
 const FormSection: React.FC = () => {
 
-  type FormData = {
-    email: string
-    password: string
-  }
-
-  type Errors = {
-    email?: string
-    password?: string
-    general?: string
-  }
-
   function sanitize(input: string) {
-    // Remove control characters and trim
     return input.replace(/[\x00-\x1F\x7F]/g, '').trim()
   }
 
@@ -32,12 +33,13 @@ const FormSection: React.FC = () => {
 
   const router = useRouter();
 
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '' })
-  const [errors, setErrors] = useState<Errors>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '', rememberMe: false });
+  const [errors, setErrors] = useState<Errors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -57,20 +59,14 @@ const FormSection: React.FC = () => {
       valid = false;
     }
 
-    if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    if (!formData.password) {
+      newErrors.password = 'Field required';
       valid = false;
     }
 
     setErrors(newErrors);
     return valid;
   };
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target
-  //   setFormData((s) => ({ ...s, [name]: value }))
-  //   setErrors((s) => ({ ...s, [name]: undefined, general: undefined }))
-  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,47 +87,23 @@ const FormSection: React.FC = () => {
       setErrors(newErrors)
       return
     }
-
-    // Do not log password
     
     setIsSubmitting(true)
     setErrors({})
 
     try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
+      await loginUser(email, password, rememberMe);
+      const user = await getCurrentUser();
 
-      const data = await (async () => {
-        try {
-          return await res.json()
-        } catch {
-          return { ok: res.ok, message: res.statusText }
-        }
-      })()
-      
-      if (!res.ok) {
-        if (res.status === 429) {
-          setErrors({ general: data?.message || 'Too many requests. Slow down.' })
-        } else if (res.status === 401) {
-          // credentials incorrect
-          setErrors({ general: data?.message || 'Invalid credentials' })
-        } else {
-          setErrors({ general: data?.message || 'Login failed. Try again later.' })
-        }
-        setIsSubmitting(false)
-        return
+      if(!user) throw new Error("Authentication failed");
+
+      if (user.role === "retail") {
+        router.push("dashboard/retail");
+      } else if (user.role === "business") {
+        router.push("dashboard/business");
+      } else {
+        throw new Error("Unauthorized role");
       }
-
-      setIsSubmitted(true)
-      router.replace(
-        data.user.role === 'retail'
-          ? '/dashboard/retail'
-          : '/dashboard/business'
-      );
     } catch (err: any) {
       setErrors({ ...errors, general: err.message });
     } finally {
@@ -141,10 +113,10 @@ const FormSection: React.FC = () => {
   }
 
   return (
-    <section className='relative min-h-[90svh] lg:min-h-[80svh] mb-16'>
+    <section className='relative min-h-[90svh] lg:min-h-[85svh] mb-16'>
       <div className='relative flex flex-col items-center justify-center '>
         <div className='absolute top-0 bg-[#120052] py-14 px-8 w-full'></div>
-        <div className='absolute formDiv overflow-y-scroll md-h-full top-0 bg-[#FFFFFF] rounded-3xl py-10 px-8 lg:px-16 w-[90%] lg:w-[70%]'>
+        <div className='absolute formDiv overflow-y-scroll md-h-full top-0 bg-[#FFFFFF] rounded-3xl py-8 px-6 lg:px-16 w-[90%] lg:w-[70%]'>
           {isSubmitted ? (
             <div className='text-center border-green-200 py-4 mx-6 md:mx-0'>
               <FaCheckCircle className='h-16 w-16 text-green-600/40 mx-auto mb-4' />
@@ -156,13 +128,13 @@ const FormSection: React.FC = () => {
             </div>
           ) : (
             <div className='flex flex-col gap-2 '>
-              <form onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center mx-2 md:mx-0' aria-live='polite'>
+              <form onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center md:mx-0' aria-live='polite'>
                 <div className='text-center'>
                   <h3 className='text-[24px] font-semibold'>We&apos;re glad to have <span className='text-[#49A5EF]'>you back</span></h3>
                   <p>Log in to manage your health insurance</p>
                 </div>
                 <div className='flex flex-col gap-3 w-full'>
-                  <label htmlFor='email' className='text-lg'>Email</label>
+                  <label htmlFor='email' className='md:text-lg text-base'>Email</label>
                   <input
                     type='text'
                     placeholder='Enter Your Email address'
@@ -183,30 +155,25 @@ const FormSection: React.FC = () => {
                 </div>
 
                 <div className='flex flex-col gap-3 w-full'>
-                  <label className='text-lg' htmlFor='password'>Password</label>
-                  <input
-                    type='password'
-                    name='password'
-                    placeholder='Enter your password'
-                    className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm'
-                    id='password'
-                    value={formData.password}
-                    onChange={handleChange}
-                    aria-invalid={!!errors.password}
-                    aria-describedby={errors.password ? 'password-error password-strength' : 'password-strength'}
-                    autoComplete='current-password'
-                    />
+                  <label className='font-semibold' htmlFor="password">
+                    Password
+                  </label>
+                  <div className='relative'>
+                    <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='Enter Your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' value={formData.password} onChange={handleChange}/>
+                    <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
+                      {showPassword ? <LuEyeClosed/> : <LuEye/>}
+                    </button>
+                  </div>
                   {errors.password && (
                     <span id='password-error' className='text-red-500/60 text-sm'>
                       {errors.password}
                     </span>
                   )}
                   <div className='flex justify-between mt-3 items-center'>
-                    <label>
-                      <input type="checkbox" name="rememberMe" onChange={handleChange} /> Remember me
+                    <label className='text-sm flex items-center gap-1'>
+                      <input type="checkbox" name="rememberMe" onChange={(e) => setRememberMe(e.target.checked)} checked={rememberMe} /> Remember me
                     </label>
                     <Link href='/forgot-password' className='text-end text-sm text-[#49A5EF]'>Forgot Password?</Link>
-
                   </div>
                 </div>
 

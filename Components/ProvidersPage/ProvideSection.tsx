@@ -5,17 +5,16 @@ import { useEffect, useMemo, useState } from "react";
 import { getProviders } from '@/lib/provider';
 
 type Provider = {
-  id: string;
+  $id: string;
   name: string;
   specialization: string;
   address: string;
+  state?: string;
 };
 
 const ITEMS_PER_PAGE = 20;
 
 const Providers = () => {
-  // const [posts, setPosts] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = [
@@ -41,9 +40,11 @@ const Providers = () => {
 
   async function loadProviders() {
     try {
+      setLoading(true);
       const data = await getProviders();
       setProviders(data);
     } catch (error) {
+      setProviders([]);
       console.error(error);
     } finally {
       setLoading(false);
@@ -53,11 +54,10 @@ const Providers = () => {
   // 🔍 Search logic (frontend-only)
   const filteredProviders = useMemo(() => {
     const q = search.toLowerCase();
-
     return providers.filter((p) =>
-      p.name.toLowerCase().includes(q) ||
-      p.specialization.toLowerCase().includes(q) ||
-      p.address.toLowerCase().includes(q)
+      (p.name?.toLowerCase().includes(q) ||
+      p.specialization?.toLowerCase().includes(q) ||
+      p.address?.toLowerCase().includes(q))
     );
   }, [providers, search]);
 
@@ -81,10 +81,6 @@ const Providers = () => {
 
   return (
     <section className='py-4 md:p-4 md:my-4'>
-        <section className='flex items-center flex-col py-8 text-[#120052] text-center space-y-2 md:px-4'>
-            <h2 className='text-[28px] md:text-[35px] font-bold'>Find Quality Healthcare Near You</h2>
-            <p className='text-[17px] md:text-lg md:w-172'>Search thousands of trusted hospitals, Pharmacy, Dental Clinics, Diagnostic Centers and Wellness &Therapy Facilities across Nigeria.</p>
-        </section>
       {/* Search and Filter */}
       <section className="pb-10">
         <div className="container-custom">
@@ -174,11 +170,11 @@ const Providers = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {paginatedProviders.map((p) => (
-                <React.Fragment key={p.id}>
+                <React.Fragment key={p.$id}>
                   <tr className="border-b border-[#D9D9D9] text-[13px] md:text-[15px]">
                     <td className="p-3">{p.name}</td>
                     <td className="p-3">{p.address}</td>
-                    <td className="p-3">{p.specialization}</td>
+                    <td className="p-3">{p.state || p.specialization}</td>
                   </tr>
                 </React.Fragment>
               ))}

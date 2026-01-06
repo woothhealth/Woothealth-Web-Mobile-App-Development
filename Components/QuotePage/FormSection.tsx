@@ -106,12 +106,21 @@ const FormSection = () => {
   
       setIsSubmitting(true);
       
-      // Simulate form submission
-      setTimeout(() => {
-        console.log('Form submitted:', formData);
+      // Submit to /api/quote to assign business role
+      try {
+        const res = await fetch("/api/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          setErrors({ ...newErrors, message: data.error || "Submission failed" });
+          setIsSubmitting(false);
+          return;
+        }
         setIsSubmitting(false);
         setIsSubmitted(true);
-        // Reset form after successful submission
         setFormData({
           firstName: '',
           lastName: '',
@@ -124,7 +133,10 @@ const FormSection = () => {
           message: '',
           check: false
         });
-      }, 1500);
+      } catch (err) {
+        setErrors({ ...newErrors, message: "Network error. Please try again." });
+        setIsSubmitting(false);
+      }
     };
 
   return (

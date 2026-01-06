@@ -1,6 +1,4 @@
 import "@/styles/globals.css";
-import NavBar from "@/Components/NavBar";
-import SmallFooter from "@/Components/SmallFooter";
 
 export default function AboutLayout({
   children,
@@ -8,10 +6,10 @@ export default function AboutLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <NavBar />
+    <html lang='en'>
+    <body className={`antialiased`}>
         {children}
-      <SmallFooter />
-    </>
-    );
+    </body>
+    </html>
+  );
 }

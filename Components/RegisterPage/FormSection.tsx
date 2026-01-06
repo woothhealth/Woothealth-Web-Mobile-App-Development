@@ -1,7 +1,5 @@
 'use client'
 
-
-import { registerUser } from '@/lib/auth';
 import React, { useState } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
 import { LuEye, LuEyeClosed } from 'react-icons/lu';
@@ -17,8 +15,8 @@ const FormSection = () => {
       password: '',
       age: '',
       check: false
-    });
-    const [errors, setErrors] = useState({
+  });
+  const [errors, setErrors] = useState({
       firstName: '',
       lastName: '',
       phoneNumber: '',
@@ -27,7 +25,8 @@ const FormSection = () => {
       address: '',
       password: '',
       age: '',
-      check: ''
+      check: '',
+      general: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -55,7 +54,8 @@ const FormSection = () => {
       address: '',
       password: '',
       age: '',
-      check: '' };
+      check: '',
+      general: '' };
       let hasError = false;
   
       if (!formData.firstName.trim()) {
@@ -101,29 +101,48 @@ const FormSection = () => {
       setIsSubmitting(true);
       
       try {
-        await registerUser(formData);
-
-        setTimeout(() => {
-        console.log('Form submitted:', formData);
-        setIsSubmitting(false);
-        setIsSubmitted(true);
-        // Reset form after successful submission
-        setFormData({
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            email: '',
-            state: '',
-            address: '',
-            password: '',
-            age: '',
-            check: false
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
         });
-      }, 1500);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+        if (data.role === 'retail') {
+          setIsSubmitted(true);
+        } else {
+          setIsSubmitted(true);
+        }
+        
+        setFormData({
+          firstName: '',
+          lastName: '',
+          phoneNumber: '',
+          email: '',
+          state: '',
+          address: '',
+          password: '',
+          age: '',
+          check: false
+        });
+        setErrors({
+          firstName: '',
+          lastName: '',
+          phoneNumber: '',
+          email: '',
+          state: '',
+          address: '',
+          password: '',
+          age: '',
+          check: '',
+          general: ''
+        });
       } catch (err: any) {
-        setErrors(err.message);
-      } finally{
-        setIsSubmitting(false)
+        setErrors({ ...errors, general: err.message });
+      } finally {
+        setIsSubmitting(false);
       }
     };
 
@@ -133,6 +152,11 @@ const FormSection = () => {
             <div className='absolute top-0 bg-[#120052] py-14 px-8 w-full'>
             </div>
             <div className='absolute formDiv overflow-y-scroll h-screen md-h-full top-0 bg-[#FFFFFF] rounded-3xl py-10 px-8 lg:px-16 w-[90%] lg:w-[70%]'>
+                {!isSubmitted && errors.general && (
+                  <div className="w-full bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-2 text-center">
+                    <span>{errors.general}</span>
+                  </div>
+                )}
                 {isSubmitted ? (
                 <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                   <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
@@ -207,7 +231,7 @@ const FormSection = () => {
                               <option value="26-35">26-35</option>
                               <option value="35-45">36-45</option>
                               <option value="46-60">46-60</option>
-                              <option value="61">61+</option>
+                              <option value="61">61-65</option>
                             </select>
                             {errors.age && <span className="text-red-500/60 text-sm">{errors.age}</span>}
                         </div>
@@ -231,7 +255,7 @@ const FormSection = () => {
                     <div className='w-full'>
                       <div className='flex items-center gap-2'>
                         <input type="checkbox" name="check" id="check" checked={formData.check} onChange={handleChange} />
-                        <label htmlFor="check" className='w-sm text-sm'>I have read and agreed to Woot Health’s Terms of Use and Privacy Policy*</label>
+                        <label htmlFor="check" className='w-sm text-sm'>I have read and agreed to Woot Health’s Terms of Use and Privacy Policy <span className='text-red-500/60'>*</span></label>
                       </div>
                       {errors.check && <span className="text-red-500/60 text-sm">{errors.check}</span>}
                     </div>

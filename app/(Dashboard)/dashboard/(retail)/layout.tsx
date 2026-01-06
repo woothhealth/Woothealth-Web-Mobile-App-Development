@@ -14,13 +14,9 @@ export default function AboutLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`antialiased flex`}
-      >
-        <SideBar />
-        {children}
-      </body>
-    </html>
+    <>
+      <SideBar />
+      {children}
+    </>
   );
 }

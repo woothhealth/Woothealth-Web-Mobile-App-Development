@@ -1,62 +1,42 @@
-import { API_BASE_URL } from "./api";
+import { account } from './appwrite';
 
-export async function loginUser (email: string, password: string, remeberMe: boolean) {
-    const res = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ email, password, remeberMe, }),
-    });
-
-    if (!res.ok) {
-        throw new Error("Invalid email or password");
-    }
-
-    return res.json();
+export async function loginUser(email: string, password: string) {
+  try {
+    const session = await account.createEmailPasswordSession({ email, password });
+    return session;
+  } catch (error: any) {
+    throw new Error(error?.message || "Invalid email or password");
+  }
 }
 
+
+// Get current user from Appwrite
 export async function getCurrentUser() {
-    const res = await fetch(`${API_BASE_URL}/me`, {
-        credentials: "include",
-        cache: "no-store",
-    });
-
-    if (!res.ok) return null;
-    return res.json();
+  try {
+    return await account.get();
+  } catch {
+    return null;
+  }
 }
 
+// Logout user from Appwrite
 export async function logoutUser() {
-    await fetch(`${API_BASE_URL}/logout`, {
-        method: "POST",
-        credentials: "include",
-    });
+  try {
+    await account.deleteSession('current');
+  } catch {}
 }
 
-export async function registerUser(formData: {
-    firstName: string;
-      lastName: string;
-      phoneNumber: string;
-      email: string;
-      state: string;
-      address: string;
-      password: string;
-      age: string;
-      check: boolean;
-}) {
-    const res = await fetch(`${API_BASE_URL}/signup`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+
+export async function registerUser({ email, password, ...rest }: { email: string, password: string, [key: string]: any }) {
+  try {
+    const user = await account.create({
+      userId: 'unique()',
+      email,
+      password,
+      name: rest.firstName ? `${rest.firstName} ${rest.lastName || ''}`.trim() : undefined,
     });
-
-    if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Registration failed");
-    }
-
-    return res.json();
+    return user;
+  } catch (error: any) {
+    throw new Error(error?.message || "Registration failed");
+  }
 }

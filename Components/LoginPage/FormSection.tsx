@@ -92,18 +92,23 @@ const FormSection: React.FC = () => {
     setErrors({})
 
     try {
-      await loginUser(email, password, rememberMe);
-      const user = await getCurrentUser();
-
-      if(!user) throw new Error("Authentication failed");
-
-      if (user.role === "retail") {
-        router.push("dashboard/retail");
-      } else if (user.role === "business") {
-        router.push("dashboard/business");
-      } else {
-        throw new Error("Unauthorized role");
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, rememberMe }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Login failed');
       }
+      if (data.role === 'retail') {
+        router.push('dashboard/retail');
+      } else if (data.role === 'business') {
+        router.push('dashboard/business');
+      } else {
+        router.push('/dashboard');
+      }
+      setIsSubmitted(true);
     } catch (err: any) {
       setErrors({ ...errors, general: err.message });
     } finally {
@@ -128,6 +133,15 @@ const FormSection: React.FC = () => {
             </div>
           ) : (
             <div className='flex flex-col gap-2 '>
+              {errors.general && (
+                <div className="w-full bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-2 text-center">
+                  {errors.general === 'Invalid credentials. Please check the email and password.' ? (
+                    <span>Invalid email or password. Please try again.</span>
+                  ) : (
+                    <span>{errors.general}</span>
+                  )}
+                </div>
+              )}
               <form onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center md:mx-0' aria-live='polite'>
                 <div className='text-center'>
                   <h3 className='text-[24px] font-semibold'>We&apos;re glad to have <span className='text-[#49A5EF]'>you back</span></h3>

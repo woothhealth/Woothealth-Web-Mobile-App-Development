@@ -7,15 +7,15 @@ import blogs from "@/data/blog.json";
 
 const articleBlog = [
     {
-        image: '/Article1.png',
+        image: '/Article-1.jpg',
         text: 'LIVER: 10 FACTS ABOUT THE LIVER',
     },
     {
-        image: '/Article2.png',
+        image: '/Article-2.jpg',
         text: 'DIET: NUTRITION ESSENTIALS',
     },
     {
-        image: '/Article3.png',
+        image: '/Article-3.jpg',
         text: 'FITNESS: A 30 DAYS CHALLENGE',
     }
 ]

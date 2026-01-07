@@ -10,17 +10,17 @@ import { motion } from 'motion/react';
 
 const slides = [
   {
-    image: '/Hero_1.webp',
+    image: '/Hero-1.webp',
     title: 'Health insurance that actually works!',
     text: 'Quality health coverage for individuals, families, and businesses across Nigeria.'
   },
   {
-    image: '/Hero_2.webp',
+    image: '/Hero-2.webp',
     title: 'Invest in Your Teams Health, Watch Your Business Thrive',
     text: 'Digital-first plans with nationwide coverage, telemedicine access, and support when you need it most.'
   },
   {
-    image: '/Hero_3.webp',
+    image: '/Hero-3.webp',
     title: 'Health Coverage That Puts You and Your Family First',
     text: `Affordable plans with access to Nigeria's largest network of trusted hospitals and healthcare providers.`
   }

@@ -14,9 +14,13 @@ export default function AboutLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <SideBar />
-      {children}
-    </>
+    <html lang='en'>
+      <body className="antialiased">
+        <div className="flex min-h-screen">
+          <SideBar />
+          <main className="flex-1 w-full">{children}</main>
+        </div>
+      </body>
+    </html>
   );
 }

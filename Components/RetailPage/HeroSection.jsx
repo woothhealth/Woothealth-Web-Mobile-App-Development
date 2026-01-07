@@ -30,7 +30,7 @@ const HeroSection = () => {
             <p className='text-[1.2rem] md:text-[1.4rem] lg:text-lg'>Simple health insurance that protects you and your family</p>
             </Reveal>
           </div>
-          <a href='#pricing'>
+          <a href='#pricing' className='w-fit'>
           <motion.button
               initial= {{opacity: 0 }}
               animate={{opacity: 1, y: 0}}

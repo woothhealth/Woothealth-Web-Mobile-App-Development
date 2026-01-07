@@ -127,16 +127,16 @@ const Footer = () => {
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         
                         <div className='mt-8 flex gap-4'>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                            <a href='https://www.linkedin.com/company/woothealth/' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10'>
                                 <FaLinkedinIn className='text-lg text-black'/>
-                            </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                            </a>
+                            <a href='https://www.facebook.com/profile.php?id=100085077885831' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10'>
                                 <FaFacebookF className='text-lg text-black'/>
-                            </div>
-                            <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                            </a>
+                            <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10 cursor-pointer'>
                                 <FaInstagram className='text-lg text-black'/> 
                             </a>
-                            <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                            <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10 cursor-pointer'>
                                 <FaXTwitter className='text-lg text-black'/>
                             </a>
                         </div>
@@ -181,12 +181,12 @@ const Footer = () => {
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         
                         <div className='mt-8 flex gap-4'>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
+                            <a href='https://www.linkedin.com/company/woothealth/' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
                                 <FaLinkedinIn className='text-lg text-black'/>
-                            </div>
-                            <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
+                            </a>
+                            <a href='https://www.facebook.com/profile.php?id=100085077885831' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
                                 <FaFacebookF className='text-lg text-black'/>
-                            </div>
+                            </a>
                             <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
                                 <FaInstagram className='text-lg text-black'/> 
                             </a>

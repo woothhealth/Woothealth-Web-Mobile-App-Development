@@ -29,6 +29,7 @@ const quick = [
     url: '/dashboard/retail/reimbursement'
   },
 ]
+
 const page = () => {
   return (
     <section className='py-4 md:p-4 my-4 flex flex-col md:flex-row gap-6 md:gap-8 bg-[#FFFFFF] rounded-2xl'>

@@ -34,13 +34,13 @@ const information = [
 
 const page = () => {
   return (
-    <section className='p-8 bg-[#FFFFFF] rounded-[10px] w-[45%] space-y-6'>
+    <section className='py-6 px-4 md:p-8 bg-[#FFFFFF] rounded-[10px] md:w-[45%] space-y-6'>
         <div className='flex space-x-4 items-center'>
             <div className='p-11 h-fit rounded-full inline-flex bg-amber-200'></div>
             <div className=''>
-                <h3 className='text-[20px] font-semibold flex items-center gap-10'>Quadri Adekunle <span><LuPencilLine/></span></h3>
-                <p className='text-[18px]'>Retail Quantun Plan</p>
-                <p className='text-[18px]'>ID: 12006</p>
+                <h3 className='text-[18px] md:text-[20px] font-semibold flex items-center gap-10'>Quadri Adekunle <span><LuPencilLine/></span></h3>
+                <p className='text-[14px] md:text-[18px]'>Retail Quantun Plan</p>
+                <p className='text-[14px] md:text-[18px]'>ID: 12006</p>
             </div>
         </div>
         <div className='flex flex-col gap-y-4'>
@@ -48,7 +48,7 @@ const page = () => {
             <div className=''>
                 {information.map((item, index) => {
                     const first = index === 0
-                    return(<div key={index} className={`grid grid-cols-2 py-4 border-b text-[16px] border-[#D9D9D9] ${first ? 'border-t border-[#D9D9D9]' : ''}`}>
+                    return(<div key={index} className={`grid grid-cols-2 py-2 md:py-4 border-b text-[16px] border-[#D9D9D9] ${first ? 'border-t border-[#D9D9D9]' : ''}`}>
                         <h3 className='font-semibold'>{item.tite}</h3>
                         <p>{item.sub}</p>
                     </div>)

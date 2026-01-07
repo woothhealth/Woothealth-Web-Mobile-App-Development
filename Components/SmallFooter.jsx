@@ -7,6 +7,7 @@ const Footer = () => {
   return (
     <section className='bg-[#120052] text-[#FFFFFF] text-[0.9rem] border-t-12 border-t-[#49A5EF]'>
         <div className='py-14 md:px-[130px] px-6'>
+            
         {/* Desktop */}
         <div className='hidden md:grid md:grid-cols-3 md:gap-y-8 md:gap-x-4 lg:flex lg:justify-between'>
             <div>
@@ -41,16 +42,16 @@ const Footer = () => {
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                 
                 <div className='mt-8 flex gap-4'>
-                    <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                    <a href='https://www.linkedin.com/company/woothealth/' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10'>
                         <FaLinkedinIn className='text-lg text-black'/>
-                    </div>
-                    <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
-                        <FaFacebookF className='text-lg text-black'/>
-                    </div>
-                    <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
-                        <FaInstagram className='text-lg text-black'/>
                     </a>
-                    <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
+                    <a href='https://www.facebook.com/profile.php?id=100085077885831' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10'>
+                        <FaFacebookF className='text-lg text-black'/>
+                    </a>
+                    <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10 cursor-pointer'>
+                        <FaInstagram className='text-lg text-black'/> 
+                    </a>
+                    <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-10 w-10 cursor-pointer'>
                         <FaXTwitter className='text-lg text-black'/>
                     </a>
                 </div>
@@ -95,14 +96,14 @@ const Footer = () => {
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                                 
                 <div className='mt-8 flex gap-4'>
-                    <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
+                    <a href='https://www.linkedin.com/company/woothealth/' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
                         <FaLinkedinIn className='text-lg text-black'/>
-                    </div>
-                    <div className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
+                    </a>
+                    <a href='https://www.facebook.com/profile.php?id=100085077885831' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px]'>
                         <FaFacebookF className='text-lg text-black'/>
-                    </div>
+                    </a>
                     <a href='https://www.instagram.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
-                        <FaInstagram className='text-lg text-black'/>
+                        <FaInstagram className='text-lg text-black'/> 
                     </a>
                     <a href='https://x.com/woothealth' className='flex items-center justify-center bg-[#FAFAFA] rounded-full h-[30px] w-[30px] cursor-pointer'>
                         <FaXTwitter className='text-lg text-black'/>

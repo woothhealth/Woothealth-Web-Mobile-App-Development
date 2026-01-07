@@ -16,8 +16,8 @@ export default function ProvidersLayout({
 }>) {
   return (
     <>
-    <div className="container w-full bg-[#FAFAFA] hidden lg:block">
-      <div>{header}</div>
+    <div className="w-full bg-[#FAFAFA]">
+      <div className="sticky top-0">{header}</div>
       <div className="p-4">{children}</div>
     </div>
     </>

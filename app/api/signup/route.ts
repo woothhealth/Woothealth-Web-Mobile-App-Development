@@ -19,7 +19,8 @@ export async function POST(req: Request) {
       password,
       name: firstName ? `${firstName} ${lastName || ''}`.trim() : undefined,
     });
-
+// let us test this out locally with my server
+// okay
     // Store user data in Appwrite collection (users) with only registration form fields
     const { databases } = await import("../../../lib/appwrite");
     const DATABASE_ID = "main";

@@ -8,10 +8,12 @@ export default function OthersLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <html lang='en'>
+    <body className={`antialiased`}>
       <NavBar />
         {children}
       <SmallFooter />
-    </>
+    </body>
+    </html>
   );
 }

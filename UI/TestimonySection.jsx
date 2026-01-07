@@ -99,13 +99,9 @@ const TestimonySecond = () => {
             {visibleTestimonialsDesktop.map((item) => (
               <div key={item.id} className="relative flex-1 max-w-sm border border-[#E1E1E2] rounded-4xl p-4 h-64">
                 <div className="flex items-center gap-3 pb-5 border-b border-[#E1E1E2]">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    width={56} 
-                    height={56}
-                    className="w-14 h-14 rounded-full grayscale object-cover" 
-                  />
+                  <div className='w-14 h-14 rounded-full bg-[#E1E1E2] flex items-center justify-center text-xl font-bold'>
+                    {item.ini}
+                  </div>
                   <div className="text-left flex flex-col gap-1">
                     <p className="font-bold tracking-wide text-[18px] uppercase">{item.name}</p>
                     <p className="text-[12px] uppercase tracking-wide">{item.role}</p>

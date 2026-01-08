@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link';
 import React, { useState } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
 import { LuEye, LuEyeClosed } from 'react-icons/lu';
@@ -263,6 +264,11 @@ const FormSection = () => {
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit mt-1'>
                         {isSubmitting ? 'Sending...' : 'SUBMIT'}
                     </button>
+                    <div>
+                      <p className='md:text-lg'>Have an account? { " "}
+                        <Link href={`/login`} className='text-[#49A5EF] underline'>Log in</Link>
+                      </p>
+                    </div>
                 </form>
             </div>
             )}

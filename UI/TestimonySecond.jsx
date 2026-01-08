@@ -107,7 +107,7 @@ const TestimonySecond = () => {
                     <p className="text-[12px] uppercase tracking-wide">{item.role}</p>
                   </div>
                 </div>
-                <p className="text-[16px] font-serif leading-tight text-justify mb-8 mt-3 z-5">
+                <p className="text-[16px] leading-tight text-justify mb-8 mt-3 z-5">
                   {item.quote}
                 <RiDoubleQuotesR className="absolute bottom-0 right-0 text-[#067cde80] text-9xl" />
                 </p>

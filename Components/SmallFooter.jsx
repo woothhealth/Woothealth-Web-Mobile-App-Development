@@ -2,6 +2,45 @@ import React from 'react'
 import Image from 'next/image'
 import { FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarker, FaPhoneAlt } from 'react-icons/fa'
 import { FaHeart, FaXTwitter } from 'react-icons/fa6'
+import Link from 'next/link'
+
+const link1 = [
+    {
+        name: "Home",
+        url: "/"
+    },
+    {
+        name: "Providers",
+        url: "/providers"
+    },
+    {
+        name: "About Us",
+        url: "/about"
+    },
+    {
+        name: "FAQs",
+        url: "/FAQs"
+    },
+    {
+        name: "Terms & Conditions",
+        url: "/"
+    },
+    {
+        name: "Privacy Policy",
+        url: "/"
+    }
+]
+
+const link2 = [
+    {
+        name: "Business Plans",
+        url: "/business"
+    },
+    {
+        name: "Retail Plans",
+        url: "/retail"
+    }
+]
 
 const Footer = () => {
   return (
@@ -13,28 +52,34 @@ const Footer = () => {
             <div>
                 <h3 className='font-semibold text-lg mb-4'>Health Plans</h3>
                 <ul className='flex flex-col gap-3 ml-2'>
-                    <li>Business Plans</li>
-                    <li>Retail Plans</li>
+                    {link2.map((item, index) => (
+                        <Link href={item.url} key={index}>
+                            <li>{item.name}</li>
+                        </Link>
+                    ))}
                 </ul>
             </div>
             <div>
                 <h3 className='font-semibold text-lg mb-4'>Quick Links</h3>
                 <ul className='flex flex-col gap-3 ml-2'>
-                    <li>Home</li>
-                    <li>Providers</li>
-                    <li>About Us</li>
-                    <li>FAQs</li>
-                    <li>Terms & Conditions</li>
-                    <li>Privacy Policy</li>
+                    {link1.map((item, index) => (
+                        <Link href={item.url} key={index}>
+                            <li>{item.name}</li>
+                        </Link>
+                    ))}
                 </ul>
             </div>
             <div className='text-wrap'>
                 <h3 className='font-semibold text-lg mb-4'>Contact Us</h3>
                 <ul className='flex flex-col gap-3 ml-2'>
-                    <li className='flex gap-2 items-center'><FaPhoneAlt/>+234 0098762345</li>
-                    <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
+                    <a href="tel:02018891833" className='w-fit'>
+                        <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
+                    </a>
+                    <a href="mailto:support@woothealth.com" className='w-fit'>
+                        <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
+                    </a>
                 </ul>
-                <address className='flex gap-3 items-center ml-2'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
+                <address className='flex mt-2 gap-3 items-center ml-2'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
             </div>
             <div className='md:col-span-3'>
                 <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
@@ -63,27 +108,33 @@ const Footer = () => {
             <div>
                 <h3 className='font-semibold text-xl mb-4'>Quick Links</h3>
                 <ul className='flex flex-col gap-4 ml-2 text-base'>
-                    <li>Home</li>
-                    <li>Providers</li>
-                    <li>About Us</li>
-                    <li>FAQs</li>
-                    <li>Terms & Conditions</li>
-                    <li>Privacy Policy</li>
+                    {link1.map((item, index) => (
+                        <Link href={item.url} key={index}>
+                            <li>{item.name}</li>
+                        </Link>
+                    ))}
                 </ul>
             </div>
             <div className='flex flex-col gap-6'>
                 <div>
                     <h3 className='font-semibold text-xl mb-4'>Health Plans</h3>
                     <ul className='flex flex-col gap-3 ml-2 text-base'>
-                        <li>Business Plans</li>
-                        <li>Retail Plans</li>
+                        {link2.map((item, index) => (
+                            <Link href={item.url} key={index}>
+                                <li>{item.name}</li>
+                            </Link>
+                        ))}
                     </ul>
                 </div>
                 <div>
                     <h3 className='font-semibold text-xl mb-4'>Contact Us</h3>
                     <ul className='flex flex-col gap-3 ml-2 text-base'>
-                        <li className='flex gap-4 items-center'><FaPhoneAlt/>+234 0098762345</li>
-                        <li className='flex gap-4 items-center'><FaEnvelope /> support@woothealth.com</li>
+                        <a href="tel:02018891833" className='w-fit'>
+                            <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
+                        </a>
+                        <a href="mailto:support@woothealth.com" className='w-fit'>
+                            <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
+                        </a>
                     </ul>
                     <address className='flex mt-3 ml-2 cursor-pointer gap-4 items-center'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
                 </div>

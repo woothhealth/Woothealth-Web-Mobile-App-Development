@@ -198,6 +198,11 @@ const FormSection: React.FC = () => {
                 >
                   {isSubmitting ? 'Signing in...' : 'LOGIN'}
                 </button>
+                <div>
+                  <p className='md:text-lg'>Don't have an account? { " "}
+                    <Link href={`/register`} className='text-[#49A5EF] underline'>Sign Up</Link>
+                  </p>
+                </div>
               </form>
             </div>
           )}

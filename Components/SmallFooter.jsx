@@ -76,10 +76,10 @@ const Footer = () => {
                         <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
                     </a>
                     <a href="mailto:support@woothealth.com" className='w-fit'>
-                        <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
+                        <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth.com</li>
                     </a>
                 </ul>
-                <address className='flex mt-2 gap-3 items-center ml-2'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
+                <address className='flex mt-2 gap-3 items-center ml-2'><FaMapMarker/>3 Adebayo Munis Close, Gbagada Phase 2, Lagos</address>
             </div>
             <div className='md:col-span-3'>
                 <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
@@ -133,10 +133,10 @@ const Footer = () => {
                             <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
                         </a>
                         <a href="mailto:support@woothealth.com" className='w-fit'>
-                            <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth .com</li>
+                            <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth.com</li>
                         </a>
                     </ul>
-                    <address className='flex mt-3 ml-2 cursor-pointer gap-4 items-center'><FaMapMarker/>4 Adebayo Muniz close, Gbagada Phase 2, Lagos</address>
+                    <address className='flex mt-3 ml-2 cursor-pointer gap-4 items-center'><FaMapMarker/>3 Adebayo Munis Close, Gbagada Phase 2, Lagos</address>
                 </div>
             </div>
             <div className=''>

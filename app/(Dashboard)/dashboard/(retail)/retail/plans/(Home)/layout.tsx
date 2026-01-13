@@ -30,7 +30,7 @@ export default function PlansLayout({
 
                 <li onClick={() => router.push('/dashboard/retail/plans/members')} className={`text-[15px] md:text-[18px] font-semibold md:p-2 p-1 ${pathname === '/dashboard/retail/plans/members' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Members</li>
 
-                <li onClick={() => router.push('/dashboard/retail/plans/claims')} className={`text-[15px] md:text-[18px] font-semibold md:p-2 p-1 ${pathname === '/dashboard/retail/plans/claims' ? 'border-b-2 border-[#49A5EF]' : ''}`}>Claims</li>
+                <li onClick={() => router.push('/dashboard/retail/plans/PA-codes')} className={`text-[15px] md:text-[18px] font-semibold md:p-2 p-1 ${pathname === '/dashboard/retail/plans/PA-codes' ? 'border-b-2 border-[#49A5EF]' : ''}`}>PA Codes</li>
               </ul>
             </nav>
           </div>

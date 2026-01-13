@@ -8,6 +8,7 @@ import TestimonySection from '../UI/TestimonySection'
 import FAQ from '../UI/FAQ'
 import HomeArticle from '../Components/HomePage/HomeArticle'
 import WalletSection from '../Components/HomePage/WalletSection'
+import MarqueeSection from '../Components/HomePage/MarqueeSection'
 import Talk from '@/UI/Talk'
 
 const HomePage = () => {
@@ -17,6 +18,7 @@ const HomePage = () => {
         <HomeSection />
         <CoverageSection />
         <WalletSection/>
+        <MarqueeSection/>
         <BenefitSection />
         <AboutSection />
         <ProviderSection />

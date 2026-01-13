@@ -10,17 +10,20 @@ const Contact = () => {
         {
             icon: <FaMapMarkerAlt/>,
             title: 'Location',
-            desc: '4 Adebayo Muniz close, Gbagada Phase 2, Lagos'
+            desc: '4 Adebayo Muniz close, Gbagada Phase 2, Lagos',
+            url: ''
         },
         {
             icon: <FaEnvelope/>,
             title: 'Email Us',
-            desc: 'support@woothealth.com'
+            desc: 'support@woothealth.com',
+            url: "mailto:support@woothealth.com"
         },
         {
             icon: <FaPhone/>,
             title: 'Call Us',
-            desc: '+234 0098762354, +234 0098762354'
+            desc: '02018891833',
+            url: "tel:02018891833"
         }
     ]
 
@@ -113,12 +116,12 @@ const Contact = () => {
                 {getInTouch.map((touch, index) => (
                     <Reveal key={index}>
                     <div className='flex gap-6 items-center'>
-                        <div className='flex items-center justify-center bg-[#49A5EF] text-[#FFFFFF] h-10 w-10 rounded-full'>
+                        <div className='inline-flex items-center justify-center bg-[#49A5EF] text-[#FFFFFF] h-full p-3 rounded-full'>
                         {touch.icon}
                         </div>
                         <div className='leading-tight'>
                             <h3 className='font-semibold'>{touch.title}</h3>
-                            <p>{touch.desc}</p>
+                            <a href={touch.url}>{touch.desc}</a>
                         </div>
                     </div>
                     </Reveal>

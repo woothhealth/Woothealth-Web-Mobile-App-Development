@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import SideBar from "@/Components/SideBar";
+import ScrollToTop from "@/Components/ScrollToTop";
 
 
 export const metadata: Metadata = {
@@ -18,7 +19,10 @@ export default function AboutLayout({
       <body className="antialiased">
         <div className="flex min-h-screen">
           <SideBar />
-          <main className="flex-1 w-full">{children}</main>
+          <main className="flex-1 w-full">
+            <ScrollToTop/>
+            {children}
+          </main>
         </div>
       </body>
     </html>

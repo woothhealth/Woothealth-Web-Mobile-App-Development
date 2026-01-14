@@ -1,0 +1,55 @@
+{
+  "contacts": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "test@email.com",
+      "userId": "1"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "User 1",
+      "email": "user1@gmail.com",
+      "password": "12345678",
+      "role": "retail"
+    },
+    {
+      "id": "2",
+      "name": "User 2",
+      "email": "user2@test.com",
+      "password": "1234567",
+      "role": "business"
+    },
+    {
+      "id": "995e",
+      "firstName": "David",
+      "lastName": "Akpom",
+      "phoneNumber": "09137976215",
+      "email": "dahvid@gmail.com",
+      "password": "111111",
+      "age": "18-25",
+      "address": "Lagos, Nigeria",
+      "state": "Lagos",
+      "role": "retail"
+    },
+    {
+      "id": "3ccf",
+      "firstName": "David",
+      "lastName": "Akpomiiiiii",
+      "phoneNumber": "09137976215",
+      "email": "timidev34@gmail.com",
+      "password": "2222222",
+      "age": "26-35",
+      "address": "Lagos",
+      "state": "Lagos",
+      "role": "retail"
+    }
+  ],
+  "signup": [
+    {
+      "id": "1"
+    }
+  ]
+}

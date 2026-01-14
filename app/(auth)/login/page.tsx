@@ -1,10 +1,19 @@
-import React from 'react'
-import LoginPage from '@/Hooks/LoginPage'
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import LoginPag from '@/Hooks/LoginPage'
 
-const page = () => {
-  return (
-    <LoginPage />
-  )
+export default async function LoginPage() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session");
+  const role = cookieStore.get("role")?.value;
+
+  if (session) {
+    redirect(
+      role === "business"
+        ? "/dashboard/business"
+        : "/dashboard/retail"
+    );
+  }
+
+  return <LoginPag/>;
 }
-
-export default page

@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import NavBar from "@/Components/NavBar";
 import Footer from "@/Components/Footer";
+import ScrollToTop from "@/Components/ScrollToTop";
 
 export default function HomeLayout({
   children,
@@ -11,6 +12,7 @@ export default function HomeLayout({
     <html lang='en'>
     <body className={`antialiased`}>
       <NavBar />
+        <ScrollToTop/>
         {children}
       <Footer />
     </body>

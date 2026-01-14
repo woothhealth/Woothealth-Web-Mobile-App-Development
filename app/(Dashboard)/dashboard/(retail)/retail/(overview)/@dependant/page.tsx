@@ -6,7 +6,7 @@ import Link from 'next/link';
 const Page = () => {
   return (
     <section className='dsbGrad w-44 md:w-[220px] py-6 rounded-[15px] text-[#FFFFFF] flex items-center px-4 md:h-full h-44'>
-      <Link href='/dashboard/retail/plans/members' className='flex flex-col gap-8 md:gap-6'>
+      <Link href='/dashboard/retail/plans/members' className='flex flex-col gap-8 md:gap-6 w-full'>
         <div className='bg-[#49A5EF] p-2 rounded-[10px] w-fit text-3xl'>
           <HiOutlineUsers/>
         </div>

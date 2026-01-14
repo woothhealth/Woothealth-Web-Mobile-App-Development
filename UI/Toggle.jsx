@@ -8,6 +8,7 @@ import { GrPlan } from "react-icons/gr";
 import { IoMdSettings } from "react-icons/io";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import LogoutButton from './LogOut';
 
 const path = [
     {
@@ -47,11 +48,6 @@ const path2 = [
         name: 'Settings',
         url: '/dashboard/retail/settings',
         icon: <IoMdSettings/>
-    },
-    {
-        name: 'Logout',
-        url: '/login',
-        icon: <RiLogoutBoxRLine/>
     }
 ]
 
@@ -78,11 +74,10 @@ const Toggle = ({ isOpen }) => {
         </div>
         <div className='flex flex-col gap-1 h-full'>
             {path2.map((path, index) => {
-                const last = index === 2;
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-8' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -90,6 +85,9 @@ const Toggle = ({ isOpen }) => {
                         </div>
                     </Link>
             )})}
+            <div className={`flex gap-4 mt-4 items-center text-[#00000033] rounded-2xl justify-center hover:bg-red-500/70 hover:text-[#FFFFFF] text-center cursor-pointer`}>
+                <LogoutButton />
+            </div>
         </div>
     </div>
     <div className='absolute top-18 h-screen w-full bg-[#FFFFFF] opacity-25'></div>

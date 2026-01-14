@@ -11,6 +11,7 @@ import { IoMdSettings } from "react-icons/io";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import LogOut from '@/UI/LogOut';
 
 const path = [
     {
@@ -50,11 +51,6 @@ const path2 = [
         name: 'Settings',
         url: '/dashboard/retail/settings',
         icon: <IoMdSettings/>
-    },
-    {
-        name: 'Logout',
-        url: '/login',
-        icon: <RiLogoutBoxRLine/>
     }
 ]
 
@@ -92,11 +88,10 @@ const SideBar = () => {
             </div>
             <div className='flex flex-col gap-2 h-full'>
                 {path2.map((path, index) => {
-                    const last = index === 2;
                     const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                     return (
                         <Link key={index} href={path.url}>
-                            <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-8' : ''}`}>
+                            <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                 <div className='text-xl'>
                                     {path.icon}
                                 </div>
@@ -104,6 +99,9 @@ const SideBar = () => {
                             </div>
                         </Link>
                 )})}
+                <div className={`flex gap-4 items-center text-[#00000033] mt-3 rounded-2xl hover:bg-red-400/50 hover:text-[#FFFFFF] cursor-pointer`}>
+                    <LogOut/>
+                </div>
             </div>
         </div>
         </>
@@ -130,17 +128,19 @@ const SideBar = () => {
                     </div>
                     <div className='flex flex-col gap-1 h-full'>
                         {path2.map((path, index) => {
-                            const last = index === 2;
                             const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
                             return (
                                 <Link key={index} href={path.url}>
-                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${last ? 'mt-8' : ''}`}>
+                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                         <div className='text-2xl'>
                                             {path.icon}
                                         </div>
                                     </div>
                                 </Link>
                         )})}
+                        <div className={`flex gap-4 mt-4 items-center text-[#00000033] rounded-2xl justify-center hover:bg-red-400/50 hover:text-[#FFFFFF] text-center cursor-pointer`}>
+                            <LogOut collapsed />
+                        </div>
                     </div>
             </div>
             </>

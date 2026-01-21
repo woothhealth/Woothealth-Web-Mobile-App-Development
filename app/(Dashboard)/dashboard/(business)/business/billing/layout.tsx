@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import SideBar from "./SideBar";
-import ScrollToTop from "@/Components/ScrollToTop";
 
 
 export const metadata: Metadata = {
@@ -9,22 +7,21 @@ export const metadata: Metadata = {
   description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
 };
 
-export default function AboutLayout({
+export default function WalletLayout({
   children,
+  header,
+  transaction,
 }: Readonly<{
   children: React.ReactNode;
+  header: React.ReactNode;
+  transaction: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body className="antialiased">
-        <div className="flex min-h-screen">
-          <SideBar />
-          <main className="flex-1 w-full">
-            <ScrollToTop/>
-            {children}
-          </main>
-        </div>
-      </body>
-    </html>
+    <>
+    <div className="w-full bg-[#FAFAFA]">
+      <div className="sticky top-0">{header}</div>
+      <div className="px-4">{transaction}</div>
+    </div>
+    </>
   );
 }

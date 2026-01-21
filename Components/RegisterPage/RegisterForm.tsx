@@ -13,7 +13,7 @@ type RegisterFormInput = {
   lastName: string;
   phoneNumber: string;
   email: string;
-  state: string;
+  locate: string;
   address: string;
   age: string;
   password: string;
@@ -46,9 +46,9 @@ const RegisterForm = () => {
   const [formInput, setFormInput] = useState<RegisterFormInput>({
     firstName: "",
     lastName: "",
-    phoneNumber: "",
+    phoneNumber: "+234",
     email: "",
-    state: "",
+    locate: "",
     address: "",
     age: "",
     password: "",
@@ -74,134 +74,162 @@ const RegisterForm = () => {
         setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
 
-    const form = e.currentTarget;
-    const formData = new FormData(e.currentTarget);
-    const result = await registerAction(formData);
-
-    if (!result.success) {
-      if (result.errors) {
-        const formatted: Record<string, string> = {};
-
-        for (const key of Object.keys(result.errors)) {
-          const messages = result.errors[key as keyof typeof result.errors];
-          if (messages?.length) {
-            formatted[key] = messages[0];
-          }
+        if (!value.startsWith("+234")) {
+            value = "+234";
         }
 
-        setErrors(formatted);
-        scrollToError(formatted);
-        return;
-      }
+        const rest = value.slice(4).replace(/\D/g, "");
 
-      toast.error(result.message);
-      return;
-    }
+        setFormInput(prev => ({
+            ...prev,
+            phoneNumber: "+234" + rest,
+        }));
+    };
 
-    toast.success("Registration successful");
-    setIsSubmitted(true);
-    
-    form.reset();
-    setMessage(result.message ?? "Account created");
-  };
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+
+        startTransition(async () => {
+            const result = await registerAction(formData);
+
+            if (!result.success) {
+            if (result.errors) {
+                const formatted: Record<string, string> = {};
+
+                for (const key of Object.keys(result.errors)) {
+                const messages = result.errors[key as keyof typeof result.errors];
+                if (messages?.length) {
+                    formatted[key] = messages[0];
+                }
+                }
+
+                setErrors(formatted);
+                scrollToError(formatted);
+                return;
+            }
+
+            toast.error(result.message);
+            return;
+            }
+
+            toast.success("Registration successful");
+            setIsSubmitted(true);
+
+            form.reset();
+            setMessage(result.message ?? "Account created");
+        });
+    };
+
 
   return (
-    <form onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center mx-2 md:mx-0'>
+    <form onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center md:mx-0'>
         {!message && (
             <>
             <div className='flex flex-col md:flex-row gap-6 w-full'>
-            <div className='flex flex-col gap-2 w-full'>
-                <label htmlFor="firstName"className='font-semibold'>
-                    First Name
-                </label>
-                <input type="text" placeholder='Enter Your Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="firstName" name="firstName" value={formInput.firstName} onChange={handleChange} />
-                {errors.firstName && <span className="text-red-500/60 text-sm">{errors.firstName}</span>}
-                        </div>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label htmlFor="lastName" className='font-semibold'>
-                                Last Name
-                            </label>
-                            <input type="text" placeholder='Enter Your Last Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="lastName" name="lastName" value={formInput.lastName} onChange={handleChange} />
-                            {errors.lastName && <span className="text-red-500/60 text-sm">{errors.lastName}</span>}
-                        </div>
-                      </div>
-                      <div className='flex flex-col md:flex-row gap-6 w-full'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="phoneNumber">
-                                Phone Number
-                            </label>
-                            <input type="tel" name='phoneNumber' id="phoneNumber" placeholder='Enter Your Phone Number' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formInput.phoneNumber} onChange={handleChange}/>
-                            {errors.phoneNumber && <span className="text-red-500/60 text-sm">{errors.phoneNumber}</span>}
-                        </div>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="email">
-                                Email
-                            </label>
-                            <input type="email" name='email' placeholder='Email' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="email" value={formInput.email} onChange={handleChange} />
-                            {errors.email && <span className="text-red-500/60 text-sm">{errors.email}</span>}
-                        </div>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label htmlFor="firstName"className='font-semibold'>
+                        First Name
+                    </label>
+                    <input type="text" placeholder='Enter Your Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="firstName" name="firstName" value= {formInput.firstName} onChange={handleChange} />
+                    {errors.firstName && <span className="text-red-500/60 text-sm">{errors.firstName}</span>}
+                </div>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label htmlFor="lastName" className='font-semibold'>
+                        Last Name
+                    </label>
+                    <input type="text" placeholder='Enter Your Last Name' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="lastName" name="lastName" value={formInput.lastName} onChange={handleChange} />
+                    {errors.lastName && <span className="text-red-500/60 text-sm">{errors.lastName}</span>}
+                </div>
+            </div>
+            <div className='flex flex-col md:flex-row gap-6 w-full'>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="phoneNumber">
+                        Phone Number
+                    </label>
+                    <input  type="tel" name="phoneNumber" placeholder="+2349137976215" id="phoneNumber" minLength={14} className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formInput.phoneNumber} onChange={handlePhoneChange}/>
+                    {errors.phoneNumber && <span className="text-red-500/60 text-sm">{errors.phoneNumber}</span>}
+                </div>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="email">
+                        Email
+                    </label>
+                    <input type="email" name='email' placeholder='Email' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="email" value={formInput.email} onChange={handleChange} />
+                    {errors.email && <span className="text-red-500/60 text-sm">{errors.email}</span>}
+                </div>
+            </div>
+            <div className='flex flex-col md:flex-row gap-6 w-full'>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="password">
+                        Choose your Password
+                    </label>
+                    <div className='relative'>
+                        <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='Enter Your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' value={formInput.password} onChange={handleChange}/>
+                        <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
+                            {showPassword ? <LuEyeClosed/> : <LuEye/>}
+                        </button>
                     </div>
-                    <div className='flex flex-col md:flex-row gap-6 w-full'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="password">
-                              Choose your Password
-                            </label>
-                            <div className='relative'>
-                            <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='Enter Your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' value={formInput.password} onChange={handleChange}/>
-                            <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
-                              {showPassword ? <LuEyeClosed/> : <LuEye/>}
-                            </button>
-                            </div>
-                            {errors.password && <span className="text-red-500/60 text-sm">{errors.password}</span>}
-                        </div>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="confirmPassword">
-                              Choose your Password
-                            </label>
-                            <div className='relative'>
-                            <input type={showPassword? 'text' : 'password'} id="confirmPassword" placeholder='Confirm your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' name="confirmPassword" value={formInput.confirmPassword} onChange={handleChange} />
-                            <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
-                              {showPassword ? <LuEyeClosed/> : <LuEye/>}
-                            </button>
-                            </div>
-                            {errors.confirmPassword && <span className="text-red-500/60 text-sm">{errors.confirmPassword}</span>}
-                        </div>
+                    {errors.password && <span className="text-red-500/60 text-sm">{errors.password}</span>}
+                </div>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="confirmPassword">
+                      Confirm your Password
+                    </label>
+                    <div className='relative'>
+                        <input type={showPassword? 'text' : 'password'} id="confirmPassword" placeholder='Confirm your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' name="confirmPassword" value={formInput.confirmPassword} onChange={handleChange} />
+                        <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
+                            {showPassword ? <LuEyeClosed/> : <LuEye/>}
+                        </button>
                     </div>
-                    <div className='flex gap-6 w-full flex-col md:flex-row'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="age">
-                              Age
-                            </label>
-                            <select name='age' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="age" value={formInput.age} onChange={handleChange}>
-                              <option value="">Select your age</option>
-                              <option value="18-25">18-25</option>
-                              <option value="26-35">26-35</option>
-                              <option value="35-45">36-45</option>
-                              <option value="46-60">46-60</option>
-                              <option value="61-65">61-65</option>
-                            </select>
-                            {errors.age && <span className="text-red-500/60 text-sm">{errors.age}</span>}
-                        </div>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="state">
-                                State
-                            </label>
-                            <input type="state" name='state' placeholder='Enter State' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="state" value={formInput.state} onChange={handleChange} />
-                            {errors.state && <span className="text-red-500/60 text-sm">{errors.state}</span>}
-                        </div>
-                    </div>
-                    <div className='flex gap-6 w-full flex-col md:flex-row'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <label className='font-semibold' htmlFor="address">
-                                Address
-                            </label>
-                            <textarea  placeholder='Enter your Address' name='address' className='resize-none h-20 bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-3 placeholder:text-sm' id="address" value={formInput.address} onChange={handleChange} ></textarea>
-                            {errors.address && <span className="text-red-500/60 text-sm">{errors.address}</span>}
-                        </div>
-                    </div>
+                    {errors.confirmPassword && <span className="text-red-500/60 text-sm">{errors.confirmPassword}</span>}
+                </div>
+            </div>
+            <div className='flex gap-6 w-full flex-col md:flex-row'>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="age">
+                        Age
+                    </label>
+                    <select name='age' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="age" value={formInput.age} onChange={handleChange}>
+                        <option value="">Select your age</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="35-45">36-45</option>
+                        <option value="46-60">46-60</option>
+                        <option value="61-65">61-65</option>
+                    </select>
+                    {errors.age && <span className="text-red-500/60 text-sm">{errors.age}</span>}
+                </div>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="locate">
+                        State
+                    </label>
+                    <select name='locate' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="locate" value={formInput.locate} onChange={handleChange}>
+                        <option value="">Select your State</option>
+                        <option value="Lagos">Lagos</option>
+                        <option value="Ayetoro">Ayetoro</option>
+                        <option value="Abuja">Abuja</option>
+                        <option value="Ondo">4Ondo</option>
+                        <option value="Oyo">Oyo</option>
+                    </select>
+                    {errors.locate && <span className="text-red-500/60 text-sm">{errors.locate}</span>}
+                    {/* <input type="text" name='locate' placeholder='Enter State' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="states" value={formInput.states} onChange={handleChange} />
+                    {errors.states && <span className="text-red-500/60 text-sm">{errors.states}</span>} */}
+                </div>
+            </div>
+            <div className='flex gap-6 w-full flex-col md:flex-row'>
+                <div className='flex flex-col gap-2 w-full'>
+                    <label className='font-semibold' htmlFor="address">
+                        Address
+                    </label>
+                    <textarea  placeholder='Enter your Address' name='address' className='resize-none h-20 bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-3 placeholder:text-sm' id="address" value={formInput.address} onChange={handleChange} ></textarea>
+                    {errors.address && <span className="text-red-500/60 text-sm">{errors.address}</span>}
+                </div>
+            </div>
                     <div className='w-full'>
                       <div className='flex items-center gap-2'>
                         <input type="checkbox" name="check" id="check" checked={formInput.check} onChange={handleChange} />

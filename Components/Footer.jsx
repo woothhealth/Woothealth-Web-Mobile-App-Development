@@ -65,7 +65,7 @@ const Footer = () => {
             </div>
             <div className='flex flex-col items-center space-y-2 md:space-y-6 px-8 text-center'>
                 <h2 className='md:text-[25px] font-extrabold text-[20px]'>
-                    Healthcare that fits your everyday life
+                    Healthcare you can count on.
                 </h2>
                 <Link href='/register' className='w-fit'>
                     <button className='btn md:px-20 px-14 py-3 text-lg'>
@@ -167,7 +167,7 @@ const Footer = () => {
                     </div>
                     <div className='md:col-span-3'>
                         <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-10 mb-4' loading='lazy' />
-                        <p className='text-base mb-4'>Healthcare that works for your everyday life</p>
+                        <p className='text-base mb-4'>Healthcare you can count on.</p>
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         
                         <div className='mt-8 flex gap-4'>
@@ -226,7 +226,7 @@ const Footer = () => {
                     <div className=''>
                         <Image src='/Logo2.png' width={500} height={100} alt="WootHealth Logo" className='w-auto h-8 mb-4' priority />
                         <p className='text-lg mb-4'>
-                            Healthcare that works for your everyday life
+                            Healthcare you can count on.
                         </p>
                         <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                         

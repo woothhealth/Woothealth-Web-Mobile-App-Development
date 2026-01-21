@@ -12,14 +12,14 @@
       "id": "1",
       "name": "User 1",
       "email": "user1@gmail.com",
-      "password": "12345678",
+      "password": "Password1",
       "role": "retail"
     },
     {
       "id": "2",
       "name": "User 2",
       "email": "user2@test.com",
-      "password": "1234567",
+      "password": "Password2",
       "role": "business"
     },
     {
@@ -28,7 +28,7 @@
       "lastName": "Akpom",
       "phoneNumber": "09137976215",
       "email": "dahvid@gmail.com",
-      "password": "111111",
+      "password": "Password3",
       "age": "18-25",
       "address": "Lagos, Nigeria",
       "state": "Lagos",
@@ -40,16 +40,39 @@
       "lastName": "Akpomiiiiii",
       "phoneNumber": "09137976215",
       "email": "timidev34@gmail.com",
-      "password": "2222222",
+      "password": "Password4",
       "age": "26-35",
       "address": "Lagos",
       "state": "Lagos",
       "role": "retail"
+    },
+    {
+      "id": "3ccf",
+      "firstName": "David",
+      "lastName": "Jude",
+      "phoneNumber": "09137976225",
+      "email": "test@gmail.com",
+      "password": "Password5",
+      "age": "18-25",
+      "address": "Lagos",
+      "state": "Lagos",
+      "role": "business"
     }
   ],
   "signup": [
     {
       "id": "1"
+    },
+    {
+      "id": "2fc8",
+      "firstName": "David",
+      "lastName": "Akpom",
+      "email": "dahvid24@gmail.com",
+      "phone": "+2349137976215",
+      "states": "Lagos",
+      "address": "Lagos state",
+      "age": "26-35",
+      "password": "Password12"
     }
   ]
 }

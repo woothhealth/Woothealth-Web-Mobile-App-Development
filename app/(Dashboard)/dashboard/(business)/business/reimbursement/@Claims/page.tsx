@@ -199,7 +199,7 @@ const Page = () => {
                     </div>
                     
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3  rounded-sm mt-3 hidden md:block'>
-                      {isSubmitting ? 'Submitting...' : 'Submit Reimbursement'}
+                      {isSubmitting ? 'Submitting...' : 'Submit Claim'}
                     </button>
                 </form>
               </div>

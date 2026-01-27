@@ -1,6 +1,7 @@
 'use client'
 
 import { checkCustomRoutes } from 'next/dist/lib/load-custom-routes'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import { FaCheckCircle, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import { FaPhone } from 'react-icons/fa6'
@@ -18,6 +19,7 @@ const FormSection = () => {
       message: '',
       check: false
     });
+    
     const [errors, setErrors] = useState({
       firstName: '',
       lastName: '',
@@ -247,6 +249,11 @@ const FormSection = () => {
                         {isSubmitting ? 'Sending...' : 'SUBMIT'}
                     </button>
                 </form>
+                <div className='text-center mt-6'>
+                  <p className='text-base md:text-lg'>Have an account? { " "}
+                    <Link href={`/login`} className='text-[#49A5EF] underline'>Login</Link>
+                  </p>
+                </div>
             </div>
             )}
             </div>

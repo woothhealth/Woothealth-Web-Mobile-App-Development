@@ -15,20 +15,47 @@ const img = [
 const MarqueeSection = () => {
   return (
     <section className='py-2 lg:px-[78px] md:px-10 px-6 text-[#FFFFFF] overflow-hidden'>
-        {/* <motion.div className='flex w-full gap-4'
-        animate={{x: ['-50%', '0%']}}
-        transition= {{ease: 'linear', duration: 10, repeat: Number.POSITIVE_INFINITY}}
-        > */}
-        <marquee behavior="" direction="right">
-            <div className="flex gap-4">
-            {img.map((item, index) => (
-                <div key={index} className='flex items-center'>
-                    <Image alt='Images' width={500} height={200} className='h-26 w-fit' src={item}/>
-                </div>
-            ))}
+    <div className="overflow-hidden w-full">
+      <motion.div
+        className="flex w-max"
+        animate={{ x: ['-50%', '0%'] }}
+        transition={{ 
+          ease: 'linear', 
+          duration: 10, 
+          repeat: Infinity 
+        }}
+      >
+        {/* Original content */}
+        <div className="flex gap-1 md:gap-4">
+          {img.map((item, index) => (
+            <div key={index} className="flex items-center">
+              <Image
+                alt="Images"
+                width={500}
+                height={200}
+                className="h-16 md:h-26 w-full md:w-fit"
+                src={item}
+              />
             </div>
-        </marquee>
-        {/* </motion.div> */}
+          ))}
+        </div>
+
+        {/* Duplicate content for smooth looping */}
+        <div className="flex gap-1 md:gap-4">
+          {img.map((item, index) => (
+            <div key={`dup-${index}`} className="flex items-center">
+              <Image
+                alt="Images"
+                width={500}
+                height={200}
+                className="h-16 md:h-26 w-full md:w-fit"
+                src={item}
+              />
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
     </section>
   )
 }

@@ -1,9 +1,10 @@
 "use server";
 
-import axios from "axios";
-import { api } from "@/lib/api/client";
-import { registerSchema } from "@/lib/validator/register";
-import { error } from "console";
+// import axios from "axios";
+// import { api } from "@/lib/api/client";
+// import { registerSchema } from "@/lib/validator/register";
+// import { error } from "console";
+// import { RegisterPayload } from "./payload";
 
 // const API_UR = "http://localhost:3001";
 
@@ -59,18 +60,14 @@ import { error } from "console";
 //   }
 // };
 
+// 
 
-export const registerAction = async (formData: FormData) => {
-  const rawData = Object.fromEntries(formData.entries());
+// registerAction.ts
+import axios from "axios";
+import { registerSchema } from "@/lib/validator/register";
 
-  const sanitizedData = Object.fromEntries(
-    Object.entries(rawData).map(([key, value]) => [
-      key,
-      typeof value === "string" ? value.trim() : value,
-    ])
-  );
-
-  const parsed = registerSchema.safeParse(sanitizedData);
+export async function registerAction(rawData: unknown) {
+  const parsed = registerSchema.safeParse(rawData);
 
   if (!parsed.success) {
     return {
@@ -78,40 +75,39 @@ export const registerAction = async (formData: FormData) => {
       errors: parsed.error.flatten().fieldErrors,
     };
   }
-  
+
+  // Strip fields NOT meant for backend
+  const {
+    confirmPassword,
+    check,
+    ...payload
+  } = parsed.data;
+
   try {
-   const payload = {
-     firstName: parsed.data.firstName.trim(),
-     lastName: parsed.data.lastName.trim(),
-     email: parsed.data.email.trim().toLowerCase(),
-     phone: parsed.data.phoneNumber,
-     locate: parsed.data.locate,
-     address: parsed.data.address,
-     age: parsed.data.age,
-     password: parsed.data.password,
-     role: "retail",
-    };
-    
-    console.log("📤 Payload sent to backend 👉", payload);
-    await api.post("/signup", payload, {
-      headers: {
-      "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest",
-    }});
-    
-    return {
-      success: true,
-      message: "Registration successful. Please login.",
-    };
-  } catch (error: any) {
-      console.error("REGISTER ACTION ERROR 👉", error);
-      console.error("BACKEND RESPONSE 👉", error?.response?.data);
-      console.error("STATUS 👉", error?.response?.status);
+    const response = await axios.post(
+      "https://backend.woothealth.com/signup/",
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    if (response.status === 201) {
+      return {
+        success: true,
+        message: response.data?.message ?? "Account created",
+      };
+    }
+
     return {
       success: false,
-      message:
-      error?.response?.data?.message || "Registration failed",
-      field: error?.response?.data?.field,
+      message: response.data?.error ?? "Sign up failed",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "An unexpected error occurred",
     };
   }
-};
+}

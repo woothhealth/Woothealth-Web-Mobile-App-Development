@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import aboutData from "../../../../../../data/about.json";
 import React from "react";
 

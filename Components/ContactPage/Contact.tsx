@@ -10,7 +10,7 @@ const Contact = () => {
         {
             icon: <FaMapMarkerAlt/>,
             title: 'Location',
-            desc: '4 Adebayo Muniz close, Gbagada Phase 2, Lagos',
+            desc: '3 Adebayo Munis Close, Gbagada Phase 2, Lagos',
             url: ''
         },
         {

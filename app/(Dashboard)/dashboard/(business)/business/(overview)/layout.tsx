@@ -12,25 +12,17 @@ export default function DashboardLayout({
   active,
   plans,
   reimbursement,
-  learn,
-  medical,
   activities,
-  upcoming,
   utility,
   welcome,
-  user,
 }: Readonly<{
   children: React.ReactNode;
   active: React.ReactNode;
   plans: React.ReactNode;
   reimbursement: React.ReactNode;
-  learn: React.ReactNode;
-  medical: React.ReactNode;
   activities: React.ReactNode;
-  upcoming: React.ReactNode;
   utility: React.ReactNode;
   welcome: React.ReactNode;
-  user: React.ReactNode;
 }>) {
   return (
     <>

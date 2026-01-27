@@ -1,33 +1,58 @@
-'use server'
+'use server';
 
-import { UserType } from "@/types/login";
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
 
-const SESSION_KEY = "session";
+const SESSION_KEY = 'session';
+const ROLE_KEY = 'role';
 
-export const setSession = async (data: { id: string; role: string }) => {
-  (await cookies()).set(
-    SESSION_KEY,
-    JSON.stringify(data),
-    {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    }
-  );
+type SessionData = {
+  id: string;
+  role: string;
+  name: string;
+  email: string;
+};
+
+export const setSession = async (
+  data: SessionData,
+  remember = false
+) => {
+  const maxAge = remember
+    ? 60 * 60 * 24 * 7
+    : 60 * 60 * 2;
+
+  const cookieStore = (await cookies());
+
+  cookieStore.set(SESSION_KEY, data.id, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge,
+  });
+
+  cookieStore.set(ROLE_KEY, data.role, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge,
+  });
 };
 
 export const getSession = async () => {
-  const value = (await cookies()).get(SESSION_KEY)?.value;
-  if (!value) return null;
+  const cookieStore = (await cookies());
 
-  return JSON.parse(value) as {
-    id: string;
-    role: string;
-  };
+  const id = cookieStore.get(SESSION_KEY)?.value;
+  const role = cookieStore.get(ROLE_KEY)?.value;
+
+  if (!id || !role) return null;
+
+  return { id, role };
 };
 
-export const deleteSession = async() => {
-  (await cookies()).delete(SESSION_KEY);
-}
+export const deleteSession = async () => {
+  const cookieStore = (await cookies());
+
+  cookieStore.delete(SESSION_KEY);
+  cookieStore.delete(ROLE_KEY);
+};

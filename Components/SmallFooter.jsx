@@ -83,7 +83,7 @@ const Footer = () => {
             </div>
             <div className='md:col-span-3'>
                 <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
-                <p className='text-base mb-4'>Healthcare you can count on.</p>
+                <p className='text-base mb-4'>Healthcare Simplified</p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                 
                 <div className='mt-8 flex gap-4'>
@@ -142,7 +142,7 @@ const Footer = () => {
             <div className=''>
                 <Image src='/Logo2.png' width={500} height={100} alt="WootHealth Logo" className='w-auto h-8 mb-4' priority />
                 <p className='text-lg mb-4'>
-                    Healthcare you can count on.
+                    Healthcare Simplified
                 </p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                                 

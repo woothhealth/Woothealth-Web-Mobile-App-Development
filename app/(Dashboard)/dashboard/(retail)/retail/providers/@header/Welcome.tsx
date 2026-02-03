@@ -7,28 +7,33 @@ import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { IoCloseOutline } from "react-icons/io5";
 import Toggle from "@/UI/Toggle";
 
-interface DashboardHeaderProps {
-  userId: string;
-  firstName: string;
-  lastName: string;
-}
+// interface WelcomeProps {
+//   userId?: string;       // optional to allow fallback
+//   firstName?: string;
+//   lastName?: string;
+//   role?: string;
+// }
 
-const Welcome = ({
-  userId,
-  firstName,
-  lastName,
-}: DashboardHeaderProps) => {
+const Welcome = (
+//   {
+//   userId = "Unknown",          // default ID
+//   firstName = "User",          // default first name
+//   lastName = "",               // default last name
+//   role = "Guest",              // default role
+// }: WelcomeProps
+) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const formattedLastName =
-  lastName && lastName.length > 5
-    ? `${lastName.slice(0, 3)}.`
-    : lastName;
 
+  // Generate initials safely
+  // const initials =
+    // (firstName?.[0] || "U") + (lastName?.[0] || "S");
 
   return (
     <section>
-      <div className="flex justify-between items-center px-4 md:px-6 py-4 bg-white border-b border-[#D9D9D9]">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 md:px-6 py-4 bg-white border-b border-gray-200">
         <div className="flex items-center gap-2 text-[20px]">
+          {/* Mobile menu toggle */}
           <div className="block lg:hidden">
             {!menuOpen ? (
               <HiOutlineMenuAlt2
@@ -45,23 +50,36 @@ const Welcome = ({
           <h2 className="font-bold">PROVIDERS</h2>
         </div>
 
+        {/* Right side: notifications and user info */}
         <div className="flex gap-2 md:gap-5 items-center">
+          {/* Notifications */}
           <div className="relative border rounded-full p-1">
             <FaRegBell className="text-[18px]" />
             <div className="absolute right-0 top-0 p-1 bg-red-500 rounded-full" />
           </div>
 
+          {/* User info */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center text-white font-bold">
-              {firstName[0]}
-              {lastName[0]}
+              {/* {initials} */}
+              FA
             </div>
 
             <div className="leading-4 hidden md:block">
               <h3 className="font-bold">
-                  {firstName || "Not"} {formattedLastName || "Found"}
+                {/* {firstName} {lastName} */}
+                Akpom David
               </h3>
-              <p className="text-[14px]">ID: <span className="font-semibold text-[15px]">{userId}</span></p>
+              <p className="text-[14px]">
+                ID: <span className="font-semibold text-[15px]">
+                  {/* {userId} */}
+                  12345678
+                </span>
+              </p>
+              <p className="text-[12px] text-gray-500">
+                {/* {role} */}
+                Retail
+              </p>
             </div>
 
             <FaChevronDown />
@@ -69,6 +87,7 @@ const Welcome = ({
         </div>
       </div>
 
+      {/* Toggle menu */}
       <Toggle isOpen={menuOpen} />
     </section>
   );

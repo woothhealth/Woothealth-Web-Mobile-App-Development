@@ -30,11 +30,13 @@ const quick = [
   },
 ]
 
-const page = () => {
+const Page = () => {
   return (
     <section className='py-4 md:p-4 my-4 flex flex-col md:flex-row gap-6 md:gap-8 bg-[#FFFFFF] rounded-2xl'>
       <div className='md:w-[55%] space-y-5'>
-        <h3 className='text-[20px] font-semibold'>Quick Actions</h3>
+        <h3 className='text-[20px] font-semibold'>
+          Quick Actions
+        </h3>
         <div className='flex w-full md:w-fit justify-between md:items-center md:gap-10'>
           {quick.map((item, index) => (
             <div key={index}>
@@ -60,4 +62,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

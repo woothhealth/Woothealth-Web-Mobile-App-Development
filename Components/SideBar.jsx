@@ -8,7 +8,6 @@ import { RiLayoutMasonryFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { ImLocation2 } from "react-icons/im";
 import { GrPlan } from "react-icons/gr";
 import { IoMdSettings } from "react-icons/io";
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogOut from '@/UI/LogOut';

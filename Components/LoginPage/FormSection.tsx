@@ -1,8 +1,22 @@
 import React from 'react'
 import Link from 'next/link'
 import LoginForm from './LoginForm';
+import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
 
-const FormSection: React.FC = () => {
+const FormSection: React.FC = async () => {
+  const session = await getSession();
+
+  if (session?.id && session?.role) {
+    // Redirect based on role
+    if (session.role === "retail") {
+      redirect("/dashboard/retail");
+    } else if (session.role === "business") {
+      redirect("/dashboard/business");
+    } else {
+      redirect("/dashboard"); // fallback for unknown roles
+    }
+  }
   return (
     <section className='relative min-h-[90svh] lg:min-h-[85svh] mb-16'>
       <div className='relative flex flex-col items-center justify-center '>

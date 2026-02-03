@@ -1,9 +1,10 @@
-export async function getProviders() {
-    const res = await fetch("/api/providers", {
-        cache: "no-store"
-    });
-    if (!res.ok) {
-        throw new Error("Failed to fetch Providers");
-    }
-    return res.json();
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const res = await fetch('https://backend.woothealth.com/providers/', {
+    cache: 'no-store',
+  });
+
+  const data = await res.json();
+  return NextResponse.json(data);
 }

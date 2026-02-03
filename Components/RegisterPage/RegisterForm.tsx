@@ -15,7 +15,6 @@ const RegisterForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
-    const [isPending, setIsPending] = useTransition();
     const [message, setMessage] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -54,70 +53,52 @@ const RegisterForm = () => {
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setErrorMessage('');
-        setFieldErrors({});
+  e.preventDefault();
 
-        const result = registerSchema.safeParse(formInput);
+  setErrorMessage('');
+  setMessage('');
+  setFieldErrors({});
+  setIsSubmitting(true);
 
-        if (!result.success) {
-            const errors: Record<string, string> = {};
+  const result = registerSchema.safeParse(formInput);
 
-            result.error.issues.forEach(issue => {
-                const field = issue.path[0] as string;
-                errors[field] = issue.message;
-            });
-            setFieldErrors(errors);
-            return;
-        }
-        setIsSubmitting(true);
-    };
-  
-    useEffect(() => {
-        if (!isSubmitting) return;
+  if (!result.success) {
+    const errors: Record<string, string> = {};
+    result.error.issues.forEach(issue => {
+      errors[issue.path[0] as string] = issue.message;
+    });
+    setFieldErrors(errors);
+    setIsSubmitting(false);
+    return;
+  }
 
-        const submit = async () => {
-            try {
-                const response = await axios.post('https://backend.woothealth.com/signup/',{
-                    ...formInput,
-                    role: 'retail',
-                },
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    validateStatus: () => true,
-                }
-                );
+  try {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formInput,
+        role: 'retail',
+      }),
+    });
 
-                if (response.status === 201) {
-                    setErrorMessage('');
-                    setIsSubmitted(true);
-                    setMessage(response.data ?? 'Registration successful');
-                } else if (response.status === 409) {
-                    setErrorMessage(
-                    response.data?.message ||
-                    response.data?.error ||
-                    'User already registered.'
-                    );
-                } else {
-                    setErrorMessage(
-                        response.data?.message ||
-                        response.data?.error ||
-                        'Sign up failed. Please try again.'
-                    );
-                }
-            } catch (error: any) {
-                console.error('Error:', error);
-                setErrorMessage(
-                    error?.response?.data?.message ||
-                    error?.response?.data?.error ||
-                    error?.message || 'An unexpected error occurred. Please try again'
-                    );
-            } finally {
-                setIsSubmitting(false);
-            };
-        };
-        submit();
-    }, [isSubmitting, formInput]);
+    const data = await res.json();
+
+    if (res.status === 201) {
+      setIsSubmitted(true);
+      setMessage(data?.message || 'Registration successful');
+    } else if (res.status === 409) {
+      setErrorMessage(data?.message || 'User already registered.');
+    } else {
+      setErrorMessage(data?.message || 'Sign up failed. Please try again.');
+    }
+  } catch (err) {
+    console.error(err);
+    setErrorMessage('Network error. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
     
   return (
     <form id="form" onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center md:mx-0'>
@@ -144,7 +125,7 @@ const RegisterForm = () => {
                     <label className='font-semibold' htmlFor="phone">
                         Phone Number
                     </label>
-                    <input  type="tel" name="phone" placeholder="+2349137976215" id="phone" minLength={14} className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formInput.phone} onChange={handlePhoneChange}/>
+                    <input  type="tel" name="phone" placeholder="+234*******" id="phone" minLength={14} className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' value={formInput.phone} onChange={handlePhoneChange}/>
                     {fieldErrors.phone && <span className="text-red-500/60 text-sm">{fieldErrors.phone}</span>}
                 </div>
                 <div className='flex flex-col gap-2 w-full'>
@@ -221,10 +202,9 @@ const RegisterForm = () => {
                 {fieldErrors.check && <span className="text-red-500/60 text-sm">{fieldErrors.check}</span>}
             </div>
 
-            <div
-                id="error-message"
-                className="mt-4 text-center text-red-500 text-sm font-semibold"
-              ></div>
+            <div id="error-message" className="mt-4 text-center text-red-500 text-sm font-semibold">
+                {errorMessage}
+              </div>
 
             <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit mt-1'>
                 {isSubmitting ? 'Sending...' : 'SUBMIT'}

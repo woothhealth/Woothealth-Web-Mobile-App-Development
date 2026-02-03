@@ -66,29 +66,46 @@ const LoginForm = () => {
         return newErrors;
     };
 
-  const handleLogin = async (formData: FormData) => {
-    const validationErrors = validate(formData);
+    const handleLogin = async (formData: FormData) => {
+        const validationErrors = validate(formData);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+        setErrors({});
 
-    setErrors({});
+        startTransition(async () => {
+            // ✅ Post to server-side login API
+            const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: formData.get("email"),
+                password: formData.get("password"),
+            }),
+            });
 
-    startTransition(async () => {
-      const result = await loginAction(formData);
+            const result = await res.json();
 
-      if (!result.success) {
-        toast.error(result.message);
-        return;
-      }
+            if (!result.success) {
+            toast.error(result.message);
+            return;
+            }
 
-      toast.success("Login successful!");
+            toast.success("Login successful!");
 
-      router.push(`/dashboard/${result.role}`);
-    });
-  };
+            // ✅ Redirect after cookie is set
+             if (result.role === "retail") {
+                router.push("/dashboard/retail");
+            } else if (result.role === "business") {
+                router.push("/dashboard/business");
+            } else {
+                router.push("/login"); // fallback
+            }
+        });
+    };
+
 
   return (
     <form action={handleLogin} className='flex flex-col gap-8 items-center justify-center md:mx-0' aria-live='polite'>

@@ -5,11 +5,11 @@ import ScrollToTop from "@/Components/ScrollToTop";
 
 
 export const metadata: Metadata = {
-  title: "WooHealth",
+  title: "WooHealth Dashboard",
   description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
 };
 
-export default function AboutLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

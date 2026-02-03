@@ -16,7 +16,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <Reveal>
                 <div className=''>
-                    <Image src='/Team_1.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_1.webp' height={100} width={500} className='h-70 lg:h-112' alt='Team Picture' />
                 </div>
                 </Reveal>
                 <div className='flex flex-col gap-3'>
@@ -50,7 +50,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
                 <Reveal>
-                    <Image src='/Team_2.webp' height={100} width={400} className='h-100' alt='Team Picture' />
+                    <Image src='/Team_2.webp' height={100} width={400} className='h-70' alt='Team Picture' />
                 </Reveal>
                 </div>
 
@@ -78,7 +78,7 @@ const Management = () => {
                 </div>
                 <div className='hidden lg:flex justify-end'>
                 <Reveal>
-                    <Image src='/Team_2.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_2.webp' height={100} width={500} className='h-112' alt='Team Picture' />
                 </Reveal>
                 </div>
             </div>
@@ -86,7 +86,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                 <Reveal>
-                    <Image src='/Team_3.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_3.webp' height={100} width={500} className='h-74 lg:h-112' alt='Team Picture' />
                 </Reveal>
                 </div>
                 <div className='flex flex-col gap-3'>
@@ -121,7 +121,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
                 <Reveal>
-                    <Image src='/Team_4.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_4.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
                 </Reveal>
                 </div>
 
@@ -163,7 +163,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Reveal>
-                    <Image src='/Team5.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team5.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
                     </Reveal>
                 </div>
                 <div className='flex flex-col gap-3'>
@@ -203,7 +203,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
                     <Reveal>
-                    <Image src='/Team_6.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_6.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
                     </Reveal>
                 </div>
 
@@ -244,7 +244,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Reveal>
-                    <Image src='/Team_7.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
+                    <Image src='/Team_7.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
                     </Reveal>
                 </div>
 

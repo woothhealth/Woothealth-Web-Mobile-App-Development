@@ -1,22 +1,15 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
-import { getUserById } from "@/lib/api/users";
-import UserUi from "./UserUi";
+"use client";
 
-export default async function RetailDashboardPage() {
-  const session = await getSession();
+import { PiHandWaving } from 'react-icons/pi';
 
-  if (!session || !session.id) {
-    redirect("/login");
-  }
+const Page = () => (
+  <div className="flex px-6 flex-col py-4 md:py-6">
+    <h4 className="text-lg">Welcome back,</h4>
+    <p className="text-[24px] font-semibold">
+      User
+      <PiHandWaving className="inline-flex text-[30px] text-[#FAD416]" />
+    </p>
+  </div>
+);
 
-  const user = await getUserById(session.id);
-
-  return (
-    <div>
-      <UserUi
-        firstName={user.firstName}
-      />
-    </div>
-  );
-}
+export default Page;

@@ -5,7 +5,6 @@ import { IoShieldOutline } from 'react-icons/io5';
 import Link from 'next/link';
 
 const Page = () => {
-
   return (
     <section className='dsbGrad w-44 md:w-[220px] py-6 rounded-[15px] text-[#FFFFFF] flex items-center px-4 md:h-full h-44'>
       <Link href='/dashboard/retail/plans' className='flex flex-col gap-6 w-full'>

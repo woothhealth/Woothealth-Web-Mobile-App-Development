@@ -12,30 +12,29 @@ export default function DoctorCard({ doctor }: any) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="bg-white rounded-xl p-4 flex justify-between items-center shadow">
-      <div className="flex gap-4">
-        <Image src={doctor.avatar} alt="" width={56} height={56} className="rounded-full" />
+    <div className="bg-white rounded-xl p-1 md:p-4 flex justify-between items-center shadow gap-1">
+      <div className="flex md:gap-4 gap-1">
+        <Image src={doctor.avatar} alt="" width={56} height={56} className="rounded-full h-fit" />
         <div>
-          <p className="font-semibold">{doctor.name}</p>
-          <p className="text-sm ">{doctor.specialty}</p>
+          <p className="font-semibold text-[0.85rem]">{doctor.name}</p>
+          <p className="md:text-sm text-xs">{doctor.specialty}</p>
           <div className='mt-2'>
-            <p className="text-sm">⭐ {doctor.rating} ({doctor.reviews})</p>
-            <p className="text-sm "><CiLocationOn className='inline-flex mr-2'/> {doctor.location}</p>
+            <p className="md:text-sm text-xs">⭐ {doctor.rating} ({doctor.reviews})</p>
+            <p className="md:text-sm text-xs"><CiLocationOn className='inline-flex mr-2'/> {doctor.location}</p>
           </div>
         </div>
       </div>
     <div className='flex flex-col items-end space-y-4'>
         <button
         onClick={() => setOpen(true)}
-        className="btn px-4 py-1 rounded-lg"
-        >
+        className="btn md:px-4 px-2 py-1 text-[0.7rem] md:text-base rounded-lg">
             Book Session
         </button>
         <div className='flex space-x-4'>
-            <Link href={`/`} className="px-3 bg-[#49A5EF] text-[#FFFFFF] py-2 rounded-lg">
+            <Link href={`/`} className="md:px-3 p-2 bg-[#49A5EF] text-[#FFFFFF] md:py-2 rounded-lg md:text-base text-xs">
                 <LuMessageSquare/>
             </Link>
-            <Link href={`/`} className="px-3 bg-[#49A5EF] text-[#FFFFFF] py-2 rounded-lg">
+            <Link href={`/`} className="md:px-3 p-2 bg-[#49A5EF] text-[#FFFFFF] md:py-2 rounded-lg md:text-base text-xs">
                 <FaPhoneAlt/>
             </Link>
         </div>

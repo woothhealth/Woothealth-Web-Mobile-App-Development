@@ -23,7 +23,7 @@ export default function DoctorsPage() {
   )
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="md:p-6 pt-6 space-y-6">
       <SearchBar value={query} onChange={setQuery} />
       <DoctorFilterTabs active={filter} onChange={setFilter} />
       <div className="space-y-4">

@@ -25,6 +25,25 @@ const FormSection = () => {
       message: '',
       check: false
     });
+
+    const resetForm = () => {
+  setFormInput({
+      firstName: '',
+      lastName: '',
+      phone: '+234',
+      email: '',
+      company: '',
+      companyAddress: '',
+      employeeNumber: '',
+      locate: '',
+      message: '',
+      check: false
+    });
+  setFieldErrors({});
+  setErrorMessage('');
+  setMessage('');
+  setIsSubmitted(false);
+};
     
         const handleChange = (
             e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -48,70 +67,53 @@ const FormSection = () => {
         }
     
         const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            setErrorMessage('');
-            setFieldErrors({});
-    
-            const result = quotaSchema.safeParse(formInput);
-    
-            if (!result.success) {
-                const errors: Record<string, string> = {};
-    
-                result.error.issues.forEach(issue => {
-                    const field = issue.path[0] as string;
-                    errors[field] = issue.message;
-                });
-                setFieldErrors(errors);
-                return;
-            }
-            setIsSubmitting(true);
-        };
-      
-        useEffect(() => {
-            if (!isSubmitting) return;
-    
-            const submit = async () => {
+                e.preventDefault();
+        
+                setErrorMessage('');
+                setMessage('');
+                setFieldErrors({});
+                setIsSubmitting(true);
+        
+                const result = quotaSchema.safeParse(formInput);
+        
+                if (!result.success) {
+                    const errors: Record<string, string> = {};
+                    result.error.issues.forEach(issue => {
+                    errors[issue.path[0] as string] = issue.message;
+                    });
+                    setFieldErrors(errors);
+                    setIsSubmitting(false);
+                    return;
+                }
+        
                 try {
-                    const response = await axios.post('https://backend.woothealth.com/signup/',{
+                    const res = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
                         ...formInput,
                         role: 'business',
-                    },
-                    {
-                        headers: { 'Content-Type': 'application/json' },
-                        validateStatus: () => true,
-                    }
-                    );
-    
-                    if (response.status === 201) {
-                        setErrorMessage('');
-                        setIsSubmitted(true);
-                        setMessage(response.data ?? 'Registration successful');
-                    } else if (response.status === 409) {
-                        setErrorMessage(
-                        response.data?.message ||
-                        response.data?.error ||
-                        'User already registered.'
-                        );
+                        password: 'Default@123',
+                    }),
+                    });
+        
+                    const data = await res.json();
+        
+                    if (res.status === 201) {
+                    setIsSubmitted(true);
+                    setMessage(data?.message || 'Registration successful');
+                    } else if (res.status === 409) {
+                    setErrorMessage(data?.message || 'User already registered.');
                     } else {
-                        setErrorMessage(
-                            response.data?.message ||
-                            response.data?.error ||
-                            'Sign up failed. Please try again.'
-                        );
+                    setErrorMessage(data?.message || 'Sign up failed. Please try again.');
                     }
-                } catch (error: any) {
-                    console.error('Error:', error);
-                    setErrorMessage(
-                        error?.response?.data?.message ||
-                        error?.response?.data?.error ||
-                        error?.message || 'An unexpected error occurred. Please try again'
-                        );
+                } catch (err) {
+                    console.error(err);
+                    setErrorMessage('Network error. Please try again.');
                 } finally {
                     setIsSubmitting(false);
-                };
+                }
             };
-            submit();
-        }, [isSubmitting, formInput]);
 
   return (
     <section className='relative min-h-screen mb-16'>
@@ -126,10 +128,11 @@ const FormSection = () => {
                     Message Sent Successfully!
                   </h3>
                   <p className=" mb-4">
-                    Thank you for contacting us. We'll get back to you within 24 hours.
+                    Thank you for reaching out to Woot Health. Our team will review the information provided
+                    and get back to you shortly via Email.
                   </p>
                   <button
-                    onClick={() => setIsSubmitted(false)}
+                    onClick={resetForm}
                     className="bg-[#49A5EF]/780 text-white px-5 py-3 rounded-sm"
                   >
                     Get Another Quote
@@ -218,7 +221,9 @@ const FormSection = () => {
                       {fieldErrors.check && <span className="text-red-500/60 text-sm">{fieldErrors.check}</span>}
                     </div>
 
-                     <div id="error-message" className="mt-4 text-center text-red-500 text-sm font-semibold"></div>
+                     <div id="error-message" className="mt-4 text-center text-red-500 text-sm font-semibold">
+                        {errorMessage && <p>{errorMessage}</p>}
+                     </div>
 
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit mt-1'>
                       {isSubmitting ? 'Sending...' : 'SUBMIT'}

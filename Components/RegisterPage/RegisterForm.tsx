@@ -53,52 +53,52 @@ const RegisterForm = () => {
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+        e.preventDefault();
 
-  setErrorMessage('');
-  setMessage('');
-  setFieldErrors({});
-  setIsSubmitting(true);
+        setErrorMessage('');
+        setMessage('');
+        setFieldErrors({});
+        setIsSubmitting(true);
 
-  const result = registerSchema.safeParse(formInput);
+        const result = registerSchema.safeParse(formInput);
 
-  if (!result.success) {
-    const errors: Record<string, string> = {};
-    result.error.issues.forEach(issue => {
-      errors[issue.path[0] as string] = issue.message;
-    });
-    setFieldErrors(errors);
-    setIsSubmitting(false);
-    return;
-  }
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.issues.forEach(issue => {
+            errors[issue.path[0] as string] = issue.message;
+            });
+            setFieldErrors(errors);
+            setIsSubmitting(false);
+            return;
+        }
 
-  try {
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...formInput,
-        role: 'retail',
-      }),
-    });
+        try {
+            const res = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ...formInput,
+                role: 'retail',
+            }),
+            });
 
-    const data = await res.json();
+            const data = await res.json();
 
-    if (res.status === 201) {
-      setIsSubmitted(true);
-      setMessage(data?.message || 'Registration successful');
-    } else if (res.status === 409) {
-      setErrorMessage(data?.message || 'User already registered.');
-    } else {
-      setErrorMessage(data?.message || 'Sign up failed. Please try again.');
-    }
-  } catch (err) {
-    console.error(err);
-    setErrorMessage('Network error. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+            if (res.status === 201) {
+            setIsSubmitted(true);
+            setMessage(data?.message || 'Registration successful');
+            } else if (res.status === 409) {
+            setErrorMessage(data?.message || 'User already registered.');
+            } else {
+            setErrorMessage(data?.message || 'Sign up failed. Please try again.');
+            }
+        } catch (err) {
+            console.error(err);
+            setErrorMessage('Network error. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
     
   return (
     <form id="form" onSubmit={handleSubmit} className='flex flex-col gap-8 items-center justify-center md:mx-0'>

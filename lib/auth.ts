@@ -72,8 +72,6 @@ export const loginAction = async (formData: FormData) => {
   return { success: true, role: user.role };
 };
 
-
-
 export const logoutAction = async () => {
   await deleteSession();
   redirect("/login")

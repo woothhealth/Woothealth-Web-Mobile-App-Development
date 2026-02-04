@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 2, // 2 hours
+      maxAge: 60 * 60 * 1,
     });
     cookieStore.set("role", user.role, {
       httpOnly: true,

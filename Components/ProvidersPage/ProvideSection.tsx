@@ -20,29 +20,36 @@ async function getProviders(): Promise<Provider[]> {
 
   const data = await res.json();
 
-  if (!data?.success || !data?.data?.categories?.length) {
-    console.warn('Unexpected providers response:', data);
+  let providers: any[] = [];
+
+  if (Array.isArray(data)) {
+    providers = data;
+  }
+  else if (data?.data?.categories && Array.isArray(data.data.categories)) {
+    const providersCategory = data.data.categories.find((c: any) => c.name === 'providers');
+    providers = providersCategory?.documents || [];
+  }
+  else if (data?.providers && Array.isArray(data.providers)) {
+    providers = data.providers;
+  }
+  else if (data?.data && Array.isArray(data.data)) {
+    providers = data.data;
+  }
+  else {
+    console.warn('Unexpected providers response structure:', data);
     return [];
   }
 
-  const providersCategory = data.data.categories.find((c: any) => c.name === 'providers');
-  if (!providersCategory?.documents || !Array.isArray(providersCategory.documents)) {
-    console.warn('No provider documents found:', providersCategory);
+  if (!Array.isArray(providers) || providers.length === 0) {
+    console.warn('No providers found in response');
     return [];
   }
 
-  return providersCategory.documents.map((doc: any) => ({
-    $id: doc.$id,
-    sn: doc.sn,
-    name: doc.name,
-    specialization: doc.specialization,
-    address: doc.address,
-    state: doc.state,
-    local_govt: doc.local_govt,
-    phone: Array.isArray(doc.phone) ? doc.phone[0] : undefined,
-    email: Array.isArray(doc.email) ? doc.email[0] : undefined,
-    lat: doc.lat,
-    long: doc.long,
+  return providers.map((doc: any) => ({
+    $id: doc.$id || doc.id || Math.random().toString(),
+    name: doc.name || '',
+    address: doc.address || '',
+    state: doc.state || ''
   }));
 }
 
@@ -124,8 +131,33 @@ export default function ProvidersPage() {
       </Reveal>
       <Reveal>
         {loading ? (
-          <div className='flex justify-center h-64 mt-4'>
-            <p>Loading providers...</p>
+          <div className="overflow-x-auto custom-scrollbar pb-4 h-120">
+            <table className="min-w-full border border-gray-200 rounded-[10px] overflow-hidden">
+              <thead className="text-[#FFFFFF]">
+                <tr className='bg-[#49A5EF] text-left'>
+                  {headers.map((h) => (
+                    <th key={h} className="text-[18px] px-6 py-6 border-b">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className='overflow-y-auto h-96'>
+                {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-3 border-b border-[#E5E7EB]">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    </td>
+                    <td className="px-6 py-3 border-b border-[#E5E7EB]">
+                      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    </td>
+                    <td className="pl-6 pr-10 py-3 border-b border-[#E5E7EB]">
+                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : error ? (
           <div className='flex justify-center h-64 mt-4'>

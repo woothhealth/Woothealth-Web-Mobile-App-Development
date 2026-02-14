@@ -10,7 +10,7 @@ import { deleteSession, setSession } from './session';
 
 //   try {
 //     const res = await axios.post(
-//       "https://backend.woothealth.com/login/",
+//       process.env.NEXT_PUBLIC_API_URL + "/login/",
 //       { email, password },
 //       {
 //         headers: { "Content-Type": "application/json" },
@@ -48,7 +48,7 @@ export const loginAction = async (formData: FormData) => {
   const password = formData.get("password");
 
   const res = await axios.post(
-    "https://backend.woothealth.com/login/",
+    (process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL) + "/login/",
     { email, password },
     { headers: { "Content-Type": "application/json" }, withCredentials: true }
   );

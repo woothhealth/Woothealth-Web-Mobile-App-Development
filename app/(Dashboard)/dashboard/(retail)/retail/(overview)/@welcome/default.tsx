@@ -1,3 +1,6 @@
 export default function Debug() {
-  return <div style={{ color: "red" }}>ACTIVE SLOT</div>;
+  return (
+    <div className="p-4">
+    </div>
+  );
 }

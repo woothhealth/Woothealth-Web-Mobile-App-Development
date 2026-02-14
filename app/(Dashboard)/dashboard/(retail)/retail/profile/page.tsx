@@ -1,47 +1,109 @@
 import React from 'react'
 import { LuPencilLine } from 'react-icons/lu'
+import { getCurrentUser } from '@/lib/currentUser'
+import { redirect } from 'next/navigation'
+import ProfileEditor from './ProfileEditor'
+import { cookies } from 'next/headers'
 
-const information = [
+const page = async () => {
+  const user = await getCurrentUser()
+  
+  if (!user || !user.id) {
+    redirect('/login')
+  }
+
+  // Fetch full user profile data
+  let profileData: any = {
+    firstName: user.name?.split(' ')[0] || 'User',
+    lastName: user.lastName || '',
+    email: user.email || '',
+    phone: '',
+    gender: '',
+    dateOfBirth: '',
+    status: 'Active',
+    userId: user.id,
+    role: user.role || 'retail',
+    plan: 'No Plan found',
+  }
+
+  try {
+    // Build cookie header for server-side fetch
+    const cookieStore = await cookies()
+    const cookieHeader = (cookieStore.getAll?.() || [])
+      .map((c) => `${c.name}=${c.value}`)
+      .join('; ')
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/me`, {
+      cache: 'no-store',
+      headers: {
+        cookie: cookieHeader,  // Send cookies with server-side fetch
+      },
+    })
+    if (res.ok) {
+      const data = await res.json()
+      profileData = {
+        firstName: data.firstName || user.name?.split(' ')[0] || 'User',
+        lastName: data.lastName || user.lastName || '',
+        email: data.email || user.email || '',
+        phone: data.phone || '',
+        gender: data.gender || '',
+        dateOfBirth: data.dateOfBirth || '',
+        status: data.availability === false ? 'Inactive' : 'Active',
+        userId: data.userId || data.$id || user.id,
+        role: data.role || user.role || 'retail',
+        plan: data.plan || 'No Plan Found',
+        specialization: data.specialization || '',
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch profile:', error)
+  }
+
+  const information = [
     {
         tite: 'First Name',
-        sub: 'Quadri'
+        sub: profileData.firstName
     },
     {
         tite: 'Last Name',
-        sub: 'Adekunle'
+        sub: profileData.lastName
     },
     {
         tite: 'Email',
-        sub: 'adek@gmail.com'
+        sub: profileData.email
     },
     {
         tite: 'Phone Number',
-        sub: '08159059492'
+        sub: profileData.phone || 'Not provided'
     },
     {
         tite: 'Gender',
-        sub: 'Male'
+        sub: profileData.gender || 'Not provided'
     },
     {
         tite: 'Date of Birth',
-        sub: '24/04/1985'
+        sub: profileData.dateOfBirth || 'Not provided'
     },
     {
         tite: 'Status',
-        sub: 'Active'
+        sub: profileData.status
     }
-]
-
-const page = () => {
+  ]
   return (
-    <section className='py-6 px-4 md:p-8 bg-[#FFFFFF] rounded-[10px] md:w-[45%] space-y-6'>
-        <div className='flex space-x-4 items-center'>
-            <div className='p-11 h-fit rounded-full inline-flex bg-amber-200'></div>
-            <div className=''>
-                <h3 className='text-[18px] md:text-[20px] font-semibold flex items-center gap-10'>Quadri Adekunle <span><LuPencilLine/></span></h3>
-                <p className='text-[14px] md:text-[18px]'>Retail Quantun Plan</p>
-                <p className='text-[14px] md:text-[18px]'>ID: 12006</p>
+    <section className='py-6 px-0 md:p-8 bg-[#FFFFFF] rounded-[10px] md:w-[50%] space-y-6'>
+        <div className='flex space-x-4 items-center justify-between'>
+            <div className='flex space-x-2 lg:space-x-4 items-center flex-1 lg:w-fit'>
+                <div className='md:p-11 p-8 h-fit rounded-full inline-flex bg-amber-200'></div>
+                <div className=''>
+                    <h3 className='text-[18px] md:text-[20px] font-semibold'>
+                        {profileData.firstName} {profileData.lastName}
+                    </h3>
+                    <p className='text-[12px] md:text-[18px]'>{profileData.plan}</p>
+                    <p className='text-[12px] md:text-[16px]'>ID: {profileData.userId}</p>
+                </div>
             </div>
+            <ProfileEditor profileData={profileData} />
         </div>
         <div className='flex flex-col gap-y-4'>
             <h3 className='text-[20px] font-semibold'>Personal Information</h3>
@@ -58,5 +120,6 @@ const page = () => {
     </section>
   )
 }
+
 
 export default page

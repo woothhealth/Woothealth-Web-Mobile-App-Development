@@ -4,7 +4,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const res = await fetch('https://backend.woothealth.com/signup/', {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+    if (!BACKEND_URL) throw new Error('Backend URL not configured');
+
+    const res = await fetch(`${BACKEND_URL}/signup/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

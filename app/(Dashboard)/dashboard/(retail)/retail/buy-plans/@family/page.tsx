@@ -94,7 +94,9 @@ const page = () => {
                         <div className='w-76 md:w-fit flex flex-col gap-4'>
                           <div className='bg-[#49A5EFB2] rounded-t-[10px] text-[#FFFFFF] py-4 px-4'>
                             <h3 className='text-[24px] font-semibold mb-3'>Retail {plan.name}</h3>
-                            <p className=' text-[#FFFFFF] text-start w-full flex flex-col'><span>For as low as</span> <span className='font-bold text-[20px]'> ₦{plan.price}/ {plan.year}</span></p>
+                            <p className=' text-[#FFFFFF] text-start w-full flex flex-col'><span>For as low as</span> 
+                            {/* <span className='font-bold text-[20px]'> ₦{plan.price}/ {plan.year}</span> */}
+                            </p>
                         </div>
                         <div className='flex flex-col items-start px-4 gap-2'>
                             <p className='text-lg font-semibold'>Benefits included:</p>

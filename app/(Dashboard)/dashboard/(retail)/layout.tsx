@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import SideBar from "@/Components/SideBar";
 import ScrollToTop from "@/Components/ScrollToTop";
+import DashboardProvider from '@/app/(Dashboard)/dashboard/DashboardProvider';
+import { Toaster } from "sonner";
 
 
 export const metadata: Metadata = {
@@ -21,7 +23,9 @@ export default function DashboardLayout({
           <SideBar />
           <main className="flex-1 w-full">
             <ScrollToTop/>
-            {children}
+            <DashboardProvider>{children}
+              <Toaster richColors position="top-right" />
+            </DashboardProvider>
           </main>
         </div>
       </body>

@@ -3,7 +3,9 @@ import axios from "axios";
 
 // export const getUserById = async (id: string) => {
 //   try {
-//     const res = await axios.get(`https://backend.woothealth.com/profile/`, {
+//     // Use the NEXT_PUBLIC_API_URL or BACKEND_URL env var here
+//     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+//     const res = await axios.get(`${BACKEND_URL}/profile/`, {
 //       withCredentials: true,
 //     });
 //     return res.data;
@@ -14,7 +16,10 @@ import axios from "axios";
 
 export const getUserById = async (id: string) => {
   try {
-    const res = await axios.get(`https://backend.woothealth.com/profile/`, {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+    if (!BACKEND_URL) throw new Error('Backend URL not configured');
+
+    const res = await axios.get(`${BACKEND_URL}/profile/`, {
       withCredentials: true, // uses cookies
     });
     return res.data; // { firstName, lastName, email, ... }

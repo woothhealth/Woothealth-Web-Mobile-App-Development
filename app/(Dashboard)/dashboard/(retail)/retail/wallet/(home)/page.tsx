@@ -33,16 +33,16 @@ const Page = () => {
         </div>
 
         <div className='space-y-6'>
-          <div className='flex bg-[#FFFFFF] rounded-xl p-3 items-center justify-center gap-4 md:gap-6 w-full'>
+          <div className='flex bg-[#FFFFFF] rounded-xl p-3 items-center justify-center gap-2 md:gap-6 w-full'>
             <Link href='/dashboard/retail/wallet/fund'>
-              <button className='btn py-2 md:px-6 md:py-4 px-3 md:gap-2 text-sm md:text-base w-fit'>
-                <FaPlus className='inline-flex mr-2 md:mr-4'/>
+              <button className='btn py-3 md:px-6 md:py-4 px-3 md:gap-2 text-sm md:text-base w-fit'>
+                <FaPlus className='inline-flex mr-1 md:mr-4'/>
                 Fund Wallet
               </button>
             </Link>
             <Link href='/dashboard/retail/wallet/withdraw'>
               <button className='py-2 md:px-6 px-3 md:py-4 md:gap-2 text-sm md:text-base w-fit border-[#49A5EF] border'>
-                <FaMinus className='inline-flex mr-2'/>Withdraw Funds
+                <FaMinus className='inline-flex mr-1'/>Withdraw Funds
               </button>
             </Link>
           </div>

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const backendRes = await fetch(
-    "https://backend.woothealth.com/profile/",
+    (process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL) + "/profile/",
     {
       headers: {
         Cookie: req.headers.get("cookie") ?? "",

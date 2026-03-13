@@ -23,11 +23,11 @@ const link1 = [
     },
     {
         name: "Terms & Conditions",
-        url: "/"
+        url: "/terms"
     },
     {
         name: "Privacy Policy",
-        url: "/"
+        url: "/privacy"
     }
 ]
 
@@ -82,7 +82,7 @@ const Footer = () => {
                 <address className='flex mt-2 gap-3 items-center ml-2'><FaMapMarker/>3 Adebayo Munis Close, Gbagada Phase 2, Lagos</address>
             </div>
             <div className='md:col-span-3'>
-                <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-[2.5rem] mb-4' loading='lazy' />
+                <Image src='/Logo2.png' width={500} height={100}alt="WootHealth Logo" className='w-auto h-10 mb-4' loading='lazy' />
                 <p className='text-base mb-4'>Healthcare Simplified</p>
                 <p className='flex items-center text-sm italic'>Made with<FaHeart className='mx-2'/> by Gramild Digital Services</p>
                 

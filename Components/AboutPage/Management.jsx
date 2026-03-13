@@ -160,7 +160,7 @@ const Management = () => {
                 </div>
             </div>
 
-            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+            {/* <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className=''>
                     <Reveal>
                     <Image src='/Team5.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
@@ -198,7 +198,7 @@ const Management = () => {
                         </Reveal>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>

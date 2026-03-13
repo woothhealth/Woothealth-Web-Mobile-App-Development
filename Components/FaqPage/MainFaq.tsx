@@ -24,11 +24,11 @@ const MainFaq = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-22">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-20 h-[65svh]">
+    <section className="max-w-7xl mx-auto px-4 py-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20 lg:h-[65svh]">
 
         {/* Left Div: For user to select category they want */}
-        <aside className="md:col-span-1 space-y-3 overflow-y-auto custom-scrollbar pr-3">
+        <aside className="md:col-span-1 space-y-3 overflow-y-auto custom-scrollbar pr-3 h-48 lg:h-full">
           {faqData.categories.map((category) => (
             <Reveal key={category.id}>
             <button

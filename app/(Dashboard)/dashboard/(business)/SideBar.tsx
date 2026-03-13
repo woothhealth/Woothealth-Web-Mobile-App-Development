@@ -3,10 +3,8 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { GoSidebarExpand, GoSidebarCollapse } from "react-icons/go";
-import { FaWallet, FaTv, FaUserAlt } from "react-icons/fa";
-import { RiLayoutMasonryFill, RiLogoutBoxRLine } from "react-icons/ri";
-import { ImLocation2 } from "react-icons/im";
-import { GrPlan } from "react-icons/gr";
+import { FaWallet, FaUserAlt } from "react-icons/fa";
+import { RiLayoutMasonryFill } from "react-icons/ri";
 import { IoMdSettings } from "react-icons/io";
 
 import Link from 'next/link';
@@ -30,7 +28,12 @@ const path = [
         name: 'Billing',
         url: '/dashboard/business/billing',
         icon: <BiSolidFile/>
-    }
+    },
+    {
+        name: 'Wallet',
+        url: '/dashboard/business/wallet',
+        icon: <FaWallet/>
+    },
 ]
 
 const path2 = [
@@ -62,14 +65,14 @@ const SideBar = () => {
         <div className='flex flex-col gap-6 h-fit w-[20vw]'>
             <div className='flex justify-between items-center'>
                 <Image src='/Logo2.png' height={100} width={500} alt='WootHealth Logo' className='h-10 w-fit' loading='eager' />
-                <GoSidebarExpand className='text-3xl cursor-pointer text-[#00000066]' onClick={click} />
+                <GoSidebarExpand className='text-3xl cursor-pointer text-[#00000077] font-semibold' onClick={click} />
             </div>
             <div className='flex flex-col gap-1'>
                 {path.map((path, index) => {
                     const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -83,7 +86,7 @@ const SideBar = () => {
                     const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
                     return (
                         <Link key={index} href={path.url}>
-                            <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                            <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                 <div className='text-xl'>
                                     {path.icon}
                                 </div>
@@ -91,7 +94,7 @@ const SideBar = () => {
                             </div>
                         </Link>
                 )})}
-                <div className={`flex gap-4 items-center text-[#00000033] mt-28 rounded-2xl hover:bg-red-400/50 hover:text-[#FFFFFF] cursor-pointer`}>
+                <div className={`flex gap-4 items-center text-[#00000077] font-semibold mt-28 rounded-2xl hover:bg-red-400/50 hover:text-[#FFFFFF] cursor-pointer`}>
                     <LogOut/>
                 </div>
             </div>
@@ -103,14 +106,14 @@ const SideBar = () => {
             <div className='flex flex-col gap-6 h-fit w-fit'>
                     <div className='flex justify-between items-center gap-4'>
                         <Image src='/Woot_collapse.png' height={100} width={500} alt='WootHealth Logo' className='h-9 w-fit' loading='eager' />
-                        <GoSidebarCollapse className='text-3xl text-[#00000066] cursor-pointer' onClick={click} />
+                        <GoSidebarCollapse className='text-3xl text-[#00000077] font-semibold cursor-pointer' onClick={click} />
                     </div>
                     <div className='flex flex-col gap-1'>
                         {path.map((path, index) => {
                         const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
                         return (
                             <Link key={index} href={path.url}>
-                                <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                     <div className='text-2xl'>
                                         {path.icon}
                                     </div>
@@ -123,14 +126,14 @@ const SideBar = () => {
                             const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
                             return (
                                 <Link key={index} href={path.url}>
-                                    <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                    <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                         <div className='text-2xl'>
                                             {path.icon}
                                         </div>
                                     </div>
                                 </Link>
                         )})}
-                        <div className={`flex gap-4 mt-28 items-center text-[#00000033] rounded-2xl justify-center hover:bg-red-400/50 hover:text-[#FFFFFF] text-center cursor-pointer`}>
+                        <div className={`flex gap-4 mt-28 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-red-400/50 hover:text-[#FFFFFF] text-center cursor-pointer`}>
                             <LogOut collapsed />
                         </div>
                     </div>

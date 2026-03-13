@@ -4,45 +4,6 @@ import axios from 'axios';
 import { redirect } from 'next/navigation';
 import { deleteSession, setSession } from './session';
 
-// export const loginAction = async (formData: FormData) => {
-//   const email = formData.get("email");
-//   const password = formData.get("password");
-
-//   try {
-//     const res = await axios.post(
-//       process.env.NEXT_PUBLIC_API_URL + "/login/",
-//       { email, password },
-//       {
-//         headers: { "Content-Type": "application/json" },
-//         withCredentials: true, // ✅ SESSION SUPPORT
-//       }
-//     );
-
-//     const user = res.data;
-
-//     if (!user?.userId) {
-//       return { success: false, message: "Invalid credentials" };
-//     }
-
-//     await setSession({
-//       name: user.name,
-//       email: user.email,
-//       id: user.userId,
-//       role: user.role,
-//     });
-
-//     return { success: true, role: user.role };
-//   } catch (error: any) {
-//     console.log(error.response?.status);
-//     console.log(error.response?.data);
-
-//     return {
-//       success: false,
-//       message: error.response?.data?.error || "Login failed",
-//     };
-//   }
-// };
-
 export const loginAction = async (formData: FormData) => {
   const email = formData.get("email");
   const password = formData.get("password");

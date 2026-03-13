@@ -10,7 +10,7 @@ import Talk from '@/UI/Talk'
 const BusinessPage = () => {
   return (
     <>
-        <Talk/>
+        {/* <Talk/> */}
         <HeroSection/>
         <WhySection/>
         <AdvantageSection/>

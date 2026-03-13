@@ -78,7 +78,7 @@ const RegisterForm = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 ...formInput,
-                role: 'retail',
+                role: 'superadmin',
             }),
             });
 
@@ -197,7 +197,7 @@ const RegisterForm = () => {
             <div className='w-full'>
                 <div className='flex items-center gap-2'>
                     <input type="checkbox" name="check" id="check" checked={formInput.check} onChange={handleChange} />
-                    <label htmlFor="check" className='w-sm text-sm'>I have read and agreed to Woot Health’s Terms of Use and Privacy Policy <span className='text-red-500/60'>*</span></label>
+                    <label htmlFor="check" className='w-base text-sm'>I have read and agreed to Woot Health’s <Link href={`/terms`} className='underline text-[#49A5EF]'>Terms of Use</Link> and <Link href={`/privacy`} className='underline text-[#49A5EF]'> Privacy Policy </Link> <span className='text-red-500/60 text-xl'>*</span></label>
                 </div>
                 {fieldErrors.check && <span className="text-red-500/60 text-sm">{fieldErrors.check}</span>}
             </div>
@@ -206,7 +206,7 @@ const RegisterForm = () => {
                 {errorMessage}
               </div>
 
-            <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit mt-1'>
+            <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm w-fit'>
                 {isSubmitting ? 'Sending...' : 'SUBMIT'}
             </button>
             <div>

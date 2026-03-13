@@ -47,7 +47,7 @@ button {
 }
 
 .chat {
-  background: linear-gradient(to bottom, #49A5EF 5%, #FFFFFF);
+  background: linear-gradient( #49A5EF 40%, #FFFFFF 45%);
 }
 
 li {

@@ -15,6 +15,7 @@ export default function DashboardLayout({
   activities,
   utility,
   welcome,
+  wallet,
 }: Readonly<{
   children: React.ReactNode;
   active: React.ReactNode;
@@ -23,15 +24,17 @@ export default function DashboardLayout({
   activities: React.ReactNode;
   utility: React.ReactNode;
   welcome: React.ReactNode;
+  wallet: React.ReactNode;
 }>) {
   return (
     <>
     <div className="relative w-full bg-[#FAFAFA]">
       <div className="sticky top-0">{welcome}</div>
-      <div className="flex gap-2 md:grid md:grid-cols-3 lg:gap-0 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
+      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
         <div>{active}</div>
         <div>{utility}</div>
         <div>{reimbursement}</div>
+        <div>{wallet}</div>
       </div>
       <div className="px-4">{children}</div>
       <div className="px-4 flex flex-col md:flex-row gap-4 md:gap-8">

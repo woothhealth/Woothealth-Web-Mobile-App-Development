@@ -63,7 +63,7 @@ const Toggle = ({ isOpen }) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -77,7 +77,7 @@ const Toggle = ({ isOpen }) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
                     <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000033] rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -85,7 +85,7 @@ const Toggle = ({ isOpen }) => {
                         </div>
                     </Link>
             )})}
-            <div className={`flex gap-4 mt-4 items-center text-[#00000033] rounded-2xl justify-center hover:bg-red-500/70 hover:text-[#FFFFFF] text-center cursor-pointer`}>
+            <div className={`flex gap-4 mt-4 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-red-500/70 hover:text-[#FFFFFF] text-center cursor-pointer`}>
                 <LogoutButton />
             </div>
         </div>

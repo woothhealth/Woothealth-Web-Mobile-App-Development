@@ -10,7 +10,7 @@ import Talk from '@/UI/Talk'
 const RetailPage = () => {
   return (
     <>
-        <Talk/>
+        {/* <Talk/> */}
         <HeroSection/>
         <WhySection/>
         <Pricing/>

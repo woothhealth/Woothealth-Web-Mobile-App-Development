@@ -36,7 +36,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "app/(Dashboard)/dashboard/(retail)/retail/wallet/(home)/@transaction/page.jsx"
-, "UI/FAQ.jsx", "Components/BlogPage/HeroSection.jsx", "app/(Dashboard)/dashboard/(retail)/retail/buy-plans/@family/default.js"  ],
+, "UI/FAQ.jsx", "Components/BlogPage/HeroSection.jsx", "app/(Dashboard)/dashboard/(retail)/retail/buy-plans/@family/default.js", "Hooks/AdminPage.jsx"  ],
   "exclude": [
     "node_modules"
   ]

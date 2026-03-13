@@ -20,5 +20,16 @@ export const doctors = [
     avatar: '/doctor2.png',
     available: false,
     favourite: false
+  },
+  {
+    id: 3,
+    name: 'Dr. Ibrahim Suleiman',
+    specialty: 'Cardiologist',
+    rating: 4.9,
+    reviews: 245,
+    location: 'Abuja',
+    avatar: '/doctor3.png',
+    available: true,
+    favourite: false
   }
 ]

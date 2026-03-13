@@ -1,24 +1,38 @@
+import React from "react";
+import { getCurrentUser } from "@/lib/currentUser";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
-import { getUserById } from "@/lib/api/users";
-import Welcome from "./Welcome";
+import WelcomeWrapper from "./WelcomeWrapper";
 
-export default function RetailDashboardPage() {
-  // const session = await getSession();
 
-  // if (!session || !session.id) {
-  //   redirect("/login");
-  // }
-
-  // const user = await getUserById(session.id);
+export default async function Welcome() {
+  const user = await getCurrentUser();
+  
+    if (!user || !user.id) {
+      redirect('/login');
+    }
+  
+    // Use firstName and lastName from user object
+    const firstName = user.name || 'User';
+    const lastName = user.lastName || '';
+    
+    // Truncate lastName: if > 6 chars, show first char + '.'
+    const displayLastName = lastName.length > 6 ? lastName[0] + '.' : lastName;
+    
+    const role = user.role || 'No assigneed role';
+    const id = user.id || 'No ID';
+    
+    // Generate initials from first and last name
+    const initials = (firstName?.[0] || "U") + (lastName?.[0] || "");
 
   return (
-    <div>
-      <Welcome
-        // userId={user.id}
-        // firstName={user.firstName}
-        // lastName={user.lastName}
-      />
-    </div>
+    <WelcomeWrapper
+      firstName={firstName}
+      lastName={lastName}
+      displayLastName={displayLastName}
+      initials={initials}
+      role={role}
+      id={id}
+      email={user.email || "user@example.com"}
+    />
   );
 }

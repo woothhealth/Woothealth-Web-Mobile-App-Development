@@ -1,8 +1,9 @@
 import React from 'react'
+import Employee from './Employee'
 
 const page = () => {
   return (
-    <div>Employee page</div>
+    <Employee/>
   )
 }
 

@@ -1,0 +1,126 @@
+{
+  "title": "Woot Health Terms & Conditions",
+  "effectiveDate": "2026-01-01",
+  "company": {
+    "name": "Woot Health Limited",
+    "industry": "Health Tech / Health Insurance Support Services",
+    "businessType": "Health Technology / Health Management",
+    "location": "Oregun-Ikeja, Lagos, Nigeria"
+  },
+  "introduction": "By accessing or using our website, mobile application, or services (Platform), you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our services.",
+  "sections": [
+    {
+      "id": 1,
+      "title": "About Woot Health",
+      "content": "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services. Woot Health is a registered HMO company under the laws of the Federal Republic of Nigeria."
+    },
+    {
+      "id": 2,
+      "title": "Eligibility",
+      "content": [
+        "You must be at least 18 years old to create an account.",
+        "Minors may only use the platform under the supervision of a parent or legal guardian.",
+        "You confirm that all information provided is accurate and complete."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Services",
+      "content": [
+        "Retail health plans",
+        "Telemedicine consultations",
+        "Healthcare providers and partner facilities",
+        "Wallet-based healthcare payments",
+        "Claims processing",
+        "Woot Health does not replace emergency medical services."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Medical Disclaimer",
+      "content": [
+        "Woot Health does not provide medical advice directly.",
+        "All medical services are delivered by licensed healthcare professionals.",
+        "In case of an emergency, contact local emergency services immediately."
+      ]
+    },
+    {
+      "id": 5,
+      "title": "User Accounts",
+      "content": [
+        "You are responsible for maintaining the confidentiality of your login details.",
+        "You agree to notify Woot Health immediately of any unauthorized access.",
+        "We reserve the right to suspend or terminate accounts that violate these terms."
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Plans, Payments & Wallet",
+      "content": [
+        "Health plans are valid for a fixed duration as stated at purchase.",
+        "Wallet funds are non-refundable and can only be used for healthcare services.",
+        "Upgrading a plan resets the plan cycle unless otherwise stated."
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Claims & Reimbursements",
+      "content": [
+        "Claims must be submitted with valid documentation.",
+        "Approval is subject to plan coverage and verification.",
+        "Woot Health reserves the right to reject invalid or fraudulent claims."
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Provider Network",
+      "content": [
+        "Services are covered only within the Woot Health provider network unless stated otherwise.",
+        "Woot Health is not responsible for services rendered outside the network."
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Prohibited Use",
+      "content": [
+        "Use the platform for unlawful activities.",
+        "Provide false medical or personal information.",
+        "Interfere with system security or performance."
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Intellectual Property",
+      "content": "All content, logos, trademarks, and software belong to Woot Health and may not be used without permission."
+    },
+    {
+      "id": 11,
+      "title": "Limitation of Liability",
+      "content": [
+        "Medical outcomes resulting from provider services.",
+        "Network interruptions or technical failures.",
+        "Indirect or consequential damages."
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Termination",
+      "content": "We may suspend or terminate access to the platform at our discretion if these terms are violated."
+    },
+    {
+      "id": 13,
+      "title": "Changes to Terms",
+      "content": "We may update these Terms & Conditions at any time. Continued use of the platform means acceptance of the updated terms."
+    },
+    {
+      "id": 14,
+      "title": "Governing Law",
+      "content": "These terms are governed by the laws of the Federal Republic of Nigeria."
+    },
+    {
+      "id": 15,
+      "title": "Contact Us",
+      "content": "For questions or concerns, contact Support@woothealth.com"
+    }
+  ]
+}

@@ -24,11 +24,11 @@ const link1 = [
     },
     {
         name: "Terms & Conditions",
-        url: "/"
+        url: "/terms"
     },
     {
         name: "Privacy Policy",
-        url: "/"
+        url: "/privacy"
     }
 ]
 

@@ -14,7 +14,7 @@ const img = [
 
 const MarqueeSection = () => {
   return (
-    <section className='py-2 lg:px-[78px] md:px-10 px-6 text-[#FFFFFF] overflow-hidden'>
+    <section className='py-2 lg:px-[78px] md:px-10 px-4 text-[#FFFFFF] overflow-hidden'>
     <div className="overflow-hidden w-full">
       <motion.div
         className="flex w-max"
@@ -33,7 +33,7 @@ const MarqueeSection = () => {
                 alt="Images"
                 width={500}
                 height={200}
-                className="h-16 md:h-26 w-full md:w-fit"
+                className="h-24 md:h-36 border-0 w-full md:w-fit"
                 src={item}
               />
             </div>
@@ -48,7 +48,7 @@ const MarqueeSection = () => {
                 alt="Images"
                 width={500}
                 height={200}
-                className="h-16 md:h-26 w-full md:w-fit"
+                className="h-24 md:h-36 w-full md:w-fit"
                 src={item}
               />
             </div>

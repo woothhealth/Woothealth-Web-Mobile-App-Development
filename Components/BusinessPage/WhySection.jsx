@@ -35,7 +35,7 @@ const WhySection = () => {
       <Reveal>
         <h3 className='text-[#120052] text-[38px] md:text-[45px]'>Why Choose Us</h3>
       </Reveal>
-        <div className='flex lg:flex-row flex-col items-center md:divide-x-2 divide-[#B6B6B9] w-full md:h-svh lg:px-12'>
+        <div className='flex lg:flex-row flex-col items-center md:divide-x-2 divide-[#B6B6B9] w-full lg:h-svh lg:px-12'>
           <div className='flex justify-center items-center md:justify-end flex-col md:divide-y-2 divide-[#B6B6B9] h-full md:pr-10'>
             {features1.map((feature, index) => (
               <Reveal key={index}>

@@ -4,6 +4,7 @@ import SideBar from "@/Components/SideBar";
 import ScrollToTop from "@/Components/ScrollToTop";
 import DashboardProvider from '@/app/(Dashboard)/dashboard/DashboardProvider';
 import { Toaster } from "sonner";
+import "react-day-picker/dist/style.css"
 
 
 export const metadata: Metadata = {

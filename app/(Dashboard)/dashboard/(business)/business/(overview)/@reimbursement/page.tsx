@@ -9,7 +9,7 @@ const Page = () => {
 
   return (
     <section className='bg-[#FFFFFF] w-44 md:w-full py-6 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48'>
-      <Link href='/dashboard/business' className='flex flex-col space-y-2 w-full'>
+      <Link href='/dashboard/business/reimbursement' className='flex flex-col space-y-2 w-full'>
         <div className='border-[#10B981] border bg-[#D1FAE5] p-2 text-[#10B981] rounded-[10px] w-fit text-3xl'>
           <LuFileText/>
         </div>

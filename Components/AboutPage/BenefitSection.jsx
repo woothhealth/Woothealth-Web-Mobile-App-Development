@@ -79,7 +79,7 @@ const BenefitSection = () => {
                 <Reveal>
                 <motion.button
                   whileTap={{scale: 0.95, transition: {delay: 0}}}
-                  className="btn px-4 py-3">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></motion.button>
+                  className="btn px-3 py-4 md:px-6 md:py-4 lg:text-lg">Our Management Team <FaArrowRight className="ml-1 inline-flex"/></motion.button>
                   </Reveal>
             </Link>
         </div>

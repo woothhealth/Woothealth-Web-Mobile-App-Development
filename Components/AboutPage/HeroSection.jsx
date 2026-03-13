@@ -14,11 +14,11 @@ const HeroSection = () => {
         initial={{opacity: 0}}
         animate={{opacity: 1}}
         transition={{delay: 0, duration: 1.5}}
-        className='text-[45px] font-semibold leading-tight'>About Us</motion.h2>
+        className='text-[40px] md:text-[45px] font-semibold leading-tight'>About Us</motion.h2>
         <motion.p
         initial={{opacity: 0}}
         animate={{opacity: 1}}
-        transition={{delay: 0, duration: 1.5}} className='md:text-[1.1rem] text-[1rem] md:w-xl'>Discover the Woot Health story, our mission, our values, and our commitment to transforming healthcare in Nigeria.</motion.p>
+        transition={{delay: 0, duration: 1.5}} className='md:text-[1.1rem] text-[1rem] leading-tight md:leading-normal md:w-xl'>Discover the Woot Health story, our mission, our values, and our commitment to transforming healthcare in Nigeria.</motion.p>
       </div>
     </section>
   )

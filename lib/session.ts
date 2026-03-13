@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 
 const SESSION_KEY = 'session';
 const ROLE_KEY = 'role';
+const PHP = 'PHPSESSID'
 
 type SessionData = {
   id: string;
@@ -34,17 +35,6 @@ export const setSession = async (data: SessionData, remember = false) => {
   });
 };
 
-// export const getSession = async () => {
-//   const cookieStore = (await cookies());
-
-//   const id = cookieStore.get(SESSION_KEY)?.value;
-//   const role = cookieStore.get(ROLE_KEY)?.value;
-
-//   if (!id || !role) return null;
-
-//   return { id, role };
-// };
-
 export const getSession = async () => {
   const cookieStore = (await cookies());
   const id = cookieStore.get("session")?.value;
@@ -59,4 +49,5 @@ export const deleteSession = async () => {
 
   cookieStore.delete(SESSION_KEY);
   cookieStore.delete(ROLE_KEY);
+  cookieStore.delete(PHP);
 };

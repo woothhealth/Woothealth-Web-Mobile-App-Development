@@ -14,14 +14,14 @@ import Talk from '@/UI/Talk'
 const HomePage = () => {
   return (
     <>
-        <Talk/>
+        {/* <Talk/> */}
         <HomeSection />
         <CoverageSection />
         <WalletSection/>
-        <MarqueeSection/>
         <BenefitSection />
         <AboutSection />
         <ProviderSection />
+        <MarqueeSection/>
         <TestimonySection/>
         <HomeArticle />
         <FAQ />

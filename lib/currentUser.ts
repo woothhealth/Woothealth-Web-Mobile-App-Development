@@ -3,9 +3,13 @@ import { cookies } from 'next/headers';
 type CurrentUser = {
   id: string | null;
   role: string | null;
+  plan: string | null;
   name: string | null;
   lastName: string | null;
   email: string | null;
+  company: string | null;
+  companyAddress: string | null;
+  industry: string | null;
 };
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
@@ -36,6 +40,10 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
           payload.firstName || payload.first_name || payload.name || payload.fullName || (payload.email ? String(payload.email).split('@')[0] : null) || null,
         lastName: payload.lastName || payload.last_name || null,
         email: payload.email || null,
+        company: payload.company || null,
+        companyAddress: payload.companyAddress || null,
+        plan: payload.plan || null,
+        industry: payload.industry || null,
       };
     }
 
@@ -47,6 +55,10 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
         name: null,
         lastName: null,
         email: null,
+        company: null,
+        companyAddress: null,
+        plan: null,
+        industry: null,
       };
     }
 

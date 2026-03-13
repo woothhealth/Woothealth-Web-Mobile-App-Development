@@ -2,19 +2,22 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import BookingPanel from './BookingPanel'
-import { FaMapPin, FaPhoneAlt } from 'react-icons/fa'
-import { FaMapLocation } from 'react-icons/fa6'
+import { FaPhoneAlt } from 'react-icons/fa'
 import { CiLocationOn } from 'react-icons/ci'
 import { LuMessageSquare } from 'react-icons/lu'
 import Link from 'next/link'
 
 export default function DoctorCard({ doctor }: any) {
   const [open, setOpen] = useState(false)
+  const valid = doctor.available === true
 
   return (
     <div className="bg-white rounded-xl p-1 md:p-4 flex justify-between items-center shadow gap-1">
       <div className="flex md:gap-4 gap-1">
-        <Image src={doctor.avatar} alt="" width={56} height={56} className="rounded-full h-fit" />
+        <div className="relative border-2 border-[#c5c5c5] rounded-full w-fit h-fit">
+          <Image src={doctor.avatar} alt="" width={56} height={56} className="rounded-full h-fit" />
+          {valid ? <div className='absolute h-2.5 w-2.5 bottom-1 right-1 rounded-full border border-[#FFFFFF] bg-[#10B981]'></div> : ""}
+        </div>
         <div>
           <p className="font-semibold text-[0.85rem]">{doctor.name}</p>
           <p className="md:text-sm text-xs">{doctor.specialty}</p>

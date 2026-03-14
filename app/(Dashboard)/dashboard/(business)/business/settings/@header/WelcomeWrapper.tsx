@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { IoCloseOutline } from "react-icons/io5";
 import Toggle from "@/app/(Dashboard)/dashboard/(business)/BusinessToggle";
-import UserDropdown from "../../../UIs/UserDropdown";
-import NotificationCenter from "../../../UIs/NotificationCenter";
+import UserDropdown from "../../UIs/UserDropdown";
+import NotificationCenter from "../../UIs/NotificationCenter";
 
 interface WelcomeWrapperProps {
   firstName: string;

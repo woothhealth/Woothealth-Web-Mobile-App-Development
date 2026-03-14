@@ -11,8 +11,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("Security")
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Settings</h2>
+    <div className="p-6 max-w-6xl mx-auto z-0">
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="relative min-h-[300px]">

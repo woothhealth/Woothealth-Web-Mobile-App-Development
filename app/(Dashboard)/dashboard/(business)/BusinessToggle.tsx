@@ -25,6 +25,11 @@ const path = [
         name: 'Billing',
         url: '/dashboard/business/billing',
         icon: <BiSolidFile/>
+    },
+    {
+        name: 'Wallet',
+        url: '/dashboard/business/wallet',
+        icon: <FaWallet/>
     }
 ]
 

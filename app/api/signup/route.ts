@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const data = await res.json();
 
     return NextResponse.json(data, { status: res.status });
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

@@ -4,10 +4,9 @@ import React from 'react';
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import { RegisterFormInput, registerSchema } from "@/lib/validator/register";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 
 const RegisterForm = () => {
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -78,7 +77,7 @@ const RegisterForm = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 ...formInput,
-                role: 'superadmin',
+                role: 'retail',
             }),
             });
 
@@ -181,7 +180,7 @@ const RegisterForm = () => {
                     <label className='font-semibold' htmlFor="locate">
                         State
                     </label>
-                    <input type="text" name='locate' placeholder='Enter your location' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="locate" value={formInput.locate} onChange={handleChange} />
+                    <input type="text" name='locate' placeholder='Enter your locate' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id="locate" value={formInput.locate} onChange={handleChange} />
                     {fieldErrors.locate && <span className="text-red-500/60 text-sm">{fieldErrors.locate}</span>}
                 </div>
             </div>
@@ -202,7 +201,7 @@ const RegisterForm = () => {
                 {fieldErrors.check && <span className="text-red-500/60 text-sm">{fieldErrors.check}</span>}
             </div>
 
-            <div id="error-message" className="mt-4 text-center text-red-500 text-sm font-semibold">
+            <div id="error-message" className="mt-2 text-center text-red-500 text-sm font-semibold">
                 {errorMessage}
               </div>
 

@@ -192,7 +192,7 @@ export default function ProvidersPage() {
             </table>
           </div>
             {totalPages > 1 && (
-              <div className="flex justify-center mt-4 gap-2">
+              <div className="flex justify-center mt-4 p-4 items-center gap-2 overflow-scroll">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
                   <button
                     key={pNum}

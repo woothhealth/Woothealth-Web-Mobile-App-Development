@@ -1,7 +1,8 @@
 'use client';
 
 import { Reveal } from '@/UI/Reveal';
-import { useState, useEffect, useMemo } from 'react';
+import { table } from 'console';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 type Provider = {
   $id: string;
@@ -12,10 +13,8 @@ type Provider = {
   email?: string;
 };
 
-const ITEMS_PER_PAGE = 20;
-
 async function getProviders(): Promise<Provider[]> {
-  const res = await fetch('/api/providers', { cache: 'no-store' });
+  const res = await fetch('/api/providers?page=1&limit=20', { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch providers');
 
   const data = await res.json();
@@ -55,6 +54,7 @@ async function getProviders(): Promise<Provider[]> {
 
 export default function ProvidersPage() {
   const [providers, setProviders] = useState<Provider[]>([]);
+  const tableRef = useRef<HTMLDivElement | null>(null)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -68,6 +68,10 @@ export default function ProvidersPage() {
   ];
 
   const headers = ['Provider Name', 'Address', 'State'];
+
+  const ITEMS_PER_PAGE = 20;
+  const PAGE_WINDOW = 8;
+
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -97,6 +101,26 @@ export default function ProvidersPage() {
   }, [providers, search, selectedCategory]);
 
   const totalPages = Math.ceil(filteredProviders.length / ITEMS_PER_PAGE);
+
+  const paginationPages = useMemo(() => {
+  const pages: number[] = [];
+
+  let start = Math.max(1, page - Math.floor(PAGE_WINDOW / 2));
+  let end = start + PAGE_WINDOW - 1;
+
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(1, end - PAGE_WINDOW + 1);
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  return pages;
+}, [page, totalPages]);
+
+
   const paginatedProviders = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE;
     return filteredProviders.slice(start, start + ITEMS_PER_PAGE);
@@ -106,8 +130,17 @@ export default function ProvidersPage() {
     setPage(1);
   }, [search, selectedCategory]);
 
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.scrollTo({
+        behavior: "smooth",
+        top: 0,
+      })
+    }
+  }, [page]);
+
   return (
-    <div className="p-4 w-full lg:max-w-6xl mx-auto">
+    <div className="p-4 mb-8 w-full lg:max-w-6xl mx-auto">
       <Reveal>
         <div className="flex flex-col md:flex-row gap-4 mb-8 lg:w-[55%] lg:mx-auto">
           <input
@@ -131,10 +164,10 @@ export default function ProvidersPage() {
       </Reveal>
       <Reveal>
         {loading ? (
-          <div className="overflow-x-auto custom-scrollbar pb-4 h-120">
-            <table className="min-w-full border border-gray-200 rounded-[10px] overflow-hidden">
-              <thead className="text-[#FFFFFF]">
-                <tr className='bg-[#49A5EF] text-left'>
+          <div className="border border-gray-200 rounded-[10px] overflow-hidden">
+            <table className="min-w-full">
+              <thead className="text-[#FFFFFF] bg-[#49A5EF]">
+                <tr className=''>
                   {headers.map((h) => (
                     <th key={h} className="text-[18px] px-6 py-6 border-b">
                       {h}
@@ -142,22 +175,27 @@ export default function ProvidersPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className='overflow-y-auto h-96'>
+              </table>
+
+              <div className="overflow-y-auto custom-scrollbar pb-4 max-h-120">
+              <table className='min-w-full'>
+              <tbody className=''>
                 {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
+                  <tr key={i} className="">
                     <td className="px-6 py-3 border-b border-[#E5E7EB]">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
                     </td>
                     <td className="px-6 py-3 border-b border-[#E5E7EB]">
-                      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
                     </td>
                     <td className="pl-6 pr-10 py-3 border-b border-[#E5E7EB]">
-                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         ) : error ? (
           <div className='flex justify-center h-64 mt-4'>
@@ -169,10 +207,11 @@ export default function ProvidersPage() {
           </div>
         ) : (
           <>
-          <div className="overflow-x-auto custom-scrollbar pb-4 h-120">
-            <table className="min-w-full border border-gray-200 rounded-[10px] overflow-hidden">
-              <thead className="text-[#FFFFFF]">
-                <tr className='bg-[#49A5EF]'>
+          <div className="border border-gray-200 rounded-[10px] overflow-hidden">
+            {/* Header */}
+            <table className="min-w-full">
+              <thead className="bg-[#49A5EF] text-[#FFFFFF]">
+                <tr>
                   {headers.map((h) => (
                     <th key={h} className="text-left text-[18px] px-6 py-6 border-b">
                       {h}
@@ -180,32 +219,66 @@ export default function ProvidersPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className='overflow-y-auto h-96'>
+            </table>
+            <div ref={tableRef} className='max-h-120 lg:max-h-96 overflow-y-auto custom-scrollbar'>
+            <table className='min-w-full'>
+              <tbody>
                 {paginatedProviders.map((p) => (
-                  <tr key={p.$id} className="hover:bg-gray-50 text-[14px] uppercase text-[#000000]">
-                    <td className="px-6 py-3 border-b border-[#E5E7EB]">{p.name}</td>
-                    <td className="px-6 py-3 border-b border-[#E5E7EB]">{p.address}</td>
-                    <td className="pl-6 pr-10 py-3 border-b border-[#E5E7EB]">{p.state ?? '-'}</td>
+                  <tr key={p.$id} className="hover:bg-gray-50 text-[14px] uppercase">
+                    <td className="px-6 py-3 w-[35%] border-b border-[#E5E7EB]">{p.name}</td>
+                    <td className="px-6 py-3 border-b border-[#E5E7EB] w-[45%]">{p.address}</td>
+                    <td className="pl-6 pr-10 py-3 border-b border-[#E5E7EB] w-[20%]">{p.state ?? '-'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
             {totalPages > 1 && (
-              <div className="flex justify-center mt-4 p-4 items-center gap-2 overflow-scroll">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
-                  <button
-                    key={pNum}
-                    onClick={() => setPage(pNum)}
-                    className={`px-3 py-1 rounded-lg border ${
-                      pNum === page ? 'bg-[#49A5EF] text-white' : 'bg-white text-black'
-                    }`}
-                  >
-                    {pNum}
-                  </button>
-                ))}
-              </div>
-            )}
+  <div className="flex justify-center mt-4 lg:p-4 items-center gap-0.5 lg:gap-2">
+
+    {paginationPages[0] > 1 && (
+      <>
+        <button
+          onClick={() => setPage(1)}
+          className="lg:px-3 px-2 py-1 text-sm md:text-base rounded-lg border bg-white"
+        >
+          1
+        </button>
+        {paginationPages[0] > 2 && <span>...</span>}
+      </>
+    )}
+
+    {paginationPages.map((pNum) => (
+      <button
+        key={pNum}
+        onClick={() => setPage(pNum)}
+        className={`lg:px-3 px-2 text-sm md:text-base py-1 rounded-lg border ${
+          pNum === page
+            ? 'bg-[#49A5EF] text-white'
+            : 'bg-white text-black'
+        }`}
+      >
+        {pNum}
+      </button>
+    ))}
+
+    {paginationPages[paginationPages.length - 1] < totalPages && (
+      <>
+        {paginationPages[paginationPages.length - 1] < totalPages - 1 && (
+          <span>...</span>
+        )}
+        <button
+          onClick={() => setPage(totalPages)}
+          className="lg:px-3 px-2 py-1 text-sm md:text-base rounded-lg border bg-white"
+        >
+          {totalPages}
+        </button>
+      </>
+    )}
+
+  </div>
+)}
           </>
         )}
       </Reveal>

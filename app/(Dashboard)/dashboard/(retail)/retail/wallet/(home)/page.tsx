@@ -6,12 +6,14 @@ import { FaEye, FaEyeSlash, FaMinus, FaPlus } from 'react-icons/fa6'
 import Image from 'next/image'
 import { TbCurrencyNaira } from 'react-icons/tb'
 import Link from 'next/link'
+import { useWallet } from '@/Components/WalletContext'
 
 const Page = () => {
+  const { wallet, loading: walletLoading } = useWallet();
   const [showBalance, setShowBalance] = useState(false);
 
-  const balance = '0.00';
-  const masked = '*'.repeat(balance.length);
+  const balance = wallet?.balance?.toLocaleString() ?? '0.00';
+  const masked = '*'.repeat(balance.replace(',', '').length);
 
   return (
     <section className='py-4 md:p-4 md:my-4 rounded-2xl'>
@@ -24,10 +26,14 @@ const Page = () => {
             </div>
           </div>
           <div className='flex justify-between'>
-            <p className='text-[45px] font-semibold flex items-center'>
-              <TbCurrencyNaira className='text-6xl'/>
-              {showBalance ? masked : balance}
-            </p>
+            {walletLoading ? (
+              <div className='lg:text-[25px] font-semibold text-gray-400'>Loading...</div>
+            ) : (
+              <p className='text-[45px] font-semibold flex items-center'>
+                <TbCurrencyNaira className='text-6xl'/>
+                {showBalance ? masked : balance}
+              </p>
+            )}
             <CiBacon className='text-9xl text-[#49A5EF4D] md:absolute md:bottom-1 right-0'/>
           </div>
         </div>

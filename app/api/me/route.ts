@@ -32,11 +32,11 @@ export async function GET(req: Request) {
 
     // If backend returns an envelope { success: true, data: { ... } }
     if (backendData && typeof backendData === 'object' && backendData.success && backendData.data) {
-      return NextResponse.json(backendData.data, { status: backendRes.status });
+      return NextResponse.json(backendData.data || {}, { status: backendRes.status });
     }
 
     // Otherwise return whatever backend sent (useful for errors)
-    return NextResponse.json(backendData, { status: backendRes.status });
+    return NextResponse.json(backendData || {}, { status: backendRes.status });
   } catch (error: any) {
     console.error(
       "BACKEND ERROR:",

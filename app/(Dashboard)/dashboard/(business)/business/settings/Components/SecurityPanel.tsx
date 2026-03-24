@@ -1,9 +1,16 @@
-// components/settings/SecurityPanel.tsx
-export default function SecurityPanel() {
+import React from 'react'
+import SecurityForm from './SecurityForm';
+import { SlScreenDesktop } from "react-icons/sl";
+import { MdOutlinePhoneIphone } from 'react-icons/md';
+
+interface SecurityPanelProps {
+  onPasswordChange?: (newPassword: string, confirmPassword: string) => Promise<void>;
+}
+
+export default function SecurityPanel({ onPasswordChange }: SecurityPanelProps) {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
-      <p>Manage password, two-factor authentication, login devices, etc.</p>
+      <SecurityForm onPasswordChange={onPasswordChange} />
     </div>
-  )
+  );
 }

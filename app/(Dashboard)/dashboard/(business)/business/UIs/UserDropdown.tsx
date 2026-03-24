@@ -16,7 +16,7 @@ interface UserDropdownProps {
 export default function UserDropdown({
   firstName,
   lastName,
-  email = "user@example.com",
+  email,
 }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

@@ -33,7 +33,13 @@ export const loginAction = async (formData: FormData) => {
   return { success: true, role: user.role };
 };
 
+
 export const logoutAction = async () => {
+  try {
+    await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+  } catch (err) {
+    console.warn('Failed to call /api/logout', err);
+  }
   await deleteSession();
   redirect("/login")
 };

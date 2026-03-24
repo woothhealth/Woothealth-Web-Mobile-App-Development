@@ -1,11 +1,14 @@
+'use client';
+
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import { BusinessOverviewProvider } from "@/Components/BusinessOverviewContext";
 
 
-export const metadata: Metadata = {
-  title: "WooHealth Dashboard",
-  description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
-};
+// export const metadata: Metadata = {
+//   title: "WooHealth Dashboard",
+//   description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
+// };
 
 export default function DashboardLayout({
   children,
@@ -27,10 +30,11 @@ export default function DashboardLayout({
   wallet: React.ReactNode;
 }>) {
   return (
+    <BusinessOverviewProvider>
     <>
-    <div className="relative w-full bg-[#FAFAFA]">
+    <div className="relative w-full bg-[#FAFAFA] pb-4">
       <div className="sticky top-0">{welcome}</div>
-      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
+      <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[93%] md:w-[96%] formDiv">
         <div>{active}</div>
         <div>{utility}</div>
         <div>{reimbursement}</div>
@@ -43,5 +47,6 @@ export default function DashboardLayout({
       </div>
     </div>
     </>
+    </BusinessOverviewProvider>
   );
 }

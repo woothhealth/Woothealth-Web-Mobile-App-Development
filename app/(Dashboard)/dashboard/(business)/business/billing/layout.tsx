@@ -1,11 +1,4 @@
-import type { Metadata } from "next";
 import "@/styles/globals.css";
-
-
-export const metadata: Metadata = {
-  title: "WooHealth",
-  description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
-};
 
 export default function WalletLayout({
   children,
@@ -20,7 +13,7 @@ export default function WalletLayout({
     <>
     <div className="w-full bg-[#FAFAFA]">
       <div className="sticky top-0">{header}</div>
-      <div className="px-4">{transaction}</div>
+      <div className="md:px-4 px-3">{transaction}</div>
     </div>
     </>
   );

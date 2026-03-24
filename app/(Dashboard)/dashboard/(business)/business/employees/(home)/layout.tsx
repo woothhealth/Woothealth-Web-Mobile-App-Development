@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import "@/styles/globals.css";
+'use client';
 
-
-export const metadata: Metadata = {
-  title: "WooHealth Dashboard",
-  description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
-};
+import { EmployeeStatsProvider } from './EmployeeStatsContext';
 
 export default function DashboardLayout({
   children,
@@ -21,16 +16,16 @@ export default function DashboardLayout({
   header: React.ReactNode;
 }>) {
   return (
-    <>
-    <div className="relative w-full bg-[#FAFAFA]">
-      <div className="sticky top-0">{header}</div>
-      <div className="flex gap-2 md:grid md:grid-cols-3 lg:gap-4 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
-        <div>{enroll}</div>
-        <div>{active}</div>
-        <div>{slot}</div>
+    <EmployeeStatsProvider>
+      <div className="relative w-full bg-[#FAFAFA] pb-6 space-y-4 md:space-y-0">
+        <div className="sticky top-0">{header}</div>
+        <div className="flex gap-2 md:grid md:grid-cols-3 lg:gap-4 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[93%] md:w-[96%] formDiv">
+          <div>{enroll}</div>
+          <div>{active}</div>
+          <div>{slot}</div>
+        </div>
+        <div className="md:px-4 px-3">{children}</div>
       </div>
-      <div className="px-4">{children}</div>
-    </div>
-    </>
+    </EmployeeStatsProvider>
   );
 }

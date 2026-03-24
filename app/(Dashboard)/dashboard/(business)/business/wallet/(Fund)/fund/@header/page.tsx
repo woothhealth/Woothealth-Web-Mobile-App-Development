@@ -1,11 +1,11 @@
 import React from "react";
-import { getCurrentUser } from "@/lib/currentUser";
+import { getBusinessCurrentUser } from "@/lib/businessCurrentUser";
 import { redirect } from "next/navigation";
 import WelcomeWrapper from "./WelcomeWrapper";
 
 
 export default async function Welcome() {
-  const user = await getCurrentUser();
+  const user = await getBusinessCurrentUser();
   
     if (!user || !user.id) {
       redirect('/login');

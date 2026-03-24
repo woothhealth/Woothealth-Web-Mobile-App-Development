@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import SideBar from "./SideBar";
 import ScrollToTop from "@/Components/ScrollToTop";
-import DashboardProvider from '@/app/(Dashboard)/dashboard/DashboardProvider';
+import DashboardProvider from '@/app/(Dashboard)/dashboard/BusinessDashboardProvider';
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {

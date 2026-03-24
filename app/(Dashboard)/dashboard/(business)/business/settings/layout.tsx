@@ -1,24 +1,21 @@
-'use client'
-
 import "@/styles/globals.css";
-import { usePathname, useRouter } from "next/navigation";
+import { SettingsProvider } from "./SettingsContext";
 
-export default function PlansLayout({
+export default function SettingsLayout({
   header,
   children
 }: Readonly<{
   header: React.ReactNode;
   children: React.ReactNode;
 }>) {
-
   return (
-    <>
-    <div className="w-full bg-[#FAFAFA]">
-      <div className="sticky top-0">{header}</div>
-      <div className="">
-        {children}
+    <SettingsProvider>
+      <div className="w-full bg-[#FAFAFA]">
+        <div className="sticky top-0 z-20">{header}</div>
+        <div className="relative md:px-6">
+          {children}
+        </div>
       </div>
-    </div>
-    </>
+    </SettingsProvider>
   );
 }

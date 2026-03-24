@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { LuPencilLine } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { useNotifications } from "@/context/NotificationContext";
+import { useBusinessDashboardUser } from "@/Components/BusinessDashboardUserProvider";
 
 interface ProfileData {
   industry: string;
@@ -13,7 +14,6 @@ interface ProfileData {
   userId: string;
   role: string;
   plan: string;
-  company: string;
   companyAddress: string;
   regNumber: string;
 }
@@ -27,6 +27,7 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(profileData);
   const { addNotification } = useNotifications();
+  const businessUser = useBusinessDashboardUser();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -44,23 +45,19 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
 
     try {
       const payload = {
-        company: formData.company,
+        industry: formData.industry,
         companyAddress: formData.companyAddress,
-        phone: formData.phone,
-        email: formData.email,
         regNumber: formData.regNumber,
       };
 
-      const response = await fetch("/api/me", {
-        method: "POST",
+      const response = await fetch("/api/business/profile", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          company: formData.company,
+          industry: formData.industry,
           companyAddress: formData.companyAddress,
-          phone: formData.phone,
-          email: formData.email,
           regNumber: formData.regNumber,
         }),
       });
@@ -119,7 +116,7 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 {/* Industry */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -127,7 +124,7 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
                   </label>
                   <input
                     type="text"
-                    name="firstName"
+                    name="industry"
                     value={formData.industry}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300"
@@ -135,37 +132,8 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300"
-                    required
-                  />
-                </div>
-
-                {/* Phone */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300"
-                    placeholder="+234..."
-                  />
-                </div>
-
                 {/* Address */}
-                <div className="col-span-2 lg:col-span-1">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Business Address
                   </label>
@@ -175,6 +143,7 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
                     value={formData.companyAddress}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300"
+                    required
                   />
                 </div>
 
@@ -183,7 +152,7 @@ export default function ProfileEditor({ profileData }: ProfileEditorProps) {
                     Registration Number
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     name="regNumber"
                     value={formData.regNumber}
                     onChange={handleChange}

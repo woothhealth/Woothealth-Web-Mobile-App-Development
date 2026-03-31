@@ -51,12 +51,19 @@ const path2 = [
 
 const SideBar = () => {
     const [isToggle, setIsToggle] = useState(false);
+    const [pressedUrl, setPressedUrl] = useState<string | null>(null);
 
     const click = () => {
         setIsToggle(!isToggle)
     }
 
     const pathname = usePathname()
+
+    const handleLinkClick = (url: string) => {
+        setPressedUrl(url)
+        setIsToggle(false)
+        setTimeout(() => setPressedUrl(null), 800)
+    }
 
   return (
     <section className='hidden lg:block lg:sticky lg:left-0 lg:top-0 px-6 h-screen w-fit border-r border-[#D9D9D9] py-8'>
@@ -70,9 +77,10 @@ const SideBar = () => {
             <div className='flex flex-col gap-1'>
                 {path.map((path, index) => {
                     const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
+                    const isPressed = pressedUrl === path.url
                 return (
-                    <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                    <Link key={index} href={path.url} onClick={() => handleLinkClick(path.url)}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${isPressed ? 'bg-[#cce6ff] text-[#000000]' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
                             </div>
@@ -84,9 +92,10 @@ const SideBar = () => {
             <div className='flex flex-col gap-2 h-full'>
                 {path2.map((path, index) => {
                     const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
+                    const isPressed = pressedUrl === path.url
                     return (
-                        <Link key={index} href={path.url}>
-                            <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <Link key={index} href={path.url} onClick={() => handleLinkClick(path.url)}>
+                            <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${isPressed ? 'bg-[#cce6ff] text-[#000000]' : ''}`}>
                                 <div className='text-xl'>
                                     {path.icon}
                                 </div>
@@ -111,9 +120,10 @@ const SideBar = () => {
                     <div className='flex flex-col gap-1'>
                         {path.map((path, index) => {
                         const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
+                        const isPressed = pressedUrl === path.url
                         return (
-                            <Link key={index} href={path.url}>
-                                <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                            <Link key={index} href={path.url} onClick={() => handleLinkClick(path.url)}>
+                                <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${isPressed ? 'bg-[#cce6ff] text-[#000000]' : ''}`}>
                                     <div className='text-2xl'>
                                         {path.icon}
                                     </div>
@@ -124,9 +134,10 @@ const SideBar = () => {
                     <div className='flex flex-col gap-1 h-full'>
                         {path2.map((path, index) => {
                             const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
+                            const isPressed = pressedUrl === path.url
                             return (
-                                <Link key={index} href={path.url}>
-                                    <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                <Link key={index} href={path.url} onClick={() => handleLinkClick(path.url)}>
+                                    <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''} ${isPressed ? 'bg-[#cce6ff] text-[#000000]' : ''}`}>
                                         <div className='text-2xl'>
                                             {path.icon}
                                         </div>

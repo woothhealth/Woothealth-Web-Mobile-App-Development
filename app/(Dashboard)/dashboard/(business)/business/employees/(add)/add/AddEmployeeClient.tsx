@@ -9,6 +9,7 @@ import { EmployeeFormInput, employeeSchema } from "@/lib/validator/employee";
 const AddEmployeeClient = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -71,25 +72,41 @@ const AddEmployeeClient = () => {
       const data = await res.json();
 
       if (res.status === 201) {
-        setIsSubmitted(true);
-        // Reset form after successful submission
-        setFormInput({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          dateOfBirth: '',
-          department: '',
-          gender: '',
-          plan: '',
-          status: 'active',
-        });
+        // Verify we actually got a created employee, not just a list response
+        if (data && typeof data === 'object' && data.success === true && Array.isArray(data.data) && data.data.length === 0) {
+          // Backend returned list format instead of created employee - this is an error
+          setErrorMessage('Error');
+          console.error('❌ Frontend detected backend returning list instead of created employee:', data);
+        } else {
+          // Success - we got a proper created employee response
+          setIsSubmitted(true);
+          setMessage(data?.message || 'Employee added successfully!');
+          setErrorMessage('');
+          // Reset form after successful submission
+          setFormInput({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            dateOfBirth: '',
+            department: '',
+            gender: '',
+            plan: '',
+            status: 'active',
+          });
+        }
       } else if (res.status === 409) {
-        setErrorMessage(data?.error || 'Employee already exists.');
+        const msg = data?.error || data?.details?.data?.error || 'Employee already exists.';
+        setErrorMessage(msg);
       } else if (res.status === 400) {
-        setErrorMessage(data?.error || 'Invalid employee data.');
+        const msg = data?.error || data?.details?.data?.error || 'Invalid employee data.';
+        setErrorMessage(msg);
+      } else if (res.status === 500) {
+        const msg = data?.error || 'Server error occurred. Please try again.';
+        setErrorMessage(msg);
       } else {
-        setErrorMessage(data?.error || 'Failed to add employee. Please try again.');
+        const msg = data?.error || data?.details?.data?.error || 'Failed to add employee. Please try again.';
+        setErrorMessage(msg);
       }
     } catch (err) {
       console.error(err);
@@ -121,33 +138,35 @@ const AddEmployeeClient = () => {
                     <p className=" mb-6">
                       Thank you for the addition. Please refresh the employee list to see the new employee.
                     </p>
-                    <Link
-                      href={`/dashboard/business/employees`}
-                      className="bg-[#49A5EF]/780 text-white px-10 font-semibold py-3 rounded-sm mr-4"
-                    >
-                      View Employee List
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setIsSubmitted(false);
-                        setFormInput({
-                          firstName: '',
-                          lastName: '',
-                          email: '',
-                          phone: '',
-                          dateOfBirth: '',
-                          department: '',
-                          gender: '',
-                          plan: '',
-                          status: 'active',
-                        });
-                        setFieldErrors({});
-                        setErrorMessage('');
-                      }}
-                      className="bg-gray-500 text-white px-10 font-semibold py-3 rounded-sm"
-                    >
-                      Add Another
-                    </button>
+                    <div className="flex items-center justify-center gap-4 flex-col md:flex-row">
+                      <Link
+                        href={`/dashboard/business/employees`}
+                        className="bg-[#49A5EF]/780 text-white px-4 md:px-10 font-semibold py-2 md:py-3 rounded-lg mr-4"
+                      >
+                        View Employee List
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setIsSubmitted(false);
+                          setFormInput({
+                            firstName: '',
+                            lastName: '',
+                            email: '',
+                            phone: '',
+                            dateOfBirth: '',
+                            department: '',
+                            gender: '',
+                            plan: '',
+                            status: 'active',
+                          });
+                          setFieldErrors({});
+                          setErrorMessage('');
+                        }}
+                        className="bg-gray-500 text-white px-4 md:px-10 font-semibold  py-2 md:py-3 rounded-sm"
+                      >
+                        Add Another
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className='flex flex-col gap-2'>
@@ -231,6 +250,7 @@ const AddEmployeeClient = () => {
                     </div>
 
                     {errorMessage && <span className="text-red-500/60 text-sm text-center">{errorMessage}</span>}
+                    {message && !errorMessage && <span className="text-green-600/80 text-sm text-center">{message}</span>}
 
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm mt-3'>
                       {isSubmitting ? 'Adding Employee...' : 'Add Employee'}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 import { FaWallet, FaTv, FaUserAlt } from "react-icons/fa";
 import { RiLayoutMasonryFill } from "react-icons/ri";
 import { ImLocation2 } from "react-icons/im";
@@ -51,9 +51,17 @@ const path2 = [
     }
 ]
 
-const Toggle = ({ isOpen }) => {
+const Toggle = ({ isOpen, onClose }) => {
     const pathname = usePathname()
+    const [pressedUrl, setPressedUrl] = useState(null)
+
     if (!isOpen) return null
+
+    const handleItemClick = (url) => {
+        setPressedUrl(url)
+        onClose?.()
+        setTimeout(() => setPressedUrl(null), 400)
+    }
   
     return (
     <>
@@ -62,7 +70,7 @@ const Toggle = ({ isOpen }) => {
             {path.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
-                    <Link key={index} href={path.url}>
+                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
@@ -76,7 +84,7 @@ const Toggle = ({ isOpen }) => {
             {path2.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/retail")
                 return (
-                    <Link key={index} href={path.url}>
+                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}

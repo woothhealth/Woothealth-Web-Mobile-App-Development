@@ -17,7 +17,7 @@ const ProviderSection = () => {
             </h3>
             </Reveal>
             <Reveal>
-            <Image src='/Mapimg.png' width={500} height={100} alt='Provider Map' className='md:h-30 h-25 w-auto' priority />
+            <Image src='/Mapimg.png' width={500} height={100} alt='Provider Map' className='md:h-30 h-25 w-fit' priority />
             </Reveal>
             <Reveal>
             <p className='md:max-w-2xl text-[1rem] md:text-[1.1rem] mb-2'>

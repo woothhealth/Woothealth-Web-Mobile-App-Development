@@ -54,7 +54,7 @@ const WalletSection = () => {
                 </Reveal>
             </div>
             <div className='lg:w-[40%] relative'>
-                <Image src='/Wallet_img.webp' alt='WootHealth Wallet Image' width={200} height={100} className='object-cover w-full h-fit' />
+                <Image src='/Wallet_img.webp' alt='WootHealth Wallet Image' width={500} height={100} className='object-cover w-full h-fit' />
                 <div className='absolute top-10 lg:top-18 left-0 flex gap-2 lg:gap-4 items-center bg-[rgba(255,255,255,0.75)] rounded-[10px] py-2 px-4 w-fit'>
                     <IoWalletOutline className='text-[#49A5EF] text-lg lg:text-xl'/>
                     <div>

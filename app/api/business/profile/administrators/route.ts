@@ -105,8 +105,17 @@ export async function POST(req: Request) {
 
     // Validate required fields
     if (!body.name || !body.email || !body.position || !body.role) {
+      const missingFields = []
+      if (!body.name) missingFields.push('name')
+      if (!body.email) missingFields.push('email')
+      if (!body.position) missingFields.push('position')
+      if (!body.role) missingFields.push('role')
+
       return NextResponse.json(
-        { error: "Missing required fields: name, email, position, and role are required" },
+        {
+          error: `Missing required fields: ${missingFields.join(', ')}`,
+          details: { missingFields }
+        },
         { status: 400 }
       );
     }
@@ -115,7 +124,10 @@ export async function POST(req: Request) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(body.email)) {
       return NextResponse.json(
-        { error: "Invalid email format" },
+        {
+          error: "Invalid email format",
+          details: { email: "Please provide a valid email address" }
+        },
         { status: 400 }
       );
     }
@@ -144,34 +156,65 @@ export async function POST(req: Request) {
     if (!backendRes.ok) {
       console.error(`Failed to create administrator: ${backendRes.status}`);
 
+      // Try to get detailed error from backend response
+      let errorMessage = 'Failed to create administrator';
+      let errorDetails = {};
+
+      try {
+        const errorData = await backendRes.json();
+        console.error('Backend error response:', errorData);
+
+        // Extract error message from various possible formats
+        if (errorData?.error) {
+          errorMessage = errorData.error;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        }
+
+        errorDetails = errorData;
+      } catch (parseError) {
+        console.error('Failed to parse backend error response:', parseError);
+        // Try to get text response
+        try {
+          const textResponse = await backendRes.text();
+          if (textResponse) {
+            errorMessage = textResponse;
+          }
+        } catch (textError) {
+          console.error('Failed to get text response:', textError);
+        }
+      }
+
       if (backendRes.status === 400) {
         return NextResponse.json(
-          { error: "Invalid administrator data" },
+          {
+            error: errorMessage,
+            details: errorDetails,
+            status: backendRes.status
+          },
           { status: 400 }
         );
       }
       if (backendRes.status === 409) {
         return NextResponse.json(
-          { error: "Administrator with this email already exists" },
+          {
+            error: errorMessage || "Administrator with this email already exists",
+            details: errorDetails,
+            status: backendRes.status
+          },
           { status: 409 }
         );
       }
 
-      // Return mock data for development if backend is not available (5xx errors)
-      if (backendRes.status >= 500) {
-        const mockAdmin = {
-          id: `admin_${Date.now()}`,
-          ...body,
-          status: "active",
-          addedDate: new Date().toISOString().split('T')[0]
-        };
-        return NextResponse.json(mockAdmin, { status: 201 });
-      }
-
-      // For other error codes, return the backend error
-      const errorData = await backendRes.json().catch(() => ({ error: 'Unknown error' }));
+      // For other error codes, return the detailed backend error
       return NextResponse.json(
-        { error: errorData?.error || 'Failed to add administrator' },
+        {
+          error: errorMessage,
+          details: errorDetails,
+          status: backendRes.status
+        },
         { status: backendRes.status }
       );
     }

@@ -5,7 +5,6 @@ export async function GET(req: Request) {
   try {
     // 1️⃣ Get all cookies from the incoming request
     const cookieHeader = req.headers.get("cookie") || "";
-    console.log("Incoming Cookies:", cookieHeader);
     if (!cookieHeader) {
       return NextResponse.json(
         { error: "Unauthorized - no cookies sent" },

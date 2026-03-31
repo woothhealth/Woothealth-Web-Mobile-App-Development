@@ -248,7 +248,7 @@ export default function UploadSLADocument({ documents = [], onDelete, onUpload }
                       <p className="text-sm text-gray-500 text-center">
                         or click to browse. Supported formats: PDF, DOC, DOCX, image
                       </p>
-                      <div className='md:space-x-4 space-y-2 md:space-y-0 md:space-y-0 flex flex-col md:flex-row items-center justify-center w-full'>
+                      <div className='md:space-x-4 space-y-2 md:space-y-0 flex flex-col md:flex-row items-center justify-center w-full'>
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}

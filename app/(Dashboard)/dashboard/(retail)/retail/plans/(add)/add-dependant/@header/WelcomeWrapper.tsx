@@ -80,7 +80,7 @@ export default function WelcomeWrapper({
         </div>
       </div>
 
-      <Toggle isOpen={menuOpen} />
+      <Toggle isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </section>
   );
 }

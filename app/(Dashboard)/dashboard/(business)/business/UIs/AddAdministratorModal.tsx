@@ -112,8 +112,47 @@ export default function AddAdministratorModal({ isOpen, onClose, onSuccess }: Ad
         }, 2000)
       } else if (res.status === 409) {
         setErrorMessage(data?.message || data?.error || 'Administrator already exists.')
+      } else if (res.status === 400) {
+        // Show detailed validation errors for 400 status
+        const errorMsg = data?.error || data?.message || 'Invalid data provided'
+        const details = data?.details
+
+        // If there are field-specific errors in details, show them
+        if (details && typeof details === 'object') {
+          const fieldErrors: Record<string, string> = {}
+          if (details.email) fieldErrors.email = details.email
+          if (details.name) fieldErrors.name = details.name
+          if (details.position) fieldErrors.position = details.position
+          if (details.role) fieldErrors.role = details.role
+
+          if (Object.keys(fieldErrors).length > 0) {
+            setFieldErrors(fieldErrors)
+            setErrorMessage('Please correct the highlighted fields.')
+          } else {
+            setErrorMessage(errorMsg)
+          }
+        } else {
+          setErrorMessage(errorMsg)
+        }
+
+        // Log detailed error for debugging
+        console.error('Administrator creation failed (400):', {
+          error: errorMsg,
+          details: details,
+          fullResponse: data
+        })
       } else {
-        setErrorMessage(data?.message || data?.error || 'Failed to add administrator. Please try again.')
+        // For other error codes, show the detailed backend error
+        const errorMsg = data?.error || data?.message || `Failed to add administrator (${res.status})`
+        setErrorMessage(errorMsg)
+
+        // Log the full error response for debugging
+        console.error('Administrator creation failed:', {
+          status: res.status,
+          statusText: res.statusText,
+          error: errorMsg,
+          fullResponse: data
+        })
       }
     } catch (err) {
       console.error(err)

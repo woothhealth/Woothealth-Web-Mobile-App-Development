@@ -87,7 +87,7 @@ const FormSection = () => {
                 }
         
                 try {
-                    const res = await fetch('/api/signup', {
+                    const res = await fetch('/api/business-signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

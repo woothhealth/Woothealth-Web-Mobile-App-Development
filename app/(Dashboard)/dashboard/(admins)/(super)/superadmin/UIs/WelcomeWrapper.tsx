@@ -88,7 +88,7 @@ export default function WelcomeWrapper({
         </div>
       </div>
 
-      <AdminToggle isOpen={menuOpen} />
+      <AdminToggle isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </section>
   );
 }

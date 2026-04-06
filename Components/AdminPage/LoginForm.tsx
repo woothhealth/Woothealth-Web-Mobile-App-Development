@@ -1,6 +1,5 @@
 'use client'
 
-import { loginAction } from '@/lib/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react'
@@ -33,7 +32,7 @@ const LoginForm = () => {
 
         setFormInput((prev) => ({
             ...prev,
-            [name]: type === value,
+            [name]: type === "checkbox" ? checked : value,
         }));
 
         setErrors((prev) => ({
@@ -81,6 +80,7 @@ const LoginForm = () => {
             body: JSON.stringify({
                 email: formData.get("email"),
                 password: formData.get("password"),
+                mode: "admin",
             }),
             });
 

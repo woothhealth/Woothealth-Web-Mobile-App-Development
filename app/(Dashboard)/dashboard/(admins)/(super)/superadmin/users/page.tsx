@@ -140,7 +140,6 @@ export default function ProvidersPage() {
 
   return (
     <div className="p-4 mb-8 w-full lg:max-w-6xl mx-auto">
-      <h3 className='text-2xl font-semibold mb-6'>User Management</h3>
       <Reveal>
         <div className="flex flex-col md:flex-row gap-4 mb-8 lg:w-[85%] lg:mx-auto">
           <input

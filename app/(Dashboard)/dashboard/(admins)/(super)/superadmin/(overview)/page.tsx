@@ -4,7 +4,7 @@ import PieChartWithCustomizedLabel from '../UIs/PieChart'
 
 const Page = () => {
   return (
-    <section className='bg-[#FFFFFF] py-4 text-[#000000] px-4'>
+    <section className='py-4 text-[#000000] px-4'>
       <div className='flex space-x-4'>
         <div className='px-2 flex items-center border border-[#D9D9D9] rounded-[5px] text-[15px]'>
           <FaRegFileAlt className='text-sm' />

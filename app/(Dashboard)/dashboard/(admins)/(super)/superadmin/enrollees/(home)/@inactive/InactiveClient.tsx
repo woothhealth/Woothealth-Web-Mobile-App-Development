@@ -19,9 +19,9 @@ const InactiveClient: React.FC<SlotClientProps> = ({ initialData = 0 }) => {
         <div className='border-[#49A5EF] border bg-[#49A5EF1A] p-2 text-[#49A5EF] rounded-[10px] w-fit text-3xl'>
           <PiCopySimpleLight/>
         </div>
-        <div className='flex flex-col -space-y-1'>
+        <div className='flex flex-col'>
           <p className='text-[15px] md:text-[16px]'>Inactive</p>
-          <h3 className='text-[17px] font-semibold md:text-[26px]'>
+          <h3 className='text-[19px] font-semibold md:text-[26px]'>
             {loading ? '...' : slotsAvailable.toLocaleString()}
           </h3>
           <p className='text-[13px] md:text-[14px]'>Suspended or Expired</p>

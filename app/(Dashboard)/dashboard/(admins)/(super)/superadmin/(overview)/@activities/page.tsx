@@ -56,7 +56,7 @@ const activity = [
 
 const page = () => {
   return (
-    <section className='py-4 md:p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl w-full'>
+    <section className='p-4 flex flex-col gap-3 bg-[#FFFFFF] rounded-2xl w-full'>
         <div className='flex justify-between'>
             <div className='flex items-center space-x-2 text-[20px] font-semibold'>
                 <div className='px-2 flex items-center border border-[#D9D9D9] rounded-[5px] text-[15px]'>

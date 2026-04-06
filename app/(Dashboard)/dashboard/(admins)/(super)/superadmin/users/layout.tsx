@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import Title from "../UIs/Title";
 
 
 export const metadata: Metadata = {
@@ -18,7 +19,8 @@ export default function ProvidersLayout({
     <>
     <div className="w-full bg-[#FAFAFA]">
       <div className="sticky top-0">{header}</div>
-      <div className="px-4">{children}</div>
+      <Title title="User Management"/>
+      <div className="md:px-4">{children}</div>
     </div>
     </>
   );

@@ -153,9 +153,19 @@ const path2 = [
     }
 ]
 
-const AdminToggle = ({ isOpen }: { isOpen: boolean }) => {
+const AdminToggle = ({ isOpen, onClose }: { isOpen: boolean; onClose?: () => void }) => {
     const pathname = usePathname()
     if (!isOpen) return null
+
+    const [pressedUrl, setPressedUrl] = useState<string | null>(null)
+    
+    if (!isOpen) return null
+    
+    const handleItemClick = (url: string) => {
+        setPressedUrl(url)
+        onClose?.()
+        setTimeout(() => setPressedUrl(null), 400)
+    }
   
     return (
     <>
@@ -164,7 +174,7 @@ const AdminToggle = ({ isOpen }: { isOpen: boolean }) => {
             {path.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
                 return (
-                    <Link key={index} href={path.url}>
+                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}
@@ -178,7 +188,7 @@ const AdminToggle = ({ isOpen }: { isOpen: boolean }) => {
             {path2.map((path, index) => {
                 const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
                 return (
-                    <Link key={index} href={path.url}>
+                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {path.icon}

@@ -19,9 +19,9 @@ const ActiveClient: React.FC<ActiveClientProps> = ({ initialData = 0 }) => {
         <div className='border-[#10B981] border bg-[#D1FAE5] p-2 text-[#10B981] rounded-[10px] w-fit text-3xl'>
           <CiUser/>
         </div>
-        <div className='flex flex-col -space-y-1'>
+        <div className='flex flex-col'>
           <p className='text-[15px] md:text-[16px]'>Active</p>
-          <h3 className='text-[17px] font-semibold md:text-[26px]'>
+          <h3 className='text-[19px] font-semibold md:text-[26px]'>
             {loading ? '...' : activeCount.toLocaleString()}
           </h3>
           <p className='text-[13px] md:text-[14px]'>Currently Enrolled</p>

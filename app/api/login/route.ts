@@ -4,9 +4,28 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { cookies } from "next/headers";
 
+type LoginMode = "login" | "admin";
+
+const ALLOWED_ROLES_BY_MODE: Record<LoginMode, readonly string[]> = {
+  login: ["business", "retail"],
+  admin: ["admin", "superadmin"],
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const body = await req.json() as { email?: string; password?: string; mode?: unknown };
+    const email = String(body.email ?? "");
+    const password = String(body.password ?? "");
+    const loginMode: LoginMode | null =
+      body.mode === "login" || body.mode === "admin" ? body.mode : null;
+    if (!loginMode) {
+      return NextResponse.json({
+        success: false,
+        message: "Login mode must be either 'login' or 'admin'.",
+      }, { status: 400 });
+    }
+
+    const allowedRoles = ALLOWED_ROLES_BY_MODE[loginMode];
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
     if (!BACKEND_URL) {
@@ -26,6 +45,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Invalid credentials" });
     }
 
+    const userRole = String(user.role ?? "");
+    if (!allowedRoles.includes(userRole)) {
+      return NextResponse.json({
+        success: false,
+        message: "This account is not allowed to log in from this page.",
+      });
+    }
+
     const cookieStore = (await cookies());
     cookieStore.set("session", user.userId, {
       httpOnly: true,
@@ -34,7 +61,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 1,
     });
-    cookieStore.set("role", user.role, {
+    cookieStore.set("role", userRole, {
       httpOnly: true,
       path: "/",
       sameSite: "lax",

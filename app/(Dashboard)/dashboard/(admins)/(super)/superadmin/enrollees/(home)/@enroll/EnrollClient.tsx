@@ -19,9 +19,9 @@ const EnrollClient: React.FC<EnrollClientProps> = ({ initialData = 0 }) => {
         <div className='border-[#8063E8] border bg-[#8063E81A] p-2 text-[#8063E8] rounded-[10px] w-fit text-3xl'>
           <CiUser/>
         </div>
-        <div className='flex flex-col -space-y-1'>
+        <div className='flex flex-col'>
           <p className='text-[15px] md:text-[16px]'>Total Enrollees</p>
-          <h3 className='text-[17px] font-semibold md:text-[26px]'>
+          <h3 className='text-[19px] font-semibold md:text-[26px]'>
             {loading ? '...' : enrolledCount.toLocaleString()}
           </h3>
           <p className='text-[13px] md:text-[14px]'>All Registered Enrollees</p>

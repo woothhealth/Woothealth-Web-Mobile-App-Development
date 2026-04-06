@@ -1,6 +1,5 @@
 'use client'
 
-import { loginAction } from '@/lib/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react'
@@ -83,6 +82,7 @@ const LoginForm = () => {
             body: JSON.stringify({
                 email: formData.get("email"),
                 password: formData.get("password"),
+                mode: "login",
             }),
             });
 

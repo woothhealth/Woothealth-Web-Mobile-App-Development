@@ -20,7 +20,7 @@ export async function GET(req: Request) {
           ...getBusinessHeaders(cookieHeader),
         },
         credentials: "include",
-        cache: "no-store",
+        next: { revalidate: 300 }, // Cache for 5 minutes
       }
     );
 

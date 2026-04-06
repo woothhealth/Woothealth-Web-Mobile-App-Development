@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
-import { IoCloseOutline, IoSearchSharp } from "react-icons/io5";
-import NotificationCenter from "../../UIs/NotificationCenter";
-import UserDropdown from "../../UIs/UserDropdown";
-import AdminToggle from "@/app/(Dashboard)/dashboard/(admins)/(super)/AdminToggle";
+import { IoCloseOutline } from "react-icons/io5";
+import Toggle from "@/UI/Toggle";
+import BusinessToggle from "@/app/(Dashboard)/dashboard/(business)/BusinessToggle";
+import NotificationCenter from "@/UI/NotificationCenter";
+import UserDropdown from "@/UI/UserDropdown";
 
-interface WelcomeWrapperProps {
+interface SharedHeaderProps {
+  title: string;
   firstName: string;
   lastName: string;
   displayLastName: string;
@@ -15,17 +17,22 @@ interface WelcomeWrapperProps {
   role: string;
   id: string;
   email?: string;
+  dashboardType?: 'business' | 'retail'; // To choose toggle
 }
 
-export default function WelcomeWrapper({
+const SharedHeader = memo(({
+  title,
   firstName,
   lastName,
   displayLastName,
   initials,
-  role,
+  id,
   email = "user@example.com",
-}: WelcomeWrapperProps) {
+  dashboardType = 'retail', // Default to retail
+}: SharedHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const ToggleComponent = dashboardType === 'business' ? BusinessToggle : Toggle;
 
   return (
     <section className="relative">
@@ -46,13 +53,7 @@ export default function WelcomeWrapper({
               />
             )}
           </div>
-            <form className="border border-[#D9D9D9] rounded-full px-1 py-1.5 space-x-2 flex items-center w-120 justify-between">
-              <input type="text" placeholder="Search enrollees, providers, PA codes, clients..." className="w-90 placeholder:text-sm outline-0 border-0 px-2 text-[15px]" />
-              <button className="bg-[#49A5EF] rounded-full p-1.5 text-[#ffffff] text-[16px]">
-                <IoSearchSharp />
-              </button>
-            </form>
-          
+          <h2 className="font-bold">{title}</h2>
         </div>
 
         {/* Right side: notifications and user info */}
@@ -71,7 +72,7 @@ export default function WelcomeWrapper({
                 {firstName} {displayLastName}
               </h3>
               <p className="text-[14px]">
-                ID: <span className="font-semibold text-[15px]">{role}</span>
+                ID: <span className="font-semibold text-[15px]">{id}</span>
               </p>
             </div>
 
@@ -85,7 +86,11 @@ export default function WelcomeWrapper({
         </div>
       </div>
 
-      <AdminToggle isOpen={menuOpen} />
+      <ToggleComponent isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </section>
   );
-}
+});
+
+SharedHeader.displayName = 'SharedHeader';
+
+export default SharedHeader;

@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
+import { useBusinessOverview } from '@/Components/BusinessOverviewContext';
 
 interface PlanData {
   name: string;
@@ -12,26 +13,8 @@ interface PlansClientProps {
 }
 
 const PlansClient: React.FC<PlansClientProps> = ({ initialData = [] }) => {
-  const [plans, setPlans] = useState<PlanData[]>(initialData);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchOverviewData = async () => {
-      try {
-        const response = await fetch('/api/business/overview');
-        if (response.ok) {
-          const data = await response.json();
-          setPlans(data.planBreakdown || []);
-        }
-      } catch (error) {
-        console.error('Failed to fetch overview data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOverviewData();
-  }, []);
+  const { overview, loading } = useBusinessOverview();
+  const plans = overview?.planBreakdown || initialData;
 
   if (loading) {
     return (
@@ -71,4 +54,4 @@ const PlansClient: React.FC<PlansClientProps> = ({ initialData = [] }) => {
   )
 }
 
-export default PlansClient
+export default memo(PlansClient);

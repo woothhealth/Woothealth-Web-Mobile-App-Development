@@ -1,7 +1,7 @@
 import React from "react";
 import { getCurrentUser } from "@/lib/currentUser";
 import { redirect } from "next/navigation";
-import WelcomeWrapper from "./WelcomeWrapper";
+import SharedHeader from "@/Components/SharedHeader";
 
 
 export default async function Welcome() {
@@ -25,7 +25,8 @@ export default async function Welcome() {
     const initials = (firstName?.[0] || "U") + (lastName?.[0] || "");
 
   return (
-    <WelcomeWrapper
+    <SharedHeader
+      title="WALLET"
       firstName={firstName}
       lastName={lastName}
       displayLastName={displayLastName}
@@ -33,6 +34,7 @@ export default async function Welcome() {
       role={role}
       id={id}
       email={user.email || "user@example.com"}
+      dashboardType="retail"
     />
   );
 }

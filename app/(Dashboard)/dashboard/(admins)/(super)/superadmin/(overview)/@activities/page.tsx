@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { CiUser } from 'react-icons/ci'
 import { FiFileText } from 'react-icons/fi'
@@ -64,7 +66,7 @@ const page = () => {
             </div>
             <button className='bg-[#49A5EF1A] text-[#49A5EF] text-[11px] py-2 px-6 hover:underline'>View All</button>
         </div>
-        <div className='flex flex-col gap-2 h-74 pr-2 overflow-y-auto'>
+        <div className='flex flex-col gap-2 h-74 pr-2 overflow-y-auto custom-scrollbar'>
             {activity.map((item, index) => {
                 const idNum = Number(item.id);
                 const isFirst = idNum === 1;
@@ -89,6 +91,23 @@ const page = () => {
             )
             })}
         </div>
+
+        <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+          margin-top: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #00000080;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #e0e0e0;
+        }
+      `}</style>
     </section>
   )
 }

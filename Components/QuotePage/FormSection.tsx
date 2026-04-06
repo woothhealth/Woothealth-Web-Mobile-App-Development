@@ -7,11 +7,11 @@ import React, { useEffect, useState, useTransition } from 'react'
 import { FaCheckCircle } from 'react-icons/fa'
 
 const FormSection = () => {
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-      const [errorMessage, setErrorMessage] = useState('');
-      const [isSubmitting, setIsSubmitting] = useState(false);
-      const [message, setMessage] = useState("");
-      const [isSubmitted, setIsSubmitted] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [message, setMessage] = useState("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const [formInput, setFormInput] = useState<QuotaFormInput>({
       firstName: '',
@@ -27,93 +27,93 @@ const FormSection = () => {
     });
 
     const resetForm = () => {
-  setFormInput({
-      firstName: '',
-      lastName: '',
-      phone: '+234',
-      email: '',
-      company: '',
-      companyAddress: '',
-      employeeNumber: '',
-      locate: '',
-      message: '',
-      check: false
-    });
-  setFieldErrors({});
-  setErrorMessage('');
-  setMessage('');
-  setIsSubmitted(false);
-};
+        setFormInput({
+            firstName: '',
+            lastName: '',
+            phone: '+234',
+            email: '',
+            company: '',
+            companyAddress: '',
+            employeeNumber: '',
+            locate: '',
+            message: '',
+            check: false
+            });
+        setFieldErrors({});
+        setErrorMessage('');
+        setMessage('');
+        setIsSubmitted(false);
+    };
     
-        const handleChange = (
-            e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
         ) => {
-            const { name, value } = e.target;
-            setFormInput(prev => ({ ...prev, [name]: value }));
-            setFieldErrors(prev => ({ ...prev, [name]: '' })); // clear field error
-        };
+        const { name, value } = e.target;
+        setFormInput(prev => ({ ...prev, [name]: value }));
+        setFieldErrors(prev => ({ ...prev, [name]: '' })); // clear field error
+    };
     
-        const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            let value = e.target.value;
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
     
-            if (!value.startsWith("+234")) value = "+234";
+        if (!value.startsWith("+234")) value = "+234";
     
-            const rest = value.slice(4).replace(/\D/g, "");
+        const rest = value.slice(4).replace(/\D/g, "");
     
-            setFormInput((prev) => ({
-                ...prev,
-                phone: "+234" + rest,
-            }));
+        setFormInput((prev) => ({
+            ...prev,
+            phone: "+234" + rest,
+        }));
+    }
+    
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        
+        setErrorMessage('');
+        setMessage('');
+        setFieldErrors({});
+        setIsSubmitting(true);
+        
+        const result = quotaSchema.safeParse(formInput);
+        
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.issues.forEach(issue => {
+                errors[issue.path[0] as string] = issue.message;
+            });
+            setFieldErrors(errors);
+            setIsSubmitting(false);
+            return;
         }
-    
-        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
         
-                setErrorMessage('');
-                setMessage('');
-                setFieldErrors({});
-                setIsSubmitting(true);
+        try {
+            const res = await fetch('/api/business-signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formInput,
+                    role: 'business',
+                    password: 'Default@123',
+                }),
+            });
         
-                const result = quotaSchema.safeParse(formInput);
+            const data = await res.json();
         
-                if (!result.success) {
-                    const errors: Record<string, string> = {};
-                    result.error.issues.forEach(issue => {
-                    errors[issue.path[0] as string] = issue.message;
-                    });
-                    setFieldErrors(errors);
-                    setIsSubmitting(false);
-                    return;
-                }
-        
-                try {
-                    const res = await fetch('/api/business-signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ...formInput,
-                        role: 'business',
-                        password: 'Default@123',
-                    }),
-                    });
-        
-                    const data = await res.json();
-        
-                    if (res.status === 201) {
-                    setIsSubmitted(true);
-                    setMessage(data?.message || 'Registration successful');
-                    } else if (res.status === 409) {
-                    setErrorMessage(data?.message || 'User already registered.');
-                    } else {
-                    setErrorMessage(data?.message || 'Sign up failed. Please try again.');
-                    }
-                } catch (err) {
-                    console.error(err);
-                    setErrorMessage('Network error. Please try again.');
-                } finally {
-                    setIsSubmitting(false);
-                }
-            };
+            if (res.status === 201) {
+                setIsSubmitted(true);
+                setMessage(data?.message || 'Registration successful');
+            } else if (res.status === 409) {
+                setErrorMessage(data?.message || 'User already registered.');
+            } else {
+                setErrorMessage(data?.message || 'Sign up failed. Please try again.');
+            }
+        } catch (err) {
+            console.error(err);
+            setErrorMessage('Network error. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
   return (
     <section className='relative min-h-screen mb-16'>

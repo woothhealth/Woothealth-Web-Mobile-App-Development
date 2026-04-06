@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useBusinessOverview as useBusinessOverviewQuery, useBusinessEmployees } from '@/lib/api';
 
 interface EmployeeStats {
   success: boolean;
@@ -38,47 +39,25 @@ interface BusinessOverviewContextType {
   employees: EmployeeStats | null;
   loading: boolean;
   error: string | null;
-  refreshData: () => Promise<void>;
+  refetch: () => void;
 }
 
 const BusinessOverviewContext = createContext<BusinessOverviewContextType | undefined>(undefined);
 
 export const BusinessOverviewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [overview, setOverview] = useState<OverviewData | null>(null);
-  const [employees, setEmployees] = useState<EmployeeStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: overview, isLoading: overviewLoading, error: overviewError, refetch: refetchOverview } = useBusinessOverviewQuery();
+  const { data: employees, isLoading: employeesLoading, error: employeesError, refetch: refetchEmployees } = useBusinessEmployees();
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loading = overviewLoading || employeesLoading;
+  const error = overviewError?.message || employeesError?.message || null;
 
-      // Fetch both endpoints in parallel
-      const [overviewRes, employeesRes] = await Promise.all([
-        fetch('/api/business/overview'),
-        fetch('/api/business/employees')
-      ]);
-
-      const overviewData = await overviewRes.json();
-      const employeesData = await employeesRes.json();
-
-      setOverview(overviewData);
-      setEmployees(employeesData);
-    } catch (err) {
-      console.error('Failed to fetch business data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
-    } finally {
-      setLoading(false);
-    }
+  const refetch = () => {
+    refetchOverview();
+    refetchEmployees();
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
-    <BusinessOverviewContext.Provider value={{ overview, employees, loading, error, refreshData: fetchData }}>
+    <BusinessOverviewContext.Provider value={{ overview: overview || null, employees: employees || null, loading, error, refetch }}>
       {children}
     </BusinessOverviewContext.Provider>
   );

@@ -70,14 +70,14 @@ const page = () => {
         <div className='py-8 text-center text-gray-500'>No administrators found.</div>
       ) : (
         <div className='space-y-4'>
-          {administrators.map((item) => (
-            <div key={item.id} className='flex justify-between border items-center border-[#D9D9D9] rounded-[10px] p-2'>
+          {administrators.map((item, index) => (
+            <div key={item.id ?? `admin-${index}`} className='flex justify-between border items-center border-[#D9D9D9] rounded-[10px] p-2'>
               <div className='flex gap-3'>
                 <div className='bg-[#49A5EF1A] text-[#49A5EF] rounded-full w-10 h-10 flex items-center justify-center'>
                   <FaUser />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-lg'>{item.name}</h3>
+                  <h3 className='font-semibold text-lg uppercase'>{item.name}</h3>
                   <p className='text-base'>{item.position}</p>
                   <p className='text-[0.9rem]'>{item.email}</p>
                   <p className='text-[#49A5EF] text-xs'>{item.role}</p>

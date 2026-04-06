@@ -1,11 +1,8 @@
-import type { Metadata } from "next";
+'use client';
+
 import "@/styles/globals.css";
+import { AdminOverviewProvider } from "@/Components/AdminOverviewContext";
 
-
-export const metadata: Metadata = {
-  title: "WooHealth Dashboard",
-  description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
-};
 
 export default function DashboardLayout({
   children,
@@ -33,9 +30,10 @@ export default function DashboardLayout({
   telemedicineStats: React.ReactNode;
 }>) {
   return (
+    <AdminOverviewProvider>
     <>
     <div className="relative w-full bg-[#FAFAFA] pb-4 space-y-2">
-      <div className="sticky top-0">{welcome}</div>
+      <div className="sticky top-0 z-10">{welcome}</div>
       <div className="sticky">{head}</div>
       <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
         <div>{totalUsers}</div>
@@ -56,5 +54,6 @@ export default function DashboardLayout({
       </div>
     </div>
     </>
+    </AdminOverviewProvider>
   );
 }

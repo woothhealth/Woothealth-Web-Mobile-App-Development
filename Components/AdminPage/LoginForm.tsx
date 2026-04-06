@@ -97,7 +97,7 @@ const LoginForm = () => {
              if (result.role === "superadmin") {
                 router.push("/dashboard/superadmin");
             } else if (result.role === "admin") {
-                router.push("/dashboard/admin");
+                router.push("/dashboard/superadmin");
             } else {
                 router.push("/admin"); // fallback
             }

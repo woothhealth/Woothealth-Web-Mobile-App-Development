@@ -9,9 +9,9 @@ export default async function AdminPage() {
 
   if (session) {
     redirect(
-      role === "superadmin"
+      role === "superadmin" || role === "admin"
         ? "/dashboard/superadmin"
-        : "/dashboard/retail"
+        : "/admin"
     );
   }
 

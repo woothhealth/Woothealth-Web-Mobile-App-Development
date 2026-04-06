@@ -30,4 +30,4 @@ const ActiveClient: React.FC<ActiveClientProps> = ({ initialData = 0 }) => {
   );
 };
 
-export default ActiveClient;
+export default React.memo(ActiveClient);

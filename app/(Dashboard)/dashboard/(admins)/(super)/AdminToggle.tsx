@@ -1,7 +1,7 @@
 'use client'
 
 import React, { use, useState } from 'react'
-import { FaWallet, FaTv, FaUserAlt } from "react-icons/fa";
+import { FaUserAlt } from "react-icons/fa";
 import { RiLayoutMasonryFill } from "react-icons/ri";
 import { IoMdSettings } from "react-icons/io";
 import Link from 'next/link';
@@ -27,43 +27,56 @@ const path = [
         icon: <RiLayoutMasonryFill/>
     },
     {
+        name: 'Claims',
+        url: '/dashboard/superadmin/claims',
+        icon: <BiSolidFile/>
+    },
+    {
         name: 'Clients',
-        url: '/dashboard/superadmin/clients',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/clients',
         icon: <HiMiniUserGroup/>
     },
     {
         name: 'Benefits/Plan',
-        url: '/dashboard/superadmin/benefits',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/benefits',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Finance',
-        url: '/dashboard/superadmin/finance',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/finance',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Leads',
-        url: '/dashboard/superadmin/leads',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/leads',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Feedback',
-        url: '/dashboard/superadmin/feedback',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/feedback',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Tickets',
-        url: '/dashboard/superadmin/tickets',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/tickets',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Employee',
-        url: '/dashboard/superadmin/employee',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/employee',
         icon: <BiSolidFile/>
     },
     {
         name: 'Providers',
-        url: '/dashboard/superadmin/providers',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/providers',
         icon: <RiLayoutMasonryFill/>
     },
     {
@@ -73,47 +86,56 @@ const path = [
     },
     {
         name: 'Reimbursement',
-        url: '/dashboard/superadmin/reimbursement',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/reimbursement',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Validations',
-        url: '/dashboard/superadmin/validations',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/validations',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'PA Codes',
-        url: '/dashboard/superadmin/pa-code',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/pa-code',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Prescription',
-        url: '/dashboard/superadmin/prescription',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/prescription',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Telemedicine',
-        url: '/dashboard/superadmin/telemedicine',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/telemedicine',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Pre-Employment Tests',
-        url: '/dashboard/superadmin/pre-employment',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/pre-employment',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Notification',
-        url: '/dashboard/superadmin/notification',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/notification',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Roles',
-        url: '/dashboard/superadmin/roles',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/roles',
         icon: <RiLayoutMasonryFill/>
     },
     {
         name: 'Product & Tech',
-        url: '/dashboard/superadmin/product',
+        url: '/dashboard/superadmin/coming',
+        // url: '/dashboard/superadmin/product',
         icon: <RiLayoutMasonryFill/>
     }
 ]
@@ -121,12 +143,12 @@ const path = [
 const path2 = [
     {
         name: 'Profile',
-        url: '/dashboard/business/profile',
+        url: '/dashboard/superadmin/profile',
         icon: <FaUserAlt/>
     },
     {
         name: 'Settings',
-        url: '/dashboard/business/settings',
+        url: '/dashboard/superadmin/settings',
         icon: <IoMdSettings/>
     }
 ]
@@ -140,7 +162,7 @@ const AdminToggle = ({ isOpen }: { isOpen: boolean }) => {
     <div className='absolute top-18 left-0 z-50 flex flex-col gap-6 h-screen bg-[#FFFFFF] w-[65%] px-4 pt-6 pb-10 overflow-y-scroll'>
         <div className='flex flex-col gap-1'>
             {path.map((path, index) => {
-                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
+                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
                 return (
                     <Link key={index} href={path.url}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
@@ -154,7 +176,7 @@ const AdminToggle = ({ isOpen }: { isOpen: boolean }) => {
         </div>
         <div className='flex flex-col gap-1 h-full'>
             {path2.map((path, index) => {
-                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/business")
+                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
                 return (
                     <Link key={index} href={path.url}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>

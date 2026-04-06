@@ -107,4 +107,4 @@ const OverviewClient: React.FC = () => {
   )
 }
 
-export default OverviewClient
+export default React.memo(OverviewClient);

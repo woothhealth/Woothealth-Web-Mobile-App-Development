@@ -12,7 +12,7 @@ const FormSection: React.FC = async () => {
     if (session.role === "superadmin") {
       redirect("/dashboard/superadmin");
     } else if (session.role === "admin") {
-      redirect("/dashboard/admin");
+      redirect("/dashboard/superadmin");
     } else {
       redirect("/admin"); // fallback for unknown roles
     }

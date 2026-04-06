@@ -1,7 +1,7 @@
 import React from "react";
 import { getCurrentUser } from "@/lib/currentUser";
 import { redirect } from "next/navigation";
-import WelcomeWrapper from "./WelcomeWrapper";
+import WelcomeWrapper from "../../UIs/WelcomeWrapper";
 
 
 export default async function Welcome() {

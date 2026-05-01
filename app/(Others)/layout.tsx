@@ -9,13 +9,11 @@ export default function OthersLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-    <body className={`antialiased`}>
+    <div>
       <NavBar />
         <ScrollToTop/>
         {children}
       <SmallFooter />
-    </body>
-    </html>
+    </div>
   );
 }

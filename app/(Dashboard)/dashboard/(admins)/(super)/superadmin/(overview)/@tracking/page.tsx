@@ -4,7 +4,7 @@ import { TiClipboard } from "react-icons/ti";
 
 const page = () => {
   return (
-    <section className='py-4 md:p-4 flex flex-col space-y-4 bg-[#FFFFFF] rounded-[10px]'>
+    <section className='p-4 flex flex-col space-y-4 bg-[#FFFFFF] rounded-[10px]'>
         <div className='flex items-center space-x-2 text-sm'>
             <div className='px-3 flex items-center border border-[#D9D9D9] rounded-[5px] text-sm'>
                 <TiClipboard/>

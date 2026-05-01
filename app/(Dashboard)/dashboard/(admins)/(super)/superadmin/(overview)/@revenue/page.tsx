@@ -6,7 +6,7 @@ import { IoIosArrowDown } from 'react-icons/io'
 
 const Page = () => {
   return (
-    <section className='py-4 text-[#000000] px-4 space-y-4'>
+    <section className='py-4 text-[#000000] px-4 space-y-6'>
       <div className='flex items-center justify-between gap-4'>
         <div className='flex items-center space-x-4'>
           <div className='px-2 py-1 md:py-0 flex items-center h-fit border border-[#D9D9D9] rounded-[5px] text-[15px]'>
@@ -22,7 +22,9 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <BarChartView isAnimationActive={true}/>
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <BarChartView isAnimationActive={true}/>
+      </div>
     </section>
   )
 }

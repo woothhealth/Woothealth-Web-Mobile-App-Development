@@ -3,6 +3,7 @@ import Link from 'next/link'
 import LoginForm from './LoginForm';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 
 const FormSection: React.FC = async () => {
   const session = await getSession();
@@ -18,11 +19,23 @@ const FormSection: React.FC = async () => {
     }
   }
   return (
-    <section className='relative min-h-[90svh] lg:min-h-[85svh] mb-16'>
-      <div className='relative flex flex-col items-center justify-center '>
-        <div className='absolute top-0 bg-[#120052] h-40 px-8 w-full'></div>
-        <div className='absolute formDiv overflow-y-scroll md-h-full top-15 bg-[#FFFFFF] rounded-3xl py-8 px-6 lg:px-16 w-[90%] lg:w-[40%]'>
+    <section className='relative h-svh'>
+      <div className='flex flex-col items-center justify-center bg-[#49A5EF] h-full space-y-3'>
+        <div className='flex flex-col space-y-2 items-center'>
+          <div className='bg-[#ffffff]/80 rounded-[15px] p-1 w-fit'>
+            <Image src='/Dashboard_image.png' alt='Logo' width={200} height={100} className='h-10 w-fit' priority/>
+          </div>
+          <div className='text-center -space-y-1'>
+            <h1 className='text-2xl font-bold text-white tracking-wider'>WOOTHEALTH</h1>
+            <h3 className='italic text-sm text-[#ffffff]/80'>Health care simplified</h3>
+          </div>
+        </div>
+        <div className='formDiv overflow-y-scroll md-h-full bg-[#FFFFFF] rounded-3xl py-8 px-6 w-[90%] lg:w-[30%]'>
           <LoginForm/>
+        </div>
+        <div className='text-[#ffffff]/80 text-sm text-center'>
+          <p>This portal is restricted to Administrators only</p>
+          <p className='text-[.8rem] tracking-wide'>&copy; {new Date().getFullYear()} | WootHealth | All rights reserved.</p>
         </div>
       </div>
     </section>

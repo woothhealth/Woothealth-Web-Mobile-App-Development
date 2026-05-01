@@ -63,17 +63,17 @@ export default function UserDropdown({
 
           {/* Menu Items */}
           <div className="py-2">
-            <Link href="/dashboard/business/profile">
+            <Link href="/dashboard/superadmin/profile">
               <div className="px-4 py-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition">
                 <FaUserAlt className="text-gray-600" />
                 <span className="text-gray-700">Profile</span>
               </div>
             </Link>
 
-            <Link href="/dashboard/business/settings">
+            <Link href="/dashboard/superadmin/">
               <div className="px-4 py-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition">
                 <IoSettings className="text-gray-600" />
-                <span className="text-gray-700">Settings</span>
+                <span className="text-gray-700">Overview</span>
               </div>
             </Link>
           </div>

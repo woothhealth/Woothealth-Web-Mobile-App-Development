@@ -106,20 +106,27 @@ const LoginForm = () => {
 
 
   return (
-    <form action={handleLogin} className='flex flex-col gap-8 items-center justify-center md:mx-0' aria-live='polite'>
-        <h3 className='text-[24px] font-semibold'>Log in</h3>
-        <div className='flex flex-col gap-3 w-full'>
+    <form action={handleLogin} className='flex flex-col gap-4 justify-center md:mx-0' aria-live='polite'>
+        <div className='text-start'>
+            <div className='bg-[#49A5EF]/70 text-[#ffffff]/80 px-2 py-0.5 w-fit rounded-full flex items-center space-x-1 animate-pulse'>
+                <div className='bg-red-400 animate-bounce h-2 w-2 rounded-full'></div>
+                <p className='text-xs animate-none'>Admin access only</p>
+            </div>
+            <h3 className='text-[22px] font-semibold uppercase'>Welcome Back</h3>
+            <p className='text-sm text-[#333333]/80'>Sign in with your Admin Credentials to continue</p>
+        </div>
+        <div className='flex flex-col gap-2 w-full'>
             <label htmlFor='email' className='md:text-lg text-base'>Email</label>
-            <input type='text' placeholder='Enter Your Email address' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm' id='email' name='email' onChange={handleChange}/>
+            <input type='text' placeholder='Enter Your Email address' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]' id='email' name='email' onChange={handleChange}/>
             {errors.email && (
                 <p className="text-red-500/60 text-sm">{errors.email}</p>
             )}
         </div>
 
-        <div className='flex flex-col gap-3 w-full'>
+        <div className='flex flex-col gap-2 w-full'>
             <label htmlFor='password' className='md:text-lg text-base'>Password</label>
             <div className='relative'>
-                <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='Enter Your Password' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full' onChange={handleChange}/>
+                <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='**********' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#49A5EF]' onChange={handleChange}/>
                 <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
                   {showPassword ? <LuEyeClosed/> : <LuEye/>}
                 </button>

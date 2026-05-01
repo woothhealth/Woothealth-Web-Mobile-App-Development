@@ -47,7 +47,7 @@ export default function DashboardLayout({
       </div>
       <div className="px-2 md:px-4 flex flex-col md:flex-row gap-4 md:gap-6">
         <div className="md:w-[58%] md:space-y-4 border border-[#D9D9D9] rounded-[10px]">{activities}</div>
-        <div className="md:w-[40%] md:space-y-4">
+        <div className="md:w-[40%] space-y-4">
           <div className="border border-[#D9D9D9] rounded-[10px]">{pending}</div>
           <div className="border border-[#D9D9D9] rounded-[10px]">{tracking}</div>
         </div>

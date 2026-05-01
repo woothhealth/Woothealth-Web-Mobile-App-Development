@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { LuUpload } from 'react-icons/lu';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 import Link from 'next/link';
+import { FaEllipsisV, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import DeleteConfirmModal from '../../DeleteConfirmModal';
 import { useAdminClaimsContext } from '@/Components/AdminClaimsContext';
 
 type Claim = {
@@ -20,9 +22,13 @@ const ITEMS_PER_PAGE = 20;
 
 export default function ClaimsClient() {
   const { claims, loading, error } = useAdminClaimsContext();
+  const [localClaims, setLocalClaims] = useState<Claim[]>(claims);
+  const [deleteTarget, setDeleteTarget] = useState<Claim | null>(null);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'patient' | 'provider' | 'status'>('patient');
   const [page, setPage] = useState(1);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const tableRef = useRef<HTMLDivElement | null>(null);
 
   const categories = [
     { label: 'Patient', value: 'patient' },
@@ -34,13 +40,13 @@ export default function ClaimsClient() {
 
   const filteredClaims = useMemo(() => {
     const q = search.toLowerCase();
-    return claims.filter((claim: Claim) => {
+    return localClaims.filter((claim: Claim) => {
       if (selectedCategory === 'patient') return (claim.patientName || '').toLowerCase().includes(q);
       if (selectedCategory === 'provider') return claim.hospitalProvider.toLowerCase().includes(q);
       if (selectedCategory === 'status') return claim.status.toLowerCase().includes(q);
       return true;
     });
-  }, [claims, search, selectedCategory]);
+  }, [localClaims, search, selectedCategory]);
 
   const paginatedClaims = useMemo(() => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
@@ -48,6 +54,33 @@ export default function ClaimsClient() {
   }, [filteredClaims, page]);
 
   const totalPages = Math.ceil(filteredClaims.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    setLocalClaims(claims);
+  }, [claims]);
+
+  const handleDeleteClaim = (id: string) => {
+    const claimToDelete = localClaims.find((claim) => claim.id === id);
+    setLocalClaims((current) => current.filter((claim) => claim.id !== id));
+    if (claimToDelete) {
+      toast.success(`Claim for ${claimToDelete.patientName ?? 'this patient'} deleted successfully.`);
+    }
+    setDeleteTarget(null);
+    setOpenMenuId(null);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -85,10 +118,10 @@ export default function ClaimsClient() {
   }
 
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 py-4 w-full">
       {/* Search and Filter */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-center w-full">
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <div className="flex flex-col md:flex-row md:items-center justify-center w-full">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center md:w-[70%] w-full mx-auto">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value as any)}
@@ -105,114 +138,252 @@ export default function ClaimsClient() {
             placeholder={`Search by ${selectedCategory}...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF] min-w-[300px]"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF] w-full"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden md:w-[95%] mx-auto">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className="bg-[#ffffff] rounded-[10px] overflow-hidden md:w-[95%] mx-auto">
+        {/* Header */}
+        <div className="hidden md:block">
+          <table className="min-w-full table-fixed">
+            <colgroup>
+              <col style={{width: '15%'}} />
+              <col style={{width: '15%'}} />
+              <col style={{width: '10%'}} />
+              <col style={{width: '20%'}} />
+              <col style={{width: '15%'}} />
+              <col style={{width: '10%'}} />
+              <col style={{width: '15%'}} />
+            </colgroup>
+            <thead className="border-b border-[#D9D9D9]">
               <tr>
-                {headers.map((header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-left text-sm md:text-base font-medium bg-[#49A5EF] text-[#ffffff] uppercase tracking-wider"
-                  >
-                    {header}
+                {headers.map((h) => (
+                  <th key={h} className="text-left text-[18px] px-6 py-6">
+                    {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={headers.length} className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <span className="ml-2">Loading claims...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginatedClaims.length === 0 ? (
-                <tr>
-                  <td colSpan={headers.length} className="px-6 py-4 text-center text-gray-500">
-                    No claims found
-                  </td>
-                </tr>
-              ) : (
-                paginatedClaims.map((claim: Claim) => (
-                  <tr key={claim.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(claim.dateOfService)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {claim.patientName || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {claim.hmoId || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {claim.hospitalProvider}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(claim.amount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(claim.status)}`}>
-                        {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Link
-                          href={`/dashboard/superadmin/claims/${claim.id}`}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          View
-                        </Link>
-                        <Link
-                          href={`/dashboard/superadmin/claims/${claim.id}/edit`}
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          Edit
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
           </table>
+        </div>
+        <div ref={tableRef} className='max-h-120 lg:max-h-96 overflow-y-auto custom-scrollbar'>
+          {/* Mobile view */}
+          <div className="md:hidden">
+            {loading ? (
+              <div className="p-4 text-center">
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span className="ml-2">Loading claims...</span>
+                </div>
+              </div>
+            ) : paginatedClaims.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                No claims found
+              </div>
+            ) : (
+              <table className="min-w-full table-fixed">
+                <thead className="border-b border-[#D9D9D9]">
+                  <tr>
+                    {headers.map((h) => (
+                      <th key={h} className="text-left md:text-[18px] px-2 py-3">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedClaims.map((claim: Claim) => (
+                    <tr key={claim.id} className="hover:bg-gray-50 text-[15px] md:text-base">
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatDate(claim.dateOfService)}</td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.patientName || 'N/A'}</td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hmoId || 'N/A'}</td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hospitalProvider}</td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatCurrency(claim.amount)}</td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB]">
+                        <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(claim.status)}`}>
+                          {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-2 py-2 border-b border-[#E5E7EB] relative">
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === claim.id ? null : claim.id)}
+                          className="text-slate-500 hover:text-slate-700"
+                        >
+                          <FaEllipsisV />
+                        </button>
+                        {openMenuId === claim.id && (
+                          <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
+                            <Link
+                              href={`/dashboard/superadmin/claims/${claim.id}`}
+                              rel="noreferrer"
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              onClick={() => setOpenMenuId(null)}
+                            >
+                              <FaEye /> View
+                            </Link>
+                            <Link
+                              href={`/dashboard/superadmin/claims/${claim.id}/edit`}
+                              rel="noreferrer"
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              onClick={() => setOpenMenuId(null)}
+                            >
+                              <FaEdit /> Edit
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setDeleteTarget(claim);
+                                setOpenMenuId(null);
+                              }}
+                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                            >
+                              <FaTrash /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+          {/* Desktop view */}
+          <div className="hidden md:block">
+            {loading ? (
+              <div className="p-4 text-center">
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span className="ml-2">Loading claims...</span>
+                </div>
+              </div>
+            ) : paginatedClaims.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                No claims found
+              </div>
+            ) : (
+              <table className='min-w-full table-fixed'>
+                <colgroup>
+                  <col style={{width: '15%'}} />
+                  <col style={{width: '15%'}} />
+                  <col style={{width: '10%'}} />
+                  <col style={{width: '20%'}} />
+                  <col style={{width: '15%'}} />
+                  <col style={{width: '10%'}} />
+                  <col style={{width: '15%'}} />
+                </colgroup>
+                <tbody>
+                  {paginatedClaims.map((claim: Claim) => (
+                    <tr key={claim.id} className="hover:bg-gray-50 text-[15px]">
+                      <td className="px-6 py-3 border-b border-[#E5E7EB]">{formatDate(claim.dateOfService)}</td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB]">{claim.patientName || 'N/A'}</td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB]">{claim.hmoId || 'N/A'}</td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB]">{claim.hospitalProvider}</td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB]">{formatCurrency(claim.amount)}</td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB] text-center">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(claim.status)}`}>
+                          {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 border-b border-[#E5E7EB] relative text-center">
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === claim.id ? null : claim.id)}
+                          className="text-slate-500 hover:text-slate-700"
+                        >
+                          <FaEllipsisV />
+                        </button>
+                        {openMenuId === claim.id && (
+                          <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
+                            <Link
+                              href={`/dashboard/superadmin/claims/${claim.id}`}
+                              rel="noreferrer"
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              onClick={() => setOpenMenuId(null)}
+                            >
+                              <FaEye /> View
+                            </Link>
+                            <Link
+                              href={`/dashboard/superadmin/claims/${claim.id}/edit`}
+                              rel="noreferrer"
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              onClick={() => setOpenMenuId(null)}
+                            >
+                              <FaEdit /> Edit
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setDeleteTarget(claim);
+                                setOpenMenuId(null);
+                              }}
+                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                            >
+                              <FaTrash /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Pagination */}
+      {deleteTarget && (
+        <DeleteConfirmModal
+          title="Delete claim"
+          description={
+            <>
+              Are you sure you want to delete the claim for <strong>{deleteTarget.patientName ?? 'this patient'}</strong>? This cannot be undone.
+            </>
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => handleDeleteClaim(deleteTarget.id)}
+        />
+      )}
+
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-700">
-            Showing {((page - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(page * ITEMS_PER_PAGE, filteredClaims.length)} of {filteredClaims.length} claims
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setPage(Math.min(totalPages, page + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Next
-            </button>
-          </div>
+        <div className="flex justify-center mt-4 lg:p-4 items-center gap-0.5 lg:gap-2 md:w-[90%] mx-auto">
+          <button
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            Previous
+          </button>
+          <span className="px-3 py-1 text-sm text-gray-700">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page === totalPages}
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            Next
+          </button>
         </div>
       )}
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 6px;
+          margin-top: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #00000032;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #00000080;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #e0e0e0;
+        }
+      `}</style>
     </div>
   );
 }

@@ -10,15 +10,15 @@ export default async function Welcome() {
     if (!user || !user.id) {
       redirect('/login');
     }
-  
+    
     // Use firstName and lastName from user object
     const firstName = user.name || 'User';
     const lastName = user.lastName || '';
     
-    // Truncate lastName: if > 6 chars, show first char + '.'
+    // Truncate lastName: if > 6 chars, show first char + '.''
     const displayLastName = lastName.length > 6 ? lastName[0] + '.' : lastName;
     
-    const role = user.role || 'No assigneed role';
+    const role = user.role || 'No assigned role';
     const id = user.id || 'No ID';
     
     // Generate initials from first and last name

@@ -4,7 +4,7 @@ import { MdOutlinePendingActions } from 'react-icons/md'
 
 const page = () => {
   return (
-    <section className='py-4 md:p-4 flex gap-3 bg-[#FFFFFF] lg:space-x-16 rounded-[10px]'>
+    <section className='p-4 flex gap-3 bg-[#FFFFFF] lg:space-x-16 rounded-[10px]'>
             <div className='bg-[#4755691A] p-2 w-fit h-fit rounded-[10px] text-[20px]'>
                 <MdOutlinePendingActions />
             </div>

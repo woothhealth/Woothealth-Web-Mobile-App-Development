@@ -10,14 +10,12 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-    <body className={`antialiased`}>
+    <div>
       <NavBar />
         <ScrollToTop/>
         {children}
         <BitrixChat />
       <Footer />
-    </body>
-    </html>
+    </div>
     );
 }

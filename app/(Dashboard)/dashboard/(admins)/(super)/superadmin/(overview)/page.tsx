@@ -11,7 +11,9 @@ const Page = () => {
         </div>
         <h3 className='font-semibold text-lg'>Claims Status</h3>
       </div>
-      <PieChartWithCustomizedLabel isAnimationActive={true}/>
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <PieChartWithCustomizedLabel isAnimationActive={true}/>
+      </div>
     </section>
   )
 }

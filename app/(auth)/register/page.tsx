@@ -5,8 +5,8 @@ import ComingSoon from '@/app/ComingSoon'
 const page = () => {
   return (
     <>
-      <Register/>
-      {/* <ComingSoon/> */}
+      {/* <Register/> */}
+      <ComingSoon/>
     </>
   )
 }

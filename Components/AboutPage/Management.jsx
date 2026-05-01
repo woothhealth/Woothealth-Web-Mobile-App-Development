@@ -47,7 +47,7 @@ const Management = () => {
                 </div>
             </div>
 
-            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+            {/* <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <div className='flex lg:hidden'>
                 <Reveal>
                     <Image src='/Team_2.webp' height={100} width={400} className='h-70' alt='Team Picture' />
@@ -75,16 +75,16 @@ const Management = () => {
                         </p>
                         </Reveal>
                     </div>
-                </div>
+                </div> 
                 <div className='hidden lg:flex justify-end'>
                 <Reveal>
                     <Image src='/Team_2.webp' height={100} width={500} className='h-112' alt='Team Picture' />
                 </Reveal>
                 </div>
-            </div>
+            </div> */}
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className=''>
+                <div className='flex lg:hidden'>
                 <Reveal>
                     <Image src='/Team_3.webp' height={100} width={500} className='h-74 lg:h-112' alt='Team Picture' />
                 </Reveal>
@@ -116,10 +116,15 @@ const Management = () => {
                         </Reveal>
                     </div>
                 </div>
+                <div className='hidden lg:flex justify-end'>
+                <Reveal>
+                    <Image src='/Team_3.webp' height={100} width={500} className='h-74 md:h-112' alt='Team Picture' />
+                </Reveal>
+                </div>
             </div>
 
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className='flex lg:hidden'>
+                <div className=''>
                 <Reveal>
                     <Image src='/Team_4.webp' height={100} width={500} className='h-76 lg:h-112' alt='Team Picture' />
                 </Reveal>
@@ -151,12 +156,6 @@ const Management = () => {
                         </p>
                         </Reveal>
                     </div>
-                </div>
-                
-                <div className='hidden lg:flex justify-end'>
-                    <Reveal>
-                    <Image src='/Team_4.webp' height={100} width={500} className='h-100 lg:h-112' alt='Team Picture' />
-                    </Reveal>
                 </div>
             </div>
 
@@ -288,7 +287,7 @@ const Management = () => {
             <Reveal>
                 <motion.button
                   whileTap={{scale: 0.95, transition: {delay: 0}}}
-                  className="btn px-10 py-4 font-semibold">
+                  className="btn px-10 py-5 text-lg font-semibold">
                     About Woot Health
                   </motion.button>
                   </Reveal>

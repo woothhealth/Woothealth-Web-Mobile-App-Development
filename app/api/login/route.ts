@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { cookies } from "next/headers";
 
-type LoginMode = "login" | "admin";
+type LoginMode = "login" | "admin" | "provider";
 
 const ALLOWED_ROLES_BY_MODE: Record<LoginMode, readonly string[]> = {
   login: ["business", "retail"],
   admin: ["admin", "superadmin"],
+  provider: ["provider"],
 };
 
 export async function POST(req: NextRequest) {
@@ -17,11 +18,11 @@ export async function POST(req: NextRequest) {
     const email = String(body.email ?? "");
     const password = String(body.password ?? "");
     const loginMode: LoginMode | null =
-      body.mode === "login" || body.mode === "admin" ? body.mode : null;
+      body.mode === "login" || body.mode === "admin" || body.mode === "provider" ? body.mode : null;
     if (!loginMode) {
       return NextResponse.json({
         success: false,
-        message: "Login mode must be either 'login' or 'admin'.",
+        message: "Login mode must be either 'login', 'admin', or 'provider'.",
       }, { status: 400 });
     }
 
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 2,
+      maxAge: 60 * 60 * 1,
     });
 
     // If backend returned a PHP session id in the response body or Set-Cookie header,
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
           path: "/",
           sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 2,
+          maxAge: 60 * 60 * 1,
         });
       }
     } catch (e) {

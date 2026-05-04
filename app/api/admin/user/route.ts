@@ -102,7 +102,7 @@ export async function GET(req: Request) {
     const search = url.searchParams.get('search') || '';
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = 20;
-    const userId = url.searchParams.get('userId');
+    const userId = url.searchParams.get('userId') || url.searchParams.get('id');
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
@@ -149,14 +149,13 @@ export async function GET(req: Request) {
 
     // Fallback to mock data only if backend is not available or failed
     if (userId) {
-      const user = mockUsers.find(u => u.userId === userId);
+      const user = mockUsers.find(u => u.userId === userId || u.$id === userId);
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
       return NextResponse.json({
         success: true,
-        data: [user],
-        total: 1,
+        data: user, // Return single user object, not array
         message: "User retrieved (mock)"
       }, { status: 200 });
     }

@@ -53,7 +53,7 @@ const NavBar = () => {
                         </div>
                     )}
                 </li>
-                <Link href="/providers">
+                <Link href="/view-providers">
                     <li className={`cursor-pointer hover:bg-[#c9e3f866] px-2 py-2 rounded-md ${isActive('/providers') ? 'text-[#49A5EF]' : ''}`}>
                         Providers
                     </li>
@@ -124,7 +124,7 @@ const NavBar = () => {
                                 </div>
                             )}
                         </li>
-                        <Link href="/providers">
+                        <Link href="/view-providers">
                             <li className={`cursor-pointer hover:bg-[#c9e3f866] px-3 py-2 rounded-md ${isActive('/providers') ? 'text-[#49A5EF]' : ''}`} onClick={toggleMenu}>
                                 Providers
                             </li>

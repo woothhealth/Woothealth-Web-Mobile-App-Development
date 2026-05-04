@@ -11,7 +11,7 @@ const link1 = [
     },
     {
         name: "Providers",
-        url: "/providers"
+        url: "/view-providers"
     },
     {
         name: "About Us",

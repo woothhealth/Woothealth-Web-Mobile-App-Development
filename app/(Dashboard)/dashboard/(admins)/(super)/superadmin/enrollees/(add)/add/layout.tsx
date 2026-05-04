@@ -12,15 +12,12 @@ export const metadata: Metadata = {
 
 export default function EmployeeLayout({
   children,
-  header,
 }: Readonly<{
   children: React.ReactNode;
-  header: React.ReactNode;
 }>) {
   return (
     <>
     <div className="w-full bg-[#FAFAFA]">
-      <div className="sticky top-0">{header}</div>
       <div className="flex items-center px-4 md:px-6 lg:px-8 py-4">
         <Link href='/dashboard/superadmin/enrollees' className='border p-1 rounded-full inline-flex'>
           <FaArrowLeft className='text-xl'/>

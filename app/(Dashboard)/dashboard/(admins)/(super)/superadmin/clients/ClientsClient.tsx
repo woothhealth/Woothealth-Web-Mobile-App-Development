@@ -176,19 +176,19 @@ export function ClientsClient() {
                     </button>
                     <button
                       onClick={() => handleOpenModal('addPlan', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
+                      className="block w-full px-4 py-2 text-left text-sm bg-[#10B981]"
                     >
                       ➕ Add Plan
                     </button>
                     <button
                       onClick={() => handleOpenModal('suspend', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
+                      className="block w-full px-4 py-2 text-left text-sm bg-[#E86306] hover:bg-[#D97706]"
                     >
                       ⏸️ Suspend Account
                     </button>
                     <button
                       onClick={() => handleOpenModal('deactivate', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50 text-red-600"
+                      className="block w-full px-4 py-2 text-left text-sm bg-[#EF4444]"
                     >
                       ⛔ Deactivate Account
                     </button>

@@ -14,9 +14,9 @@ const ActiveClient: React.FC<ActiveClientProps> = ({ initialData = 0 }) => {
   const activeCount = stats?.active || initialData;
 
   return (
-    <section className='bg-[#FFFFFF] w-44 md:w-full py-6 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48'>
+    <section className='bg-[#FFFFFF] w-44 md:w-full py-6 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48 border border-[#D9D9D9]'>
       <div className='flex flex-col space-y-2 w-full'>
-        <div className='border-[#10B981] border bg-[#D1FAE5] p-2 text-[#10B981] rounded-[10px] w-fit text-3xl'>
+        <div className='bg-[#D1FAE5] p-2 text-[#10B981] rounded-[10px] w-fit text-3xl'>
           <CiUser/>
         </div>
         <div className='flex flex-col'>

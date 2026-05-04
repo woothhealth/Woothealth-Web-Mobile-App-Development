@@ -8,6 +8,7 @@ type UserProfile = {
   fullName: string;
   email: string;
   phone: string;
+  role: string;
   status: 'Active' | 'Suspended';
   dependants: number;
   hmoId: string;
@@ -77,6 +78,7 @@ export default function UserTableClient() {
           status: user.status === 'active' ? 'Active' : 'Suspended',
           dependants: 0, // Not in API, default to 0
           hmoId: user.userId,
+          role: user.role || 'User',
           plan: user.plan || 'N/A',
           homeAddress: '', // Not in API
           dob: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
@@ -142,6 +144,7 @@ export default function UserTableClient() {
                 <th className="px-4 py-4 text-left">Name</th>
                 <th className="px-4 py-4 text-left">Email</th>
                 <th className="px-4 py-4 text-left">Phone</th>
+                <th className="px-4 py-4 text-left">Role</th>
                 <th className="px-4 py-4 text-center">Status</th>
                 <th className="px-4 py-4 text-center">Action</th>
               </tr>
@@ -164,6 +167,9 @@ export default function UserTableClient() {
                   <td className="px-4 py-4 text-center">
                     <div className="h-8 w-20 bg-slate-200 rounded-lg animate-pulse mx-auto"></div>
                   </td>
+                  <td className="px-4 py-4 text-center">
+                    <div className="h-8 w-20 bg-slate-200 rounded-lg animate-pulse mx-auto"></div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -175,6 +181,7 @@ export default function UserTableClient() {
           <div className="flex items-center space-x-2">
             <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div>
             <div className="h-4 w-20 bg-slate-200 rounded animate-pulse"></div>
+            <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div>
             <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div>
           </div>
         </div>
@@ -220,6 +227,7 @@ export default function UserTableClient() {
               <th className="px-4 py-4 text-left">Name</th>
               <th className="px-4 py-4 text-left">Email</th>
               <th className="px-4 py-4 text-left">Phone</th>
+              <th className="px-4 py-4 text-left">Role</th>
               <th className="px-4 py-4 text-center">Status</th>
               <th className="px-4 py-4 text-center">Action</th>
             </tr>
@@ -237,13 +245,14 @@ export default function UserTableClient() {
                   <td className="px-4 py-4 whitespace-nowrap w-fit">{user.fullName}</td>
                   <td className="px-4 py-4">{user.email}</td>
                   <td className="px-4 py-4 whitespace-nowrap w-fit">{user.phone}</td>
+                  <td className="px-4 py-4 whitespace-nowrap w-fit">{user.role}</td>
                   <td className={`px-4 py-4 text-center`}>
                     <span className={`${statusColors[user.status] || 'bg-gray-100 text-gray-800'} inline-flex items-center rounded-full px-3 py-1 text-xs font-medium   `}>
                         {user.status}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-center">
-                    <Link href={`/dashboard/superadmin/users/view?userId=${user.id}`}
+                    <Link href={`/dashboard/superadmin/users/${user.id}`}
                       className="inline-flex rounded-lg bg-[#49A5EF1A] px-3 py-2 text-xs font-medium text-[#49A5EF] transition hover:bg-blue-100"
                     >
                       View Profile

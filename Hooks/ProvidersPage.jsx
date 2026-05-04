@@ -1,12 +1,12 @@
 import React from 'react'
-import HeroSection from '../Components/ProvidersPage/HeroSection'
-import ProvideSection from '../Components/ProvidersPage/ProvideSection'
+import HeroSection from '../Components/ViewProvidersPage/HeroSection'
+import ProviderSection from '../Components/ViewProvidersPage/ProvideSection'
 
 const ProvidersPage = () => {
   return (
     <>
         <HeroSection/>
-        <ProvideSection/>
+        <ProviderSection/>
     </>
   )
 }

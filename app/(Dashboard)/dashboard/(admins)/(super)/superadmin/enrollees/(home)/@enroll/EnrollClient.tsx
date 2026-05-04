@@ -14,9 +14,9 @@ const EnrollClient: React.FC<EnrollClientProps> = ({ initialData = 0 }) => {
   const enrolledCount = stats?.totalEnrollees || initialData;
 
   return (
-    <section className='bg-[#FFFFFF] w-44 md:w-full py-6 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48'>
+    <section className='bg-[#FFFFFF] w-44 md:w-full py-6 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48 border border-[#D9D9D9]'>
       <div className='flex flex-col space-y-2 w-full'>
-        <div className='border-[#8063E8] border bg-[#8063E81A] p-2 text-[#8063E8] rounded-[10px] w-fit text-3xl'>
+        <div className='bg-[#8063E81A] p-2 text-[#8063E8] rounded-[10px] w-fit text-3xl'>
           <CiUser/>
         </div>
         <div className='flex flex-col'>

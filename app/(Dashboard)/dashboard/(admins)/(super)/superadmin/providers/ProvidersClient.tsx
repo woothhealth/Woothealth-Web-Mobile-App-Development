@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { FaPlus, FaChevronDown, FaEllipsisV, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaChevronDown, FaEllipsisV, FaEye, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 import DeleteConfirmModal from '../DeleteConfirmModal';
 
 export type Provider = {
@@ -458,9 +458,9 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
                         <FaEllipsisV />
                       </button>
                       {openMenuId === p.$id && (
-                        <div className="absolute right-0 top-full z-10 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg">
+                        <div className="absolute right-0 top-full z-10 w-32 rounded-lg border border-slate-200 bg-white shadow-lg">
                           <Link
-                            href={`/dashboard/superadmin/providers/view?providerId=${p.$id}`}
+                            href={`/dashboard/superadmin/providers/${p.$id}`}
                             rel="noreferrer"
                             className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                             onClick={() => setOpenMenuId(null)}
@@ -468,8 +468,23 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
                             <FaEye /> View
                           </Link>
                           <button
-                            onClick={() => {
-                              setEditingProvider(p);
+                            onClick={async () => {
+                              // Fetch individual provider data for edit
+                              try {
+                                const response = await fetch(`/api/admin/providers?id=${p.$id}`, { credentials: 'include' });
+                                if (response.ok) {
+                                  const data = await response.json();
+                                  if (data.success && data.data) {
+                                    setEditingProvider(data.data);
+                                  } else {
+                                    setEditingProvider(p); // fallback to list data
+                                  }
+                                } else {
+                                  setEditingProvider(p); // fallback to list data
+                                }
+                              } catch (error) {
+                                setEditingProvider(p); // fallback to list data
+                              }
                               setIsEditModalOpen(true);
                               setOpenMenuId(null);
                             }}
@@ -651,7 +666,7 @@ function ProviderModal({ provider, onClose, onSave }: ProviderModalProps) {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">{provider ? 'Edit Provider' : 'Add New Provider'}</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-900">
-            ×
+            <FaTimes size={20} />
           </button>
         </div>
 

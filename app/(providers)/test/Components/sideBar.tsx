@@ -59,7 +59,7 @@ const path : pathType[] = [
     {
         name: 'Billing',
         // url: '/dashboard/providers/billing',
-        url: '/test/providers/billing',
+        url: '/test/providers/billings',
         icon: <HiMiniUserGroup/>
     },
     {
@@ -131,12 +131,12 @@ const SideBar = () => {
                                     }
                                 </div>
                                 {openDropdown === path.name && (
-                                    <div className='ml-6 mt-1 space-y-1'>
+                                    <div className='ml-4 mt-1 space-y-1'>
                                         {path.children?.map((child, childIndex) => {
                                             const isChildActive = pathname === child.url
                                             return (
                                                 <Link key={childIndex} href={child.url!}>
-                                                    <div className={`flex py-2 px-3 items-center text-[15px] text-[#000000]/70 font-medium rounded-lg hover:bg-gray-100 ${isChildActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}>
+                                                    <div className={`flex p-3 items-center text-[15px] text-[#000000]/70 font-medium rounded-[15px] hover:bg-gray-100 ${isChildActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}>
                                                         {child.icon && <div className='text-lg text-center mr-2'>{child.icon}</div>}
                                                         {child.name}
                                                     </div>

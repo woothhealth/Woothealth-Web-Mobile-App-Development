@@ -5,8 +5,8 @@ import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { IoCloseOutline, IoSearchSharp } from "react-icons/io5";
 import NotificationCenter from "./NotificationCenter";
 import UserDropdown from "./UserDropdown";
-import AdminToggle from "@/app/(Dashboard)/dashboard/(admins)/(super)/AdminToggle";
 import { FaBell } from "react-icons/fa";
+import ProvidersToggle from "../ProvidersToggle";
 
 interface WelcomeWrapperProps {
   firstName: string;
@@ -87,7 +87,7 @@ export default function WelcomeWrapper({
         </div>
       </div>
 
-      <AdminToggle isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      <ProvidersToggle isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </section>
   );
 }

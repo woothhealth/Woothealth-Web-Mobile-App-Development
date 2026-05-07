@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { mockInvoices, mockClients } from '../mock-clients';
+import Link from 'next/link';
 import { CreditInvoiceModal } from '../components/CreditInvoiceModal';
 
 export function InvoiceClient() {
@@ -11,6 +12,10 @@ export function InvoiceClient() {
   const client = mockClients[0];
   const invoices = mockInvoices.filter((inv) => inv.companyName === client.companyName);
   const invoice = invoices[0];
+  const statusColors: Record<string, string> = {
+    active: 'text-green-600',
+    Pending: 'text-yellow-600',
+  };
 
   if (!invoice) {
     return (
@@ -21,139 +26,149 @@ export function InvoiceClient() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 md:w-[80%]">
+      <Link href="/dashboard/superadmin/clients" className="text-sm p-3 rounded-[10px] border border-border w-fit">
+        Back to Clients
+      </Link>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-4">
         <h1 className="text-2xl font-semibold">Invoice</h1>
-        <button
+        <div
           onClick={() => setShowCreditModal(true)}
-          className="rounded-2xl bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-[10px] bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/80 cursor-pointer"
         >
-          + Credit Invoice
-        </button>
+          Credit Invoice
+        </div>
       </div>
 
+      <div className="rounded-[10px] bg-white space-y-6 shadow-sm">
       {/* Invoice Header Section */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          <div>
-            <p className="text-xs text-slate-600">Company Name</p>
-            <p className="mt-1 text-lg font-semibold text-slate-900">{invoice.companyName}</p>
+      <div className="space-y-4">
+        <div className="flex flex-col divide-y divide-border">
+          <div className='px-6 py-2'>
+            <p className="text-xl font-semibold text-slate-900">{invoice.companyName}</p>
           </div>
-          <div>
-            <p className="text-xs text-slate-600">Amount</p>
-            <p className="mt-1 text-lg font-semibold text-blue-600">₦{invoice.amount.toLocaleString()}</p>
+          <div className='px-6 py-2 flex justify-between items-center'>
+            <p className="">Invoice Reference Code</p>
+            <p className="font-medium">{invoice.invoiceNumber}</p>
           </div>
-          <div>
-            <p className="text-xs text-slate-600">Amount Paid</p>
-            <p className="mt-1 text-lg font-semibold text-green-600">₦{invoice.amountPaid.toLocaleString()}</p>
+          <div className='px-6 py-2 flex justify-between items-center bg-[#D1FAE580]'>
+            <p className="text-[#10B981]">Amount</p>
+            <p className="font-medium text-primary">₦{invoice.amount.toLocaleString()}</p>
           </div>
-          <div>
-            <p className="text-xs text-slate-600">Payment Status</p>
-            <p
-              className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                invoice.paymentStatus === 'Partial'
-                  ? 'bg-yellow-100 text-yellow-700'
-                  : invoice.paymentStatus === 'Full'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-              }`}
-            >
+          <div className='px-6 py-2 flex justify-between items-center bg-[#EF444433]'>
+            <p className="text-[#EF4444]">Amount Paid</p>
+            <p className="font-medium text-primary">₦{invoice.amountPaid.toLocaleString()}</p>
+          </div>
+          <div className='px-6 py-2 flex justify-between items-center bg-[#FEF3C780]'>
+            <p className="text-[#F59E0B]">Payment Status</p>
+            <p className={`text-primary font-medium `}>
               {invoice.paymentStatus}
             </p>
           </div>
         </div>
 
-        <div className="mt-6 border-t border-slate-200 pt-6">
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-5">
-            <div>
-              <p className="text-xs text-slate-600">Issued By</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{invoice.issuedBy}</p>
+        <div className="flex flex-col divide-y divide-border">
+            <div className='px-6 py-2 flex justify-between items-center'>
+              <p className="">Issued By</p>
+              <p className="font-medium text-primary">{invoice.issuedBy}</p>
             </div>
-            <div>
-              <p className="text-xs text-slate-600">Issue Date</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{invoice.issueDate}</p>
+            <div className='px-6 py-2 flex justify-between items-center'>
+              <p className="">Issue Date</p>
+              <p className="font-medium text-primary">{invoice.issueDate}</p>
             </div>
-            <div>
-              <p className="text-xs text-slate-600">Account Manager</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{invoice.accountManager}</p>
+            <div className='px-6 py-2 flex justify-between items-center'>
+              <p className="">Account Manager</p>
+              <p className="font-medium text-primary">{invoice.accountManager}</p>
             </div>
-            <div>
-              <p className="text-xs text-slate-600">Invoice Status</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{invoice.invoiceStatus}</p>
+            <div className='px-6 py-2 flex justify-between items-center'>
+              <p className="">Invoice Status</p>
+              <p className={`font-medium ${statusColors[invoice.invoiceStatus] || 'text-slate-600'}`}>
+                {invoice.invoiceStatus}
+              </p>
             </div>
-            <div>
-              <p className="text-xs text-slate-600">Payment Link</p>
+            <div className='px-6 py-2 flex justify-between items-center'>
+              <p className="">Payment Link</p>
               <a
                 href={invoice.paymentLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 text-sm font-medium text-blue-600 hover:underline"
+                className="font-medium text-primary hover:underline"
               >
-                View Link →
+                {invoice.paymentLink}
               </a>
             </div>
-          </div>
         </div>
       </div>
 
       {/* Invoice Items Table */}
-      <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h2 className="font-semibold text-slate-900">Invoice Items</h2>
-        </div>
+      <div className="">
+        <h2 className="font-semibold text-2xl py-2 text-center">Invoice Items</h2>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Item Name</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Price (₦)</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Quantity</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Total (₦)</th>
+            <tr className="border-b border-border">
+              <th className="px-6 py-3 text-left font-semibold">Item Name</th>
+              <th className="px-6 py-3 text-left font-semibold">Price</th>
+              <th className="px-6 py-3 text-left font-semibold">Quantity</th>
+              <th className="px-6 py-3 text-left font-semibold">Total</th>
             </tr>
           </thead>
           <tbody>
             {invoice.items.map((item) => (
-              <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="px-6 py-3 text-sm text-slate-900">{item.itemName}</td>
-                <td className="px-6 py-3 text-sm text-slate-900">{item.price.toLocaleString()}</td>
-                <td className="px-6 py-3 text-sm text-slate-900">{item.quantity}</td>
-                <td className="px-6 py-3 text-sm font-medium text-slate-900">
-                  {(item.price * item.quantity).toLocaleString()}
+              <tr key={item.id} className="divide-y divide-border">
+                <td className="px-6 py-3">{item.itemName}</td>
+                <td className="px-6 py-3">#{item.price.toLocaleString()}</td>
+                <td className="px-6 py-3">{item.quantity}</td>
+                <td className="px-6 py-3 font-medium border-b border-border">
+                  #{(item.price * item.quantity).toLocaleString()}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* Sub-Invoices Section */}
-      <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h2 className="font-semibold text-slate-900">Sub-Invoices</h2>
-        </div>
-        <div className="p-6 space-y-3">
+      <div className="rounded-[10px] bg-[#ffffff] shadow-sm">
+        <h2 className="font-semibold text-xl px-6 py-4 border-b border-border">Sub-Invoices</h2>
+        <div className="space-y-2 divide-y divide-border">
           {/* Sample sub-invoice */}
-          <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 hover:bg-slate-50">
-            <div>
-              <p className="text-sm font-medium text-slate-900">Invoice Number: INV-2024-002</p>
-              <p className="text-sm text-slate-600">{invoice.companyName}</p>
+          <div className="flex flex-col space-y-2 py-4">
+          <div className="flex items-center justify-between px-6">
+            <div className="space-y-1">
+              <p className="font-medium text-lg">Invoice Number: INV-2024-002</p>
+              <p className="">{invoice.companyName}</p>
+              <p className="font-medium">₦500,000</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold text-blue-600">₦500,000</p>
-              <button className="mt-1 text-xs text-blue-600 hover:underline">View Invoice →</button>
+              <button className="text-xs px-6 py-2 bg-primary text-white hover:bg-primary/80">View Invoice</button>
             </div>
+          </div>
+          <div className="flex justify-center py-2 px-6 bg-[#E5E7EB80]">
+            <p className="text-center">
+              Issued by {invoice.issuedBy} on {invoice.issueDate}
+            </p>
+          </div>
           </div>
 
           {/* Sample sub-invoice 2 */}
-          <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 hover:bg-slate-50">
-            <div>
-              <p className="text-sm font-medium text-slate-900">Invoice Number: INV-2024-003</p>
-              <p className="text-sm text-slate-600">{invoice.companyName}</p>
+          <div className="flex flex-col space-y-2 py-4">
+          <div className="flex items-center justify-between px-6">
+            <div className="space-y-1">
+              <p className="font-medium text-lg">Invoice Number: INV-2024-003</p>
+              <p className="">{invoice.companyName}</p>
+              <p className="font-medium">₦250,000</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold text-blue-600">₦250,000</p>
-              <button className="mt-1 text-xs text-blue-600 hover:underline">View Invoice →</button>
+              <button className="text-xs px-6 py-2 bg-primary text-white hover:bg-primary/80">View Invoice</button>
             </div>
+          </div>
+          <div className="flex justify-center py-2 px-6 bg-[#E5E7EB80]">
+            <p className="text-center">
+              Issued by {invoice.issuedBy} on {invoice.issueDate}
+            </p>
+          </div>
           </div>
         </div>
       </div>

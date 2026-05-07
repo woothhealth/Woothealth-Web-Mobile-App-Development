@@ -135,7 +135,7 @@ export default function TicketsClient() {
   };
 
   return (
-    <div className="px-2 py-4 md:p-4 mb-8 w-full mx-auto">
+    <div className="px-3 py-4 md:p-4 mb-8 w-full mx-auto">
       <div className="flex flex-col md:flex-row gap-4 mb-8 lg:w-[90%] w-full lg:mx-auto md:items-center justify-between">
         <div className="flex flex-col md:flex-row w-[90%] gap-4">
           <input
@@ -178,11 +178,11 @@ export default function TicketsClient() {
           <tbody>
             {filteredTickets.map((ticket) => (
               <tr key={ticket.id} className="hover:bg-gray-50 text-[15px] divide-y divide-[#D9D9D9]">
-                <td className="px-4 py-4">{ticket.date}</td>
-                <td className="px-4 py-4">{ticket.title}</td>
-                <td className="px-4 py-4">{ticket.department}</td>
-                <td className="px-4 py-4">{ticket.assignedTo}</td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-2 md:py-4">{ticket.date}</td>
+                <td className="px-4 py-2 md:py-4">{ticket.title}</td>
+                <td className="px-4 py-2 md:py-4">{ticket.department}</td>
+                <td className="px-4 py-2 md:py-4">{ticket.assignedTo}</td>
+                <td className="px-4 py-2 md:py-4">
                   <span className={`px-3 py-1 rounded-full ${statusColors[ticket.status] || 'bg-gray-100 text-gray-800'}`}>
                     {ticket.status}
                   </span>
@@ -190,7 +190,7 @@ export default function TicketsClient() {
                 <td className="px-4 py-4 relative">
                   <button
                     onClick={() => setOpenActionId(openActionId === ticket.id ? null : ticket.id)}
-                    className="rounded-full border border-slate-200 p-2 text-slate-600 hover:bg-slate-100"
+                    className="rounded-full p-2 text-slate-600 hover:bg-slate-100"
                   >
                     <FaEllipsisV />
                   </button>

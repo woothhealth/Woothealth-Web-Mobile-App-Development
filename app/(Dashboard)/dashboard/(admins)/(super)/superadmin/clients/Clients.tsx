@@ -1,5 +1,11 @@
 import { ClientsClient } from './ClientsClient';
+import Title from "../UIs/Title";
 
 export default function Clients() {
-  return <ClientsClient />;
+  return (
+    <>
+      <Title title="Client Management"/>
+      <ClientsClient />
+    </>
+  );
 }

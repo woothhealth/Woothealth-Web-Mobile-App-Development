@@ -94,7 +94,7 @@ export default function FinanceClient() {
   };
 
   return (
-    <div className="rounded-[10px] bg-white px-4 py-6 md:p-6 shadow-sm">
+    <div className="py-6 md:p-6">
       {/* Search and Filters */}
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between z-10">
         <div className="relative flex-1">
@@ -111,7 +111,7 @@ export default function FinanceClient() {
           />
         </div>
 
-        <div className='flex space-x-4 md:space-x-0'>
+        <div className='flex space-x-2 md:space-x-0'>
         {/* Account Type Filter */}
         <div className="relative w-32">
           <button
@@ -173,10 +173,10 @@ export default function FinanceClient() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto custom-scrollbar">
+      <div className="overflow-x-auto custom-scrollbar rounded-[10px] bg-[#ffffff]">
         <table className="w-full text-[17px]">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
+            <tr className="border-b border-border">
               <th className="px-4 py-3 text-left font-semibold">Invoice ID</th>
               <th className="px-4 py-3 text-left font-semibold">Client</th>
               <th className="px-4 py-3 text-left font-semibold">Amount (₦)</th>
@@ -187,17 +187,17 @@ export default function FinanceClient() {
           </thead>
           <tbody>
             {paginatedInvoices.map((invoice) => (
-              <tr key={invoice.id} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-900 whitespace-nowrap w-fit">{invoice.invoiceId}</td>
-                <td className="px-4 py-3 text-gray-900">{invoice.client}</td>
-                <td className="px-4 py-3 text-gray-900">₦{invoice.amount.toLocaleString()}</td>
-                <td className="px-4 py-3 text-gray-900">{invoice.accountType}</td>
-                <td className="px-4 py-3 text-center">
+              <tr key={invoice.id} className="border-b border-gray-200 hover:bg-gray-50 text-[15px] md:text-base">
+                <td className="px-4 py-2 md:py-3 text-gray-900 whitespace-nowrap w-fit">{invoice.invoiceId}</td>
+                <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.client}</td>
+                <td className="px-4 py-2 md:py-3 text-gray-900">₦{invoice.amount.toLocaleString()}</td>
+                <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.accountType}</td>
+                <td className="px-4 py-2 md:py-3 text-center">
                   <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(invoice.status)}`}>
                     {invoice.status}
                   </span>
                 </td>
-                <td className="relative px-4 py-3">
+                <td className="relative px-4 py-2 md:py-3">
                   <div className="flex justify-center">
                     <button
                       onClick={() => setOpenActionMenu(openActionMenu === invoice.id ? null : invoice.id)}

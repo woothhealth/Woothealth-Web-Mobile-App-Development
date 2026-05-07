@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaEllipsisV, FaChevronDown, FaTrash, FaTimes } from 'react-icons/fa';
 import { mockEnrollees } from '../mock-clients';
 import type { Enrollee } from '../mock-clients';
 
@@ -17,12 +17,7 @@ function DeleteConfirmModal({ enrollee, onConfirm, onCancel }: DeleteConfirmModa
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-red-100 p-2">
-            <span className="text-xl">⚠️</span>
-          </div>
-          <h2 className="text-lg font-semibold">Delete Enrollee</h2>
-        </div>
+        <h2 className="text-lg font-semibold">Delete Enrollee</h2>
 
         <p className="mt-4 text-sm text-slate-600">
           Are you sure you want to delete <strong>{enrollee.name}</strong>? This action cannot be undone.
@@ -49,8 +44,13 @@ function DeleteConfirmModal({ enrollee, onConfirm, onCancel }: DeleteConfirmModa
 
 export function EnrolleesClient() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [planFilter, setPlanFilter] = useState<string | null>(null);
+  const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
+  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<Enrollee | null>(null);
+  const [editingEnrollee, setEditingEnrollee] = useState<Enrollee | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', planType: '', dependents: 0 });
   const [enrollees, setEnrollees] = useState(mockEnrollees);
   const itemsPerPage = 10;
 
@@ -59,14 +59,17 @@ export function EnrolleesClient() {
       const matchesSearch =
         enrollee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         enrollee.email.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
+      const matchesPlan = planFilter ? enrollee.planType === planFilter : true;
+      return matchesSearch && matchesPlan;
     });
-  }, [searchTerm, enrollees]);
+  }, [searchTerm, planFilter, enrollees]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedEnrollees = filtered.slice(startIndex, endIndex);
+
+  const planOptions = ['Premium', 'Basic'];
 
   const handleDelete = (enrollee: Enrollee) => {
     setDeleteConfirm(enrollee);
@@ -79,64 +82,141 @@ export function EnrolleesClient() {
     }
   };
 
-  const handleEdit = (enrollee: Enrollee) => {
-    alert(`Edit enrollee: ${enrollee.name}`);
+  const openEditModal = (enrollee: Enrollee) => {
+    setEditingEnrollee(enrollee);
+    setEditForm({
+      name: enrollee.name,
+      email: enrollee.email,
+      planType: enrollee.planType,
+      dependents: enrollee.dependents,
+    });
+  };
+
+  const handleEditSave = () => {
+    if (!editingEnrollee) return;
+
+    setEnrollees((prev) =>
+      prev.map((enrollee) =>
+        enrollee.id === editingEnrollee.id
+          ? { ...enrollee, ...editForm, dependents: Number(editForm.dependents) }
+          : enrollee
+      )
+    );
+    setEditingEnrollee(null);
   };
 
   return (
     <div className="space-y-6 p-6">
-      {/* Search */}
-      <div>
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full rounded-2xl border border-slate-300 bg-transparent px-4 py-3 text-sm placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-        />
+      {/* Search + Plan Filter */}
+      <div className="flex flex-col gap-3 md:flex-row sm:items-center md:justify-between">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full rounded-2xl border border-slate-300 bg-transparent px-4 py-3 text-sm placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
+
+        <div className="relative min-w-[210px]">
+          <button
+            onClick={() => setPlanDropdownOpen((open) => !open)}
+            className="flex w-full items-center justify-between rounded-2xl border border-slate-300 bg-white px-6 py-2 font-medium text-slate-700 shadow-sm hover:border-slate-400"
+            aria-expanded={planDropdownOpen}
+            aria-haspopup="listbox"
+          >
+          {planFilter || 'All'}
+          <FaChevronDown className="h-4 w-4 text-slate-500" />
+          </button>
+
+          {planDropdownOpen && (
+            <div className="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-[15px] border border-border bg-white shadow-xl">
+              <button
+                onClick={() => {
+                  setPlanFilter(null);
+                  setPlanDropdownOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-3 text-left text-slate-700 hover:bg-slate-50"
+              >
+                All Plans
+              </button>
+              {planOptions.map((plan) => (
+                <button
+                  key={plan}
+                  onClick={() => {
+                    setPlanFilter(plan);
+                    setPlanDropdownOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left hover:bg-slate-50"
+                >
+                  {plan}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded-[15px] bg-white">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Date Added</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Plan Type</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Dependents</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700">Action</th>
+            <tr className="border-b border-border text-[17px]">
+              <th className="px-4 py-3 text-left font-semibold">Date Added</th>
+              <th className="px-4 py-3 text-left font-semibold">Name</th>
+              <th className="px-4 py-3 text-left font-semibold">Email</th>
+              <th className="px-4 py-3 text-left font-semibold">Plan Type</th>
+              <th className="px-4 py-3 text-center font-semibold">Number of Dependents</th>
+              <th className="px-4 py-3 text-left font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
             {paginatedEnrollees.map((enrollee) => (
-              <tr key={enrollee.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="px-6 py-3 text-sm text-slate-900">{enrollee.dateAdded}</td>
-                <td className="px-6 py-3 text-sm font-medium text-slate-900">{enrollee.name}</td>
-                <td className="px-6 py-3 text-sm text-slate-600">{enrollee.email}</td>
-                <td className="px-6 py-3 text-sm">{enrollee.planType}</td>
-                <td className="px-6 py-3 text-sm text-slate-900">{enrollee.dependents}</td>
-                <td className="px-6 py-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(enrollee)}
-                      className="rounded-lg bg-blue-100 p-2 text-blue-600 hover:bg-blue-200"
-                      title="Edit"
-                    >
-                      <FaEdit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(enrollee)}
-                      className="rounded-lg bg-red-100 p-2 text-red-600 hover:bg-red-200"
-                      title="Delete"
-                    >
-                      <FaTrash size={16} />
-                    </button>
-                  </div>
+              <tr key={enrollee.id} className="divide-y divide-border text-[15px]">
+                <td className="px-4 py-3">{enrollee.dateAdded}</td>
+                <td className="px-4 py-3">{enrollee.name}</td>
+                <td className="px-4 py-3">{enrollee.email}</td>
+                <td className="px-4 py-3">{enrollee.planType}</td>
+                <td className="px-4 py-3 text-center">{enrollee.dependents}</td>
+                <td className="px-4 py-3 border-b border-border">
+                  <div className="relative">
+                  <button
+                    onClick={() => setOpenActionMenu(openActionMenu === enrollee.id ? null : enrollee.id)}
+                    className="p-2"
+                    title="Actions"
+                  >
+                    <FaEllipsisV size={16} />
+                  </button>
+
+                  {openActionMenu === enrollee.id && (
+                    <div className="absolute right-0 top-10 z-20 min-w-[150px] overflow-hidden rounded-[15px] border border-border bg-white shadow-xl">
+                      <button
+                        onClick={() => {
+                          openEditModal(enrollee);
+                          setOpenActionMenu(null);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50"
+                      >
+                        <FaEdit className="h-4 w-4" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleDelete(enrollee);
+                          setOpenActionMenu(null);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm hover:bg-slate-50"
+                      >
+                        <FaTrash className="h-4 w-4" />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
                 </td>
               </tr>
             ))}
@@ -173,6 +253,86 @@ export function EnrolleesClient() {
         onConfirm={confirmDelete}
         onCancel={() => setDeleteConfirm(null)}
       />
+
+      {editingEnrollee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-6">
+          <div onClick={() => setEditingEnrollee(null)} className="absolute inset-0 cursor-pointer" />
+          <div className="w-full md:w-2xl rounded-[15px] bg-white p-6 shadow-2xl z-10 relative">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">Edit Enrollee</h2>
+              </div>
+              <FaTimes
+                size={20}
+                onClick={() => setEditingEnrollee(null)}
+                className="cursor-pointer"
+              />
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="space-y-2">
+                Name
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                />
+              </label>
+              <label className="space-y-2">
+                Email
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, email: e.target.value }))}
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                />
+              </label>
+              <label className="space-y-2">
+                Plan Type
+                <select
+                  value={editForm.planType}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, planType: e.target.value }))}
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                >
+                  {planOptions.map((plan) => (
+                    <option key={plan} value={plan}>
+                      {plan}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="space-y-2">
+                Dependents
+                <input
+                  type="number"
+                  min={0}
+                  value={editForm.dependents}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, dependents: Number(e.target.value) }))
+                  }
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                onClick={() => setEditingEnrollee(null)}
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <div
+                onClick={handleEditSave}
+                className="rounded-[15px] bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 cursor-pointer text-center"
+              >
+                Save Changes
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,6 +61,15 @@ export default function UserDropdown({
             <p className="text-sm text-[#333333]">{email}</p>
           </div>
 
+          <div className="py-2">
+            <Link href="/dashboard/superadmin/profile">
+              <div className="px-4 py-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition">
+                <FaUserAlt className="text-gray-600" />
+                <span className="text-gray-700">Profile</span>
+              </div>
+            </Link>
+          </div>
+
           {/* Logout */}
           <div className="border-t border-gray-300">
             <div className="flex items-center gap-3 hover:bg-red-50 cursor-pointer transition rounded">

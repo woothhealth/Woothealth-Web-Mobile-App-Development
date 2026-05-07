@@ -1,18 +1,21 @@
 import "@/styles/globals.css";
-import Title from "../UIs/Title";
 
-export default function FinanceLayout({
-  header,
+export default function ProvidersLayout({
   children,
+  header,
+  // accountDetails,
 }: Readonly<{
-  header: React.ReactNode;
   children: React.ReactNode;
+  header: React.ReactNode;
+  // accountDetails: React.ReactNode;
 }>) {
   return (
-      <div className="w-full bg-[#FAFAFA] space-y-4">
-        <div className="sticky top-0 z-50">{header}</div>
-        <Title title="Providers Management"/>
-        <div className="md:px-4">{children}</div>
-      </div>
+    <>
+    <div className="w-full bg-[#FAFAFA]">
+      <div className="sticky top-0">{header}</div>
+      <div className="p-4">{children}</div>
+      {/* <div className="px-4">{accountDetails}</div> */}
+    </div>
+    </>
   );
 }

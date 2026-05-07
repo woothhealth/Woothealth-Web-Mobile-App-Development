@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { PiCopySimpleLight } from 'react-icons/pi';
-import { useClaimsStats } from '../ClaimsStatsContext';
+import { useClaimsStats } from '../../ClaimsStatsContext';
 
 interface RejectedClientProps {
   initialData?: number;

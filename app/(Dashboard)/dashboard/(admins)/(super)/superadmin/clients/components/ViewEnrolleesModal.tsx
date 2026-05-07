@@ -13,7 +13,7 @@ export function ViewEnrolleesModal({ clientId, clientName, enrolleeCount, onClos
   const router = useRouter();
 
   const handleView = () => {
-    router.push(`/superadmin/clients/enrollees?clientId=${clientId}`);
+    router.push(`dashboard/superadmin/clients/enrollees`);
     onClose();
   };
 

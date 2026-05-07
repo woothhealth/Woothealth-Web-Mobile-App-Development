@@ -68,7 +68,9 @@ export default function UserTableClient() {
         throw new Error('Failed to fetch users');
       }
       const data = await response.json();
-      if (data.success) {
+      
+      // Check if data array exists (don't rely only on success flag)
+      if (data && Array.isArray(data.data)) {
         // Transform API data to match UserProfile
         const transformedUsers: UserProfile[] = data.data.map((user: any) => ({
           id: user.userId || user.$id,
@@ -91,7 +93,7 @@ export default function UserTableClient() {
         setUsers(transformedUsers);
         setTotalUsers(data.total || transformedUsers.length);
       } else {
-        throw new Error(data.message || 'Failed to fetch users');
+        throw new Error(data.message || 'Invalid response structure - missing data array');
       }
     } catch (err: any) {
       clearTimeout(timeoutId);
@@ -137,7 +139,7 @@ export default function UserTableClient() {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-[15px] bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-[15px]">
             <thead className=" text-[18px] font-semibold">
               <tr>
@@ -195,7 +197,7 @@ export default function UserTableClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 md:space-y-0 space-x-0 md:space-x-8 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col space-y-2 md:space-y-0 space-x-0 md:space-x-8 md:flex-row md:items-center md:justify-between">
         <div className="w-full">
           <label htmlFor="user-search" className="sr-only">Search users</label>
           <input
@@ -220,14 +222,13 @@ export default function UserTableClient() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-[10px] bg-white shadow-sm custom-scrollbar">
+      <div className="overflow-x-auto rounded-[10px] bg-white shadow-sm px-2 md:px-0 custom-scrollbar">
         <table className="min-w-full divide-y divide-slate-200 text-[15px]">
           <thead className=" text-[18px] font-semibold">
             <tr>
               <th className="px-4 py-4 text-left">Name</th>
               <th className="px-4 py-4 text-left">Email</th>
-              <th className="px-4 py-4 text-left">Phone</th>
-              <th className="px-4 py-4 text-left">Role</th>
+              <th className="px-4 py-4 text-left">Phone Number</th>
               <th className="px-4 py-4 text-center">Status</th>
               <th className="px-4 py-4 text-center">Action</th>
             </tr>
@@ -242,16 +243,15 @@ export default function UserTableClient() {
             ) : (
               filteredUsers.map((user) => (
                 <tr key={user.id} className="transition hover:bg-slate-50">
-                  <td className="px-4 py-4 whitespace-nowrap w-fit">{user.fullName}</td>
-                  <td className="px-4 py-4">{user.email}</td>
-                  <td className="px-4 py-4 whitespace-nowrap w-fit">{user.phone}</td>
-                  <td className="px-4 py-4 whitespace-nowrap w-fit">{user.role}</td>
-                  <td className={`px-4 py-4 text-center`}>
+                  <td className="px-4 py-2 md:py-4 whitespace-nowrap w-fit">{user.fullName}</td>
+                  <td className="px-4 py-2 md:py-4">{user.email}</td>
+                  <td className="px-4 py-2 md:py-4 whitespace-nowrap w-fit">{user.phone}</td>
+                  <td className={`px-4 py-2 md:py-4 text-center`}>
                     <span className={`${statusColors[user.status] || 'bg-gray-100 text-gray-800'} inline-flex items-center rounded-full px-3 py-1 text-xs font-medium   `}>
                         {user.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-center">
+                  <td className="px-4 py-2 md:py-4 text-center">
                     <Link href={`/dashboard/superadmin/users/${user.id}`}
                       className="inline-flex rounded-lg bg-[#49A5EF1A] px-3 py-2 text-xs font-medium text-[#49A5EF] transition hover:bg-blue-100"
                     >

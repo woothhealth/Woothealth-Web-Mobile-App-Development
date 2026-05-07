@@ -11,9 +11,215 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const search = url.searchParams.get('search') || '';
     const page = parseInt(url.searchParams.get('page') || '1');
+    const claimId = url.searchParams.get('id'); // Check for individual claim ID
     const limit = 20; // Fixed limit for now
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+
+    // Handle individual claim request
+    if (claimId) {
+      if (!BACKEND_URL) {
+        console.error('Missing BACKEND_URL environment variable');
+        // Return mock data for development
+        const mockClaims = [
+          {
+            claimType: "Emergency Care",
+            userId: "WHT-0001-A",
+            dateOfService: "2026-01-30T00:00:00.000+00:00",
+            hospitalProvider: "Minna General Hospital",
+            description: "Emergency treatment",
+            status: "pending",
+            amount: 5000,
+            reviewNotes: "",
+            approvedAmount: null,
+            submittedDate: "2026-01-30T16:22:13.305+00:00",
+            processedDate: null,
+            documents: [],
+            policy_number: null,
+            diagnosis: null,
+            referred_from_code: null,
+            referred_from_name: null,
+            referred_to_code: null,
+            referred_to_name: null,
+            created: null,
+            source: null,
+            $id: "697ccca54a8611d1153f",
+            $sequence: 1,
+            $createdAt: "2026-01-30T15:22:15.014+00:00",
+            $updatedAt: "2026-01-30T15:22:15.014+00:00",
+            $permissions: ["read(\"user:WHT-0001-A\")", "update(\"user:WHT-0001-A\")", "delete(\"user:WHT-0001-A\")"],
+            $databaseId: "main",
+            $collectionId: "claims"
+          },
+          {
+            claimType: "Maternity Care",
+            userId: "WHT-0004-A",
+            dateOfService: "2026-01-29T00:00:00.000+00:00",
+            hospitalProvider: "Kaduna Teaching Hospital",
+            description: "Maternity services",
+            status: "approved",
+            amount: 25000,
+            reviewNotes: "Approved for full amount",
+            approvedAmount: 25000,
+            submittedDate: "2026-01-30T19:11:08.096+00:00",
+            processedDate: "2026-01-31T10:00:00.000+00:00",
+            documents: [],
+            policy_number: null,
+            diagnosis: null,
+            referred_from_code: null,
+            referred_from_name: null,
+            referred_to_code: null,
+            referred_to_name: null,
+            created: null,
+            source: null,
+            $id: "697cf43c177a89d17ec7",
+            $sequence: 2,
+            $createdAt: "2026-01-30T18:11:08.902+00:00",
+            $updatedAt: "2026-01-31T10:00:00.000+00:00",
+            $permissions: ["read(\"user:WHT-0004-A\")", "update(\"user:WHT-0004-A\")", "delete(\"user:WHT-0004-A\")"],
+            $databaseId: "main",
+            $collectionId: "claims"
+          },
+          {
+            claimType: "Outpatient Care",
+            userId: "WHT-0002-B",
+            dateOfService: "2026-01-28T00:00:00.000+00:00",
+            hospitalProvider: "Abuja Medical Center",
+            description: "Regular checkup",
+            status: "rejected",
+            amount: 3000,
+            reviewNotes: "Insufficient documentation",
+            approvedAmount: 0,
+            submittedDate: "2026-01-29T14:30:00.000+00:00",
+            processedDate: "2026-01-30T09:15:00.000+00:00",
+            documents: [],
+            policy_number: null,
+            diagnosis: null,
+            referred_from_code: null,
+            referred_from_name: null,
+            referred_to_code: null,
+            referred_to_name: null,
+            created: null,
+            source: null,
+            $id: "697cf43c177a89d17ec8",
+            $sequence: 3,
+            $createdAt: "2026-01-29T14:30:00.000+00:00",
+            $updatedAt: "2026-01-30T09:15:00.000+00:00",
+            $permissions: ["read(\"user:WHT-0002-B\")", "update(\"user:WHT-0002-B\")", "delete(\"user:WHT-0002-B\")"],
+            $databaseId: "main",
+            $collectionId: "claims"
+          }
+        ];
+
+        const foundClaim = mockClaims.find(claim => claim.$id === claimId);
+        if (foundClaim) {
+          // Transform single claim
+          const transformedClaim = {
+            id: foundClaim.$id,
+            dateOfService: foundClaim.dateOfService,
+            userId: foundClaim.userId,
+            hospitalProvider: foundClaim.hospitalProvider,
+            amount: typeof foundClaim.amount === 'string' ? parseFloat(foundClaim.amount) : foundClaim.amount,
+            status: foundClaim.status.toLowerCase() as 'pending' | 'approved' | 'rejected',
+            patientName: `Patient ${foundClaim.userId}`,
+            hmoId: foundClaim.userId,
+            paCode: foundClaim.policy_number || 'N/A',
+            dateSubmitted: foundClaim.submittedDate,
+            notes: foundClaim.diagnosis || foundClaim.description,
+            treatment: [] // Mock treatment data
+          };
+
+          return NextResponse.json({
+            success: true,
+            data: transformedClaim,
+            message: "Claim retrieved successfully"
+          }, { status: 200 });
+        }
+
+        return NextResponse.json({
+          success: false,
+          error: "Claim not found"
+        }, { status: 404 });
+      }
+
+      // Fetch individual claim from backend
+      const backendRes = await fetch(
+        BACKEND_URL + `/admin/claims/${claimId}`,
+        {
+          headers: {
+            ...getAdminHeaders(cookieHeader),
+          },
+          credentials: "include",
+          next: { revalidate: 300 },
+        }
+      );
+
+      if (!backendRes.ok) {
+        return NextResponse.json({
+          success: false,
+          error: "Claim not found"
+        }, { status: 404 });
+      }
+
+      const data = await backendRes.json();
+
+      // Transform backend data for single claim
+      let claim = null;
+      if (data && typeof data === "object") {
+        if (data.success && data.data) {
+          // Handle different backend response formats
+          if (data.data.claims && Array.isArray(data.data.claims)) {
+            claim = data.data.claims.find((c: any) => c.$id === claimId || c.id === claimId);
+          } else if (Array.isArray(data.data)) {
+            claim = data.data.find((c: any) => c.$id === claimId || c.id === claimId);
+          } else if (typeof data.data === 'object') {
+            claim = data.data;
+          } else {
+            claim = data.data;
+          }
+        } else if (data.data && typeof data.data === 'object') {
+          // Handle different backend response formats
+          if (data.data.claims && Array.isArray(data.data.claims)) {
+            claim = data.data.claims.find((c: any) => c.$id === claimId || c.id === claimId);
+          } else if (Array.isArray(data.data)) {
+            claim = data.data.find((c: any) => c.$id === claimId || c.id === claimId);
+          } else {
+            claim = data.data;
+          }
+        } else {
+          claim = data;
+        }
+      }
+
+      if (!claim) {
+        return NextResponse.json({
+          success: false,
+          error: "Claim not found"
+        }, { status: 404 });
+      }
+
+      // Transform claim to match frontend expectations
+      const transformedClaim = {
+        id: claim.$id || claim.id || claim._id,
+        dateOfService: claim.dateOfService,
+        userId: claim.userId,
+        hospitalProvider: claim.hospitalProvider,
+        amount: typeof claim.amount === 'string' ? parseFloat(claim.amount) : (claim.amount || 0),
+        status: (claim.status || 'pending').toLowerCase() as 'pending' | 'approved' | 'rejected',
+        patientName: claim.patientName || `Patient ${claim.userId || 'Unknown'}`,
+        hmoId: claim.hmoId || claim.userId,
+        paCode: claim.policy_number || claim.paCode,
+        dateSubmitted: claim.submittedDate || claim.dateSubmitted,
+        notes: claim.diagnosis || claim.description || claim.notes,
+        treatment: claim.treatment || []
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: transformedClaim,
+        message: "Claim retrieved successfully"
+      }, { status: 200 });
+    }
 
     if (!BACKEND_URL) {
       console.error('Missing BACKEND_URL environment variable');

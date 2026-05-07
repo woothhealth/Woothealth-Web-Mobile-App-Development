@@ -12,6 +12,13 @@
   --color-foreground: var(--foreground);
   --color-btn: var(--btn);
   --bg-primary: var(--bg-color);
+  --primary: #49A5EF;
+  --border: #D9D9D9;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-border: var(--border);
 }
 
 body {

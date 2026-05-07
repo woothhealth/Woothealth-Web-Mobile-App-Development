@@ -11,7 +11,7 @@ const page = () => {
 
   return (
     <section className='bg-[#FFFFFF] w-44 md:w-full py-4 rounded-[15px] text-[#000000] flex items-center px-4 md:h-fit h-48 border border-[#D9D9D9]'>
-         <Link href='/dashboard/superadmin/claims' className='flex flex-col space-y-4 w-full'>
+         <Link href='/dashboard/superadmin/telemedicine' className='flex flex-col space-y-4 w-full'>
           <div className='bg-[#FFEDD5] p-2 text-[#F97316] rounded-[10px] w-fit text-3xl'>
             <IoWalletOutline/>
            </div>

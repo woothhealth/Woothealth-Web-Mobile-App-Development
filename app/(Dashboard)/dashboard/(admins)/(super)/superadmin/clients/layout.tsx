@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import Title from "../UIs/Title";
 
 export default function TicketsLayout({
   header,
@@ -11,7 +10,6 @@ export default function TicketsLayout({
   return (
       <div className="w-full bg-[#FAFAFA] space-y-2">
         <div className="sticky top-0 z-20">{header}</div>
-        <Title title="Client Management"/>
         <div className="md:px-4">{children}</div>
       </div>
   );

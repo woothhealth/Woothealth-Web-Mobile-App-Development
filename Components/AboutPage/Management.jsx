@@ -16,7 +16,7 @@ const Management = () => {
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
                 <Reveal>
                 <div className=''>
-                    <Image src='/CEO.jpg' height={100} width={500} className='h-70 lg:h-112' alt='Team Picture' />
+                    <Image src='/CEO.jpg' height={100} width={500} className='h-70 lg:h-112 rounded-tl-[80px] rounded-br-[80px] object-cover' alt='Team Picture' />
                 </div>
                 </Reveal>
                 <div className='flex flex-col gap-3'>

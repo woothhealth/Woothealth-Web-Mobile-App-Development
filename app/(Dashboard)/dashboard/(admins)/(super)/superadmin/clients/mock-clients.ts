@@ -12,6 +12,7 @@ export type Client = {
   email: string;
   phone: string;
   registrationDate: string;
+  clientType?: string;
 };
 
 export type Enrollee = {
@@ -60,6 +61,7 @@ export const mockClients: Client[] = [
     email: 'john.smith@acme.com',
     phone: '+234 801 234 5678',
     registrationDate: '2024-01-15',
+    clientType: 'Business Client',
   },
   {
     id: '2',
@@ -75,6 +77,7 @@ export const mockClients: Client[] = [
     email: 'jane.doe@techstart.com',
     phone: '+234 802 345 6789',
     registrationDate: '2024-02-20',
+    clientType: 'Woothealth Retail',
   },
   {
     id: '3',
@@ -90,6 +93,7 @@ export const mockClients: Client[] = [
     email: 'bob.johnson@global.com',
     phone: '+234 803 456 7890',
     registrationDate: '2023-06-10',
+    clientType: 'Business Client',
   },
 ];
 

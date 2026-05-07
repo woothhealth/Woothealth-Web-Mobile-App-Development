@@ -156,8 +156,8 @@ const Footer = () => {
                     <div className='text-wrap'>
                         <h3 className='font-semibold text-lg mb-4'>Contact Us</h3>
                         <ul className='flex flex-col gap-3 ml-2'>
-                            <a href="tel:02018891833" className='w-fit'>
-                                <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
+                            <a href="tel:02018877500" className='w-fit'>
+                                <li className='flex gap-2 items-center'><FaPhoneAlt/>02018877500</li>
                             </a>
                             <a href="mailto:support@woothealth.com" className='w-fit'>
                                 <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth.com</li>
@@ -213,8 +213,8 @@ const Footer = () => {
                         <div>
                             <h3 className='font-semibold text-xl mb-4'>Contact Us</h3>
                             <ul className='flex flex-col gap-3 ml-2 text-base'>
-                                <a href="tel:02018891833" className='w-fit'>
-                                <li className='flex gap-2 items-center'><FaPhoneAlt/>02018891833</li>
+                                <a href="tel:02018877500" className='w-fit'>
+                                <li className='flex gap-2 items-center'><FaPhoneAlt/>02018877500</li>
                             </a>
                             <a href="mailto:support@woothealth.com" className='w-fit'>
                                 <li className='flex gap-2 items-center'><FaEnvelope/>support@woothealth.com</li>

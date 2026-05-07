@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { CiUser } from 'react-icons/ci';
-import { useClaimsStats } from '../ClaimsStatsContext';
+import { useClaimsStats } from '../../ClaimsStatsContext';
 
 interface TotalClientProps {
   initialData?: number;

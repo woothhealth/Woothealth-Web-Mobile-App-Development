@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LuUpload } from 'react-icons/lu';
 import Link from 'next/link';
-import { FaEllipsisV, FaEye, FaTrash } from 'react-icons/fa';
+import { FaEllipsisV, FaEye, FaTimes, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { mockEnrollees, type Enrollee } from '../mockEnrollees';
 import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
@@ -162,7 +162,7 @@ export default function EnrolleesClient() {
   };
 
   return (
-    <div className="p-4 pt-10 w-full mx-auto">
+    <div className="md:p-4 md:pt-10 w-full mx-auto">
         <div className="flex flex-col md:flex-row gap-4 mb-8 lg:w-[90%] lg:mx-auto">
           <input
             type="text"
@@ -323,18 +323,17 @@ export default function EnrolleesClient() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-          <div className="w-full max-w-2xl rounded-[15px] bg-white p-6 shadow-xl">
+          <div className="w-full max-w-2xl h-full md:h-fit rounded-[15px] bg-white p-4 md:p-6 shadow-xl overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between gap-4 mb-6">
               <div>
                 <h2 className="text-2xl font-semibold text-slate-900">Add Enrollee</h2>
-                <p className="text-sm text-slate-600">Create a new enrollee and submit to the API.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="rounded-full p-2 text-slate-500 hover:bg-slate-100"
+                className="rounded-full p-2 hover:bg-slate-100"
               >
-                ✕
+                <FaTimes size={20} />
               </button>
             </div>
 
@@ -413,7 +412,7 @@ export default function EnrolleesClient() {
                 />
               </label>
 
-              <label className="space-y-2 md:col-span-2">
+              <label className="space-y-2">
                 <span className="text-sm font-medium text-slate-700">Benefit Balance</span>
                 <input
                   value={newEnrollee.benefitBalance || ''}

@@ -67,7 +67,8 @@ export default function EditInvoiceModal({ invoice, onClose, onSave }: EditInvoi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full md:w-3xl rounded-3xl bg-white p-6 shadow-xl">
+      <div onClick={onClose} className="absolute inset-0 cursor-pointer" />
+      <div className="w-full md:w-3xl rounded-3xl bg-white p-6 shadow-xl z-10 relative">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-800">Edit Invoice</h2>
           <button onClick={onClose} className="hover:text-gray-700">

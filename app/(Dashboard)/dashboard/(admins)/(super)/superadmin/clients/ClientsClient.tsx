@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV, FaFilter, FaChevronDown, FaUsers, FaCreditCard, FaFileInvoice, FaPlus, FaPause, FaBan } from 'react-icons/fa';
+import Link from 'next/link';
+import { IoWalletOutline } from "react-icons/io5";
 import type { Client } from './mock-clients';
 import { mockClients } from './mock-clients';
 import { ViewEnrolleesModal } from './components/ViewEnrolleesModal';
@@ -16,6 +18,7 @@ type ModalType = 'enrollees' | 'payment' | 'invoice' | 'addPlan' | 'suspend' | '
 export function ClientsClient() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [planFilter, setPlanFilter] = useState<string | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
@@ -54,8 +57,8 @@ export function ClientsClient() {
   return (
     <div className="space-y-6 p-6">
       {/* Search and Filters */}
-      <div className="space-y-4">
-        <div>
+      <div className="flex items-center space-x-4">
+        <div className='w-full'>
           <input
             type="text"
             placeholder="Search by company name, email, or phone..."
@@ -64,70 +67,73 @@ export function ClientsClient() {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full rounded-2xl border border-slate-300 bg-transparent px-4 py-3 text-sm placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-[10px] border border-border bg-transparent px-4 py-3 text-sm placeholder-slate-500 focus:border-primary focus:outline-none"
           />
         </div>
 
-        <div className="flex gap-3 overflow-x-auto z-10">
           {/* Status Filter */}
-          <div className="relative min-w-max">
-            <button
-              onClick={() => setStatusFilter(statusFilter ? null : statusOptions[0])}
-              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          <div className="relative w-fit">
+            <div
+              onClick={() => setStatusDropdownOpen((open) => !open)}
+              className="flex items-center justify-between gap-2 w-30 rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              aria-expanded={statusDropdownOpen}
+              aria-haspopup="listbox"
             >
-              Status: {statusFilter || 'All'}
-            </button>
-            {statusFilter && (
-              <div className="absolute top-12 left-0 z-20 rounded-2xl border border-slate-200 bg-white shadow-lg">
+              <span className="">{statusFilter || 'All'}</span>
+              <FaChevronDown className={`h-3.5 w-3.5 text-slate-500 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+            </div>
+
+            {statusDropdownOpen && (
+              <div className="absolute left-0 top-12 z-10 w-full overflow-hidden rounded-[15px] border border-border bg-white shadow-lg">
+                <button
+                  onClick={() => {
+                    setStatusFilter(null);
+                    setStatusDropdownOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <span className="inline-flex h-2.5 w-2.5 rounded-full bg-slate-300" />
+                  All
+                </button>
                 {statusOptions.map((status) => (
                   <button
                     key={status}
-                    onClick={() => setStatusFilter(status === statusFilter ? null : status)}
-                    className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-100"
+                    onClick={() => {
+                      setStatusFilter(status);
+                      setStatusDropdownOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-slate-100"
                   >
-                    {status}
+                    <span
+                      className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                        status === 'Active'
+                          ? 'bg-emerald-500'
+                          : status === 'Suspended'
+                          ? 'bg-amber-500'
+                          : 'bg-rose-500'
+                      }`}
+                    />
+                    <span className="flex-1">{status}</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
-
-          {/* Plan Filter */}
-          <div className="relative min-w-max">
-            <button
-              onClick={() => setPlanFilter(planFilter ? null : planOptions[0])}
-              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
-            >
-              Plan: {planFilter || 'All'}
-            </button>
-            {planFilter && (
-              <div className="absolute top-12 left-0 z-20 rounded-2xl border border-slate-200 bg-white shadow-lg">
-                {planOptions.map((plan) => (
-                  <button
-                    key={plan}
-                    onClick={() => setPlanFilter(plan === planFilter ? null : plan)}
-                    className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-100"
-                  >
-                    {plan}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Clients List */}
       <div className="space-y-4">
         {paginatedClients.map((client) => (
-          <div key={client.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div key={client.id} className="rounded-[15px] border border-border p-6 shadow-sm">
             {/* Header with Company Name, Status, Plan */}
             <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">{client.companyName}</h3>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">{client.companyName}</h3>
+                  <p className="text-sm text-slate-600">{client.clientType}</p>
+                </div>
                 <div className="mt-2 flex gap-3">
                   <span
-                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
                       client.status === 'Active'
                         ? 'bg-green-100 text-green-700'
                         : client.status === 'Suspended'
@@ -137,109 +143,99 @@ export function ClientsClient() {
                   >
                     {client.status}
                   </span>
-                  <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                  <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
                     {client.planType}
                   </span>
                 </div>
-              </div>
-
-              {/* Action Menu Button */}
-              <div className="relative">
-                <button
-                  onClick={() => setOpenActionMenu(openActionMenu === client.id ? null : client.id)}
-                  className="rounded-full bg-slate-100 p-2 hover:bg-slate-200"
-                  aria-label="More actions"
-                >
-                  <FaEllipsisV className="text-slate-700" />
-                </button>
-
-                {/* Action Dropdown Menu */}
-                {openActionMenu === client.id && (
-                  <div className="absolute right-0 top-10 z-30 min-w-max rounded-2xl border border-slate-200 bg-white shadow-lg">
-                    <button
-                      onClick={() => handleOpenModal('enrollees', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
-                    >
-                      👥 View Enrollees ({client.totalEnrollees})
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('payment', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
-                    >
-                      💳 View Payment
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('invoice', client)}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
-                    >
-                      📄 View Invoice
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('addPlan', client)}
-                      className="block w-full px-4 py-2 text-left text-sm bg-[#10B981]"
-                    >
-                      ➕ Add Plan
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('suspend', client)}
-                      className="block w-full px-4 py-2 text-left text-sm bg-[#E86306] hover:bg-[#D97706]"
-                    >
-                      ⏸️ Suspend Account
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('deactivate', client)}
-                      className="block w-full px-4 py-2 text-left text-sm bg-[#EF4444]"
-                    >
-                      ⛔ Deactivate Account
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-              <div className="rounded-2xl bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Total Enrollees</p>
-                <p className="mt-1 text-lg font-bold text-slate-900">{client.totalEnrollees}</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5 bg-[#E5E7EB4D] rounded-[10px] py-3 px-4 text-center">
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">Total Enrollees</p>
+                <p className="text-xl font-bold text-slate-900">{client.totalEnrollees}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Active Plans</p>
-                <p className="mt-1 text-lg font-bold text-slate-900">{client.activePlan}</p>
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">Active Plans</p>
+                <p className="text-xl font-bold text-primary">{client.activePlan}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Monthly Premium</p>
-                <p className="mt-1 text-lg font-bold text-blue-600">₦{client.monthlyPremium.toLocaleString()}</p>
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">Monthly Premium</p>
+                <p className="text-xl font-bold text-[#10B981]">₦{client.monthlyPremium.toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Outstanding</p>
-                <p className="mt-1 text-lg font-bold text-red-600">₦{client.outstanding.toLocaleString()}</p>
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">Outstanding</p>
+                <p className="text-xl font-bold text-[#EF4444]">₦{client.outstanding.toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Wallet Balance</p>
-                <p className="mt-1 text-lg font-bold text-green-600">₦{client.walletBalance.toLocaleString()}</p>
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">Wallet Balance</p>
+                <p className="text-xl font-bold text-primary">₦{client.walletBalance.toLocaleString()}</p>
               </div>
             </div>
 
             {/* Contact Information */}
-            <div className="mt-4 border-t border-slate-200 pt-4">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div>
-                  <p className="text-xs text-slate-600">Contact Person</p>
-                  <p className="mt-1 text-sm font-medium text-slate-900">{client.contactPerson}</p>
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 items-start justify-between">
+              <div className="flex flex-col text-sm space-y-1">
+                <div className="flex space-x-2">
+                  <p className="text-slate-600">Contact Person:</p>
+                  <p className="font-medium text-slate-900">{client.contactPerson}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-600">Email</p>
-                  <p className="mt-1 text-sm font-medium text-slate-900">{client.email}</p>
+                <div className='flex space-x-2'>
+                  <p className="text-slate-600">Email:</p>
+                  <p className="font-medium text-slate-900">{client.email}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-600">Phone</p>
-                  <p className="mt-1 text-sm font-medium text-slate-900">{client.phone}</p>
+                <div className='flex space-x-2'>
+                  <p className="text-slate-600">Phone:</p>
+                  <p className="font-medium text-slate-900">{client.phone}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-600">Registration Date</p>
-                  <p className="mt-1 text-sm font-medium text-slate-900">{client.registrationDate}</p>
+                <div className='flex space-x-2'>
+                  <p className="text-slate-600">Registration Date:</p>
+                  <p className="font-medium text-slate-900">{client.registrationDate}</p>
                 </div>
+              </div>
+              
+              {/* Action Menu Button */}
+              <div className="flex space-x-4 justify-end">
+                  <div className="space-y-2">
+                    <Link
+                      href={`/dashboard/superadmin/clients/enrollees`}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#E5E7EB4D] cursor-pointer hover:bg-slate-50 rounded-[10px]"
+                    >
+                      <FaUsers /> View Enrollees ({client.totalEnrollees})
+                    </Link>
+                    <div
+                      onClick={() => handleOpenModal('payment', client)}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left bg-[#E5E7EB4D] cursor-pointer text-sm hover:bg-slate-50 rounded-[10px]"
+                    >
+                      <IoWalletOutline /> View Payment
+                    </div>
+                    <Link
+                      href={`/dashboard/superadmin/clients/invoice`}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#E5E7EB4D] cursor-pointer hover:bg-slate-50 rounded-[10px]"
+                    >
+                      <FaFileInvoice /> View Invoice
+                    </Link>
+                  </div>
+                    <div className="space-y-2 text-[#ffffff]">
+                    <div
+                      onClick={() => handleOpenModal('addPlan', client)}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#10B981] cursor-pointer hover:bg-[#10B981]/80 rounded-[10px]"
+                    >
+                      <FaPlus /> Add Plan
+                    </div>
+                    <div
+                      onClick={() => handleOpenModal('suspend', client)}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#E86306] hover:bg-[#D97706] rounded-[10px] cursor-pointer"
+                    >
+                      <FaPause /> Suspend Account
+                    </div>
+                    <div
+                      onClick={() => handleOpenModal('deactivate', client)}
+                      className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#EF4444] hover:bg-[#EF4444]/80 rounded-[10px] cursor-pointer"
+                    >
+                      <FaBan /> Deactivate Account
+                    </div>
+                  </div>
               </div>
             </div>
           </div>

@@ -1,14 +1,13 @@
-import "@/styles/globals.css";
 import Title from "../../UIs/Title";
 
 export default function ProviderLayout({
-  children,
   active,
   inactive,
+  children,
 }: Readonly<{
-  children: React.ReactNode;
   active: React.ReactNode;
   inactive: React.ReactNode;
+  children: React.ReactNode;
 }>) {
   return (
       <div className="">

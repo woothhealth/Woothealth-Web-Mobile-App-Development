@@ -160,7 +160,7 @@ export default function PrescriptionClient() {
                   {openActionMenu === prescription.id && (
                     <div className="absolute right-0 top-full z-20 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-lg">
                       <Link
-                        href={`/dashboard/superadmin/prescription/view/${prescription.id}`}
+                        href={`/dashboard/superadmin/prescription/${prescription.id}`}
                         className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#49A5EF] hover:bg-gray-50"
                         onClick={() => setOpenActionMenu(null)}
                       >

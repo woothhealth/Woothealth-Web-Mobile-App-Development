@@ -352,7 +352,7 @@ function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
       <div className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">{lead ? 'Edit Lead' : 'Add New Lead'}</h2>
@@ -497,7 +497,7 @@ function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
             />
           </Field>
 
-          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+          <div className="flex flex-col gap-3 pt-2 w-full">
             <button
               type="button"
               onClick={onClose}

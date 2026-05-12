@@ -55,7 +55,7 @@ export function ClientsClient() {
   const planOptions = ['Business', 'Retail'];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 px-4 py-6 md:p-6">
       {/* Search and Filters */}
       <div className="flex items-center space-x-4">
         <div className='w-full'>
@@ -124,16 +124,16 @@ export function ClientsClient() {
       {/* Clients List */}
       <div className="space-y-4">
         {paginatedClients.map((client) => (
-          <div key={client.id} className="rounded-[15px] border border-border p-6 shadow-sm">
+          <div key={client.id} className="rounded-[15px] border border-border p-4 md:p-6 shadow-sm">
             {/* Header with Company Name, Status, Plan */}
             <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">{client.companyName}</h3>
                   <p className="text-sm text-slate-600">{client.clientType}</p>
                 </div>
-                <div className="mt-2 flex gap-3">
+                <div className="flex flex-col md:flex-row gap-1 md:gap-3">
                   <span
-                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+                    className={`inline-block rounded-full px-3 w-fit py-1 text-sm font-medium ${
                       client.status === 'Active'
                         ? 'bg-green-100 text-green-700'
                         : client.status === 'Suspended'
@@ -150,7 +150,7 @@ export function ClientsClient() {
             </div>
 
             {/* Stats Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5 bg-[#E5E7EB4D] rounded-[10px] py-3 px-4 text-center">
+            <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5 bg-[#E5E7EB4D] rounded-[10px] py-3 px-4 md:text-center">
               <div className="flex flex-col space-y-2">
                 <p className="text-sm">Total Enrollees</p>
                 <p className="text-xl font-bold text-slate-900">{client.totalEnrollees}</p>
@@ -195,7 +195,7 @@ export function ClientsClient() {
               </div>
               
               {/* Action Menu Button */}
-              <div className="flex space-x-4 justify-end">
+              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-4 justify-end">
                   <div className="space-y-2">
                     <Link
                       href={`/dashboard/superadmin/clients/enrollees`}
@@ -203,12 +203,12 @@ export function ClientsClient() {
                     >
                       <FaUsers /> View Enrollees ({client.totalEnrollees})
                     </Link>
-                    <div
+                    <button
                       onClick={() => handleOpenModal('payment', client)}
                       className="flex gap-2 items-center w-full px-4 py-2 text-left bg-[#E5E7EB4D] cursor-pointer text-sm hover:bg-slate-50 rounded-[10px]"
                     >
                       <IoWalletOutline /> View Payment
-                    </div>
+                    </button>
                     <Link
                       href={`/dashboard/superadmin/clients/invoice`}
                       className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#E5E7EB4D] cursor-pointer hover:bg-slate-50 rounded-[10px]"
@@ -217,24 +217,24 @@ export function ClientsClient() {
                     </Link>
                   </div>
                     <div className="space-y-2 text-[#ffffff]">
-                    <div
+                    <button
                       onClick={() => handleOpenModal('addPlan', client)}
                       className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#10B981] cursor-pointer hover:bg-[#10B981]/80 rounded-[10px]"
                     >
                       <FaPlus /> Add Plan
-                    </div>
-                    <div
+                    </button>
+                    <button
                       onClick={() => handleOpenModal('suspend', client)}
                       className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#E86306] hover:bg-[#D97706] rounded-[10px] cursor-pointer"
                     >
                       <FaPause /> Suspend Account
-                    </div>
-                    <div
+                    </button>
+                    <button
                       onClick={() => handleOpenModal('deactivate', client)}
                       className="flex gap-2 items-center w-full px-4 py-2 text-left text-sm bg-[#EF4444] hover:bg-[#EF4444]/80 rounded-[10px] cursor-pointer"
                     >
                       <FaBan /> Deactivate Account
-                    </div>
+                    </button>
                   </div>
               </div>
             </div>

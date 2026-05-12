@@ -1,17 +1,30 @@
-'use client';
+// 'use client';
 
-import "@/styles/globals.css";
 import { AdminOverviewProvider } from "@/Components/AdminOverviewContext";
 
+// export default function OverviewAdminDashboardLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   return (
+//     <AdminOverviewProvider>
+//       <div className="relative w-full bg-[#FAFAFA] pb-4 space-y-2">
+//         <div className="px-2 md:px-4">
+//           <div className="">{children}</div>
+//         </div>
+//       </div>
+//     </AdminOverviewProvider>
+//   );
+// }
 
-export default function DashboardLayout({
+export default function OverviewAdminDashboardLayout({
   children,
   totalUsers,
   pending,
   activeClient,
   activities,
   enrollees,
-  welcome,
   tracking,
   telemedicineStats,
   head,
@@ -24,7 +37,6 @@ export default function DashboardLayout({
   activeClient: React.ReactNode;
   activities: React.ReactNode;
   enrollees: React.ReactNode;
-  welcome: React.ReactNode;
   tracking: React.ReactNode;
   revenue: React.ReactNode;
   telemedicineStats: React.ReactNode;
@@ -33,7 +45,6 @@ export default function DashboardLayout({
     <AdminOverviewProvider>
     <>
     <div className="relative w-full bg-[#FAFAFA] pb-4 space-y-2">
-      <div className="sticky top-0 z-10">{welcome}</div>
       <div className="sticky">{head}</div>
       <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
         <div>{totalUsers}</div>

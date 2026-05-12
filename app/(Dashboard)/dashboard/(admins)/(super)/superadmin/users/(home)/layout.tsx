@@ -1,7 +1,6 @@
-import "@/styles/globals.css";
 import Title from "../../UIs/Title";
 
-export default function UsersLayout({
+export default function UsersAdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

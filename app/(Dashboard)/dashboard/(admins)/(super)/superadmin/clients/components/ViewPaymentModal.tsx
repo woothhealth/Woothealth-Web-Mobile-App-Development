@@ -8,7 +8,7 @@ interface ViewPaymentModalProps {
 export function ViewPaymentModal({ clientName, onClose }: ViewPaymentModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl mx-auto">
         <h2 className="text-lg font-semibold">View Payment History</h2>
         <p className="mt-2 text-sm text-slate-600">{clientName}</p>
         <div className="mt-4 space-y-3">

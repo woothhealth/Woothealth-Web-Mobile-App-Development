@@ -8,7 +8,7 @@ type LoginMode = "login" | "admin" | "provider";
 
 const ALLOWED_ROLES_BY_MODE: Record<LoginMode, readonly string[]> = {
   login: ["business", "retail"],
-  admin: ["admin", "superadmin"],
+  admin: ["admin", "superadmin", "sales", "ops", "csupport", "claims", "underwriting", "finance", "hr"],
   provider: ["provider"],
 };
 
@@ -60,14 +60,14 @@ export async function POST(req: NextRequest) {
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 1,
+      maxAge: 60 * 60 * 8,
     });
     cookieStore.set("role", userRole, {
       httpOnly: true,
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 1,
+      maxAge: 60 * 60 * 8,
     });
 
     // If backend returned a PHP session id in the response body or Set-Cookie header,
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
           path: "/",
           sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 1,
+          maxAge: 60 * 60 * 8,
         });
       }
     } catch (e) {

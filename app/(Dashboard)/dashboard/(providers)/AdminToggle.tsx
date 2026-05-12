@@ -144,12 +144,10 @@ const path2 = [
 ]
 
 const AdminToggle = ({ isOpen, onClose }: { isOpen: boolean; onClose?: () => void }) => {
-    const pathname = usePathname()
     if (!isOpen) return null
 
+    const pathname = usePathname()
     const [pressedUrl, setPressedUrl] = useState<string | null>(null)
-    
-    if (!isOpen) return null
     
     const handleItemClick = (url: string) => {
         setPressedUrl(url)

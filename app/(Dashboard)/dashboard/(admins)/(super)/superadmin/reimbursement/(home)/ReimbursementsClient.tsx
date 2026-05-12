@@ -194,15 +194,15 @@ export default function ReimbursementsClient() {
                     <button
                       type="button"
                       onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#E5E7EB] text-slate-600 hover:bg-[#F8F9FA]"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border-0 outline-0 text-slate-600 hover:bg-[#F8F9FA]"
                     >
                       <FaEllipsisV />
                     </button>
                     {openMenuId === item.id && (
                       <div className="absolute right-0 top-10 z-20 w-40 rounded-2xl border border-[#E5E7EB] bg-white p-2 shadow-lg">
                         <Link
-                          href={`/dashboard/superadmin/reimbursement/view?id=${item.id}`}
-                          className="block rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-[#F8F9FA]"
+                          href={`/dashboard/superadmin/reimbursement/${item.reimbursementId}`}
+                          className="flex w-full px-3 rounded-lg py-2 text-sm text-left text-slate-700 hover:bg-[#F8F9FA]"
                           onClick={() => setOpenMenuId(null)}
                         >
                           <FaEye className="mr-2 inline" /> View
@@ -210,7 +210,7 @@ export default function ReimbursementsClient() {
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(item)}
-                          className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm text-slate-700 hover:bg-[#F8F9FA]"
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-[#F8F9FA]"
                         >
                           <FaEdit className="mr-2" /> Edit
                         </button>
@@ -220,7 +220,7 @@ export default function ReimbursementsClient() {
                             setDeleteTarget(item);
                             setOpenMenuId(null);
                           }}
-                          className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
                         >
                           <FaTrash className="mr-2" /> Delete
                         </button>

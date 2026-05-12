@@ -540,7 +540,7 @@ export const ActionButtonsHandler: React.FC<ActionButtonsHandlerProps> = ({ user
               </div>
               <FaTimes onClick={handleClosePopup} className="cursor-pointer" size={22}/>
             </div>
-            <div className="mt-2 grid gap-6 lg:grid-cols-2 bg-primary text-[#ffffff] rounded-[10px]">
+            <div className="mt-2 grid gap-2 md:gap-6 lg:grid-cols-2 bg-primary text-[#ffffff] rounded-[10px]">
               <div className="p-5">
                 <p className="text-sm">Current Plan</p>
                 <h3 className="text-xl font-semiboldmt-2">{currentPlanLabel}</h3>
@@ -573,14 +573,14 @@ export const ActionButtonsHandler: React.FC<ActionButtonsHandlerProps> = ({ user
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
             <div onClick={handleClosePopup} className="absolute inset-0 cursor-pointer" />
-                    <div className="w-full md:w-xl h-full rounded-[15px] bg-white p-6 shadow-xl z-10 relative">
+                    <div className="w-full md:w-xl h-full rounded-[15px] bg-white p-3 md:p-6 shadow-xl z-10 relative">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <h2 className="text-2xl font-semibold text-slate-900">Reimbursements</h2>
                         </div>
                         <FaTimes onClick={handleClosePopup} className="cursor-pointer" size={22}/>
                       </div>
-                      <div className="mt-6 space-y-4 overflow-y-auto h-[80%] custom-scrollbar">
+                      <div className="mt-6 space-y-4 overflow-y-auto h-[90%] custom-scrollbar">
                         {reimburseMock.map((item) => (
                           <div key={item.id} className="rounded-2xl border border-[#E5E7EB] p-4 space-y-4">
                             <div className="flex items-center justify-between">
@@ -594,7 +594,7 @@ export const ActionButtonsHandler: React.FC<ActionButtonsHandlerProps> = ({ user
                                 {item.status}
                               </span>
                             </div>
-                            <div className='grid grid-cols-2 md:grid-cols-4 gap-4 bg-[#E5E7EB40] px-6 py-2 rounded-[10px] text-xs text-gray-500'>
+                            <div className='grid grid-cols-2 md:grid-cols-4 gap-4 bg-[#E5E7EB40] px-3 md:px-6 py-2 rounded-[10px] text-xs text-gray-500'>
                               <div className='flex flex-col space-y-1'>
                                 <p>Providers</p>
                                 <span className="text-slate-700">{item.providersName}</span>
@@ -612,7 +612,7 @@ export const ActionButtonsHandler: React.FC<ActionButtonsHandlerProps> = ({ user
                                 <span className="text-slate-700">{item.submitted}</span>
                               </div>
                             </div>
-                            <div className="space-y-2 flex flex-col">
+                            <div className="space-y-2 flex flex-col w-full">
                               <p className="text-sm text-slate-500">Supported Documents ({item.supportedDocs.length})</p>
                               <div className="flex w-full gap-2">
                                 {item.supportedDocs.map((doc, index) => (

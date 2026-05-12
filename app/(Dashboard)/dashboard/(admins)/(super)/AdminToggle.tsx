@@ -3,187 +3,194 @@
 import React, { useState } from 'react'
 import { FaUserAlt, FaUsers } from "react-icons/fa";
 import { RiLayoutMasonryFill } from "react-icons/ri";
-import { IoMdSettings } from "react-icons/io";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/UI/LogOut';
 import { HiMiniUserGroup } from 'react-icons/hi2';
 import { HiOutlineAcademicCap, HiOutlineBell, HiOutlineCamera, HiOutlineCash, HiOutlineChatAlt2, HiOutlineCheckCircle, HiOutlineChip, HiOutlineClipboardCheck, HiOutlineClipboardList, HiOutlineCreditCard, HiOutlineDocumentText, HiOutlineKey, HiOutlineOfficeBuilding, HiOutlineShieldCheck, HiOutlineTicket, HiOutlineTrendingUp, HiOutlineUserGroup, HiOutlineUsers } from 'react-icons/hi';
+import { useAdminDashboardUser } from '@/Components/AdminDashboardUserProvider';
+import { can } from '@/lib/rbac';
 
-const path = [
+const navItems = [
     {
         name: 'Overview',
         url: '/dashboard/superadmin',
-        icon: <RiLayoutMasonryFill/>
+        icon: <RiLayoutMasonryFill/>,
+        permission: 'overview',
     },
     {
         name: 'Users',
         url: '/dashboard/superadmin/users',
-        icon: <HiOutlineUsers/>
+        icon: <HiOutlineUsers/>,
+        permission: 'users',
     },
     {
         name: 'Enrollees',
         url: '/dashboard/superadmin/enrollees',
-        icon: <FaUsers/>
+        icon: <FaUsers/>,
+        permission: 'enrollees',
     },
     {
         name: 'Clients',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/clients',
-        icon: <HiMiniUserGroup/>
+        icon: <HiMiniUserGroup/>,
+        permission: 'clients',
     },
     {
         name: 'Benefits/Plan',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/benefits',
-        icon: <HiOutlineClipboardList/>
+        icon: <HiOutlineClipboardList/>,
+        permission: 'benefits',
     },
     {
         name: 'Finance',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/finance',
-        icon: <HiOutlineCash/>
+        icon: <HiOutlineCash/>,
+        permission: 'finance',
     },
     {
         name: 'Leads',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/leads',
-        icon: <HiOutlineTrendingUp/>
+        icon: <HiOutlineTrendingUp/>,
+        permission: 'leads',
     },
     {
         name: 'Feedback',
         url: '/dashboard/superadmin/coming',
-        // url: '/dashboard/superadmin/feedback',
-        icon: <HiOutlineChatAlt2/>
+        icon: <HiOutlineChatAlt2/>,
+        permission: 'customerFeeds',
     },
     {
         name: 'Tickets',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/tickets',
-        icon: <HiOutlineTicket/>
+        icon: <HiOutlineTicket/>,
+        permission: 'tickets',
     },
     {
         name: 'Employee',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/employees',
-        icon: <HiOutlineUserGroup/>
+        icon: <HiOutlineUserGroup/>,
+        permission: 'employees',
     },
     {
         name: 'Providers',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/providers',
-        icon: <HiOutlineOfficeBuilding/>
+        icon: <HiOutlineOfficeBuilding/>,
+        permission: 'providers',
     },
     {
         name: 'Claims',
         url: '/dashboard/superadmin/claims',
-        icon: <HiOutlineDocumentText/>
+        icon: <HiOutlineDocumentText/>,
+        permission: 'claims',
     },
     {
         name: 'Reimbursement',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/reimbursement',
-        icon: <HiOutlineCreditCard/>
+        icon: <HiOutlineCreditCard/>,
+        permission: 'reimbursement',
     },
     {
         name: 'Validations',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/validations',
-        icon: <HiOutlineCheckCircle/>
+        icon: <HiOutlineCheckCircle/>,
+        permission: 'validations',
     },
     {
         name: 'PA Codes',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/pa-code',
-        icon: <HiOutlineKey/>
+        icon: <HiOutlineKey/>,
+        permission: 'paCodes',
     },
     {
         name: 'Prescription',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/prescription',
-        icon: <HiOutlineClipboardCheck/>
+        icon: <HiOutlineClipboardCheck/>,
+        permission: 'prescription',
     },
     {
         name: 'Telemedicine',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/telemedicine',
-        icon: <HiOutlineCamera/>
+        icon: <HiOutlineCamera/>,
+        permission: 'telemedicine',
     },
     {
         name: 'Pre-Employment Tests',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/pre-employment',
-        icon: <HiOutlineAcademicCap/>
+        icon: <HiOutlineAcademicCap/>,
+        permission: 'preEmployment',
     },
     {
         name: 'Notification',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/notification',
-        icon: <HiOutlineBell/>
+        icon: <HiOutlineBell/>,
+        permission: 'notification',
     },
     {
         name: 'Roles',
-        // url: '/dashboard/superadmin/coming',
         url: '/dashboard/superadmin/roles',
-        icon: <HiOutlineShieldCheck/>
+        icon: <HiOutlineShieldCheck/>,
+        permission: 'roles',
     },
     {
         name: 'Product & Tech',
         url: '/dashboard/superadmin/coming',
-        // url: '/dashboard/superadmin/product',
-        icon: <HiOutlineChip/>
+        icon: <HiOutlineChip/>,
+        permission: 'product',
     }
-]
+];
 
-const path2 = [
+const actionItems = [
     {
         name: 'Profile',
         url: '/dashboard/superadmin/profile',
-        icon: <FaUserAlt/>
+        icon: <FaUserAlt/>,
+        permission: 'profile',
     }
 ]
 
 const AdminToggle = ({ isOpen, onClose }: { isOpen: boolean; onClose?: () => void }) => {
-    const pathname = usePathname()
-    if (!isOpen) return null
+    if (!isOpen) return null;
 
-    const [pressedUrl, setPressedUrl] = useState<string | null>(null)
-    
-    if (!isOpen) return null
+    const pathname = usePathname();
+    const user = useAdminDashboardUser();
+    const [pressedUrl, setPressedUrl] = useState<string | null>(null);
+    const visibleNavItems = navItems.filter((item) => can(user, item.permission));
+    const visibleActionItems = actionItems.filter((item) => can(user, item.permission));
     
     const handleItemClick = (url: string) => {
-        setPressedUrl(url)
-        onClose?.()
-        setTimeout(() => setPressedUrl(null), 400)
-    }
+        setPressedUrl(url);
+        onClose?.();
+        setTimeout(() => setPressedUrl(null), 400);
+    };
   
     return (
     <>
     <div className='absolute top-18 left-0 z-50 flex flex-col md:hidden gap-6 h-[95svh] bg-[#FFFFFF] w-[70%] px-4 pt-4 pb-14 overflow-y-scroll custom-scrollbar mb-4'>
         <div className='flex flex-col gap-1'>
-            {path.map((path, index) => {
-                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
+            {visibleNavItems.map((item, index) => {
+                const isActive = pathname === item.url || (pathname.startsWith(item.url) && item.url !== "/dashboard/superadmin")
                 return (
-                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
+                    <Link key={index} href={item.url} onClick={() => handleItemClick(item.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
-                                {path.icon}
+                                {item.icon}
                             </div>
-                            {path.name}
+                            {item.name}
                         </div>
                     </Link>
             )})}
         </div>
         <div className='flex flex-col gap-1 h-full'>
-            {path2.map((path, index) => {
-                const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
+            {visibleActionItems.map((item, index) => {
+                const isActive = pathname === item.url || (pathname.startsWith(item.url) && item.url !== "/dashboard/superadmin")
                 return (
-                    <Link key={index} href={path.url} onClick={() => handleItemClick(path.url)}>
+                    <Link key={index} href={item.url} onClick={() => handleItemClick(item.url)}>
                         <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
-                                {path.icon}
+                                {item.icon}
                             </div>
-                            {path.name}
+                            {item.name}
                         </div>
                     </Link>
             )})}

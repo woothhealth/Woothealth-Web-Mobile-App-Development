@@ -1,4 +1,3 @@
-import "@/styles/globals.css";
 import Title from "../../UIs/Title";
 
 export default function PaCodesLayout({

@@ -28,11 +28,11 @@ body {
 }
 
 button {
-  border-radius: 40px;
   cursor: pointer;
 }
 
 .btn {
+  border-radius: 40px;
   background: var(--color-btn);
   color: var(--foreground-secondary);
 }

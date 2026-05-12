@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { IoIosArrowBack } from 'react-icons/io';
 import { toast } from 'sonner';
 import Claims from '../(home)/Claims';
+import { FaEyeSlash, FaRegEdit, FaRegEye } from 'react-icons/fa';
 
 interface Claim {
   id: string;
@@ -25,7 +26,7 @@ interface Claim {
   totalAmount: number;
   assignedExaminer?: string;
   dateSubmitted?: string;
-  treatment?: Array<{
+  treatment: Array<{
     itemCode: string;
     description: string;
     quantity: number;
@@ -36,7 +37,7 @@ interface Claim {
 }
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString('en-NG', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -46,6 +47,8 @@ const formatDate = (dateString: string) => {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'approved':
+      return 'bg-[#10B9811A] text-[#10B981]';
+    case 'paid':
       return 'bg-[#10B9811A] text-[#10B981]';
     case 'pending':
       return 'bg-[#F59E0B1A] text-[#F59E0B]';
@@ -104,6 +107,28 @@ async function getClaim(claimId: string): Promise<Claim | null> {
   }
 }
 
+async function getClaimsByUserId(userId: string): Promise<Claim[]> {
+  try {
+    const response = await fetch(`/api/admin/claims?userId=${encodeURIComponent(userId)}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.data && Array.isArray(data.data)) {
+      return data.data;
+    }
+
+    return [];
+  } catch (error) {
+    return [];
+  }
+}
+
 function DetailCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col space-y-1">
@@ -112,6 +137,22 @@ function DetailCard({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+const calculateTimeframe = (claims: Claim[]): string => {
+  if (claims.length < 2) return 'N/A';
+  
+  const firstDate = new Date(claims[0].dateOfService);
+  const lastDate = new Date(claims[claims.length - 1].dateOfService);
+  
+  const diffTime = Math.abs(lastDate.getTime() - firstDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 30) return `${diffDays} days`;
+  const months = Math.floor(diffDays / 30);
+  if (months < 12) return `${months} month${months > 1 ? 's' : ''}`;
+  const years = Math.floor(diffDays / 365);
+  return `${years} year${years > 1 ? 's' : ''}`;
+};
 
 interface ClaimDetailsModalProps {
   claim: Claim;
@@ -124,6 +165,13 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
 }) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<{name: string, message: string}[]>([]);
+  const [isShowPaCode, setIsShowPaCode] = useState(false);
+  const [recentClaims, setRecentClaims] = useState<Claim[]>([]);
+
+  const showPaCode = () => {
+    setIsShowPaCode(!isShowPaCode);
+  };
+
   const [communications] = useState<{name: string, message: string}[]>([
     // Mock communications
     { name: 'Dr. Smith', message: 'Initial consultation completed.' },
@@ -144,6 +192,8 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
     .join('')
     .toUpperCase();
 
+  const timeframeText = calculateTimeframe(recentClaims);
+
   const handleAddComment = () => {
     if (comment.trim()) {
       setComments([...comments, { name: 'Admin', message: comment }]);
@@ -154,109 +204,146 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
     }
   };
 
-  return (
-    <div className="w-full px-4 py-4">
-      {/* Back Button */}
-      <div className='flex w-full mb-4'>
-        <Link href="/dashboard/superadmin/claims"
-          className="font-semibold p-2 rounded-full border border-border hover:bg-gray-100 flex items-center"
-        >
-          <IoIosArrowBack size={28} />
-        </Link>
-      </div>
+  useEffect(() => {
+    const fetchRecentClaims = async () => {
+      if (claim.userId) {
+        const claims = await getClaimsByUserId(claim.userId);
+        // Filter out the current claim
+        const filteredClaims = claims.filter(c => c.id !== claim.id);
+        setRecentClaims(filteredClaims);
+      }
+    };
 
-      <div className='border border-border rounded-[10px] space-y-6 shadow-sm py-2'>
-        <h2 className='text-lg font-semibold px-6 pb-2 border-b border-border'>Claim Identifiers</h2>
-        <div className='px-6 py-2 space-y-4 grid grid-cols-1 md:grid-cols-3'>
-            <DetailCard label="Total Billed Amount" value={claim.amount ? `₦${claim.amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A'} />
-            <DetailCard label='Date of encounter' value={claim.dateOfService ? formatDate(claim.dateOfService) : 'N/A'} />
-            <DetailCard label='Date Submitted' value={claim.dateSubmitted ? formatDate(claim.dateSubmitted) : 'N/A'} />
-            <DetailCard label='Claim type' value={claim.claimType || 'N/A'} />
-            <DetailCard label='Providers' value={claim.hospitalProvider || 'N/A'} />
-            <DetailCard label='Assigned Examiner' value={claim.assignedExaminer || 'N/A'} />
+    fetchRecentClaims();
+  }, [claim.userId, claim.id]);
+
+  return (
+    <div className="w-full py-4 px-3">
+      {/* Back Button */}
+      <div className='flex w-full mb-4 flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0'>
+        <div className='flex items-center space-x-6 md:space-x-8'>
+          <Link href="/dashboard/superadmin/claims"
+            className="font-semibold p-2 rounded-full border border-border hover:bg-gray-100 flex items-center"
+          >
+            <IoIosArrowBack size={28} />
+          </Link>
+          <h3 className='text-xl font-semibold'>Claim Details</h3>
+          <div className='space-x-4 space-y-2 flex flex-col md:flex-row text-sm md:text-base'>
+            <span className={`${getStatusColor(claim.status)} px-4 w-fit py-1 rounded-[15px] capitalize`}>{claim.status}</span>
+            <span className='px-4 py-1 w-fit rounded-[15px] text-primary bg-primary/20'>{claim.claimType || 'N/A'}</span>
+          </div>
+        </div>
+        <div>
+          <div>
+            {claim.status === 'pending' && (
+              <div className='flex gap-2 text-[15px]'>
+                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-full font-medium hover:bg-green-700 transition'>Approve Claim</button>
+                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-red-700 transition'>Query Provider</button>
+                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject Claim</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      <div className="space-y-6">
-        {/* Enrollee Information */}
-        <div className="space-y-4 py-2 shadow-sm border border-border rounded-[10px]">
-          <h2 className='text-lg font-semibold px-6 pb-2 border-b border-border'>Enrollee information</h2>
-          <div className="flex items-start space-x-4 px-6 py-4">
-            {/* Avatar */}
-            <div className="shrink-0 w-20 h-20 rounded-[10px] bg-linear-to-br from-blue-400 to-primary flex items-center justify-center text-white text-2xl font-bold">
-              {initials}
+      <div className='grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4'>
+        <div className='bg-[#ffffff] rounded-[10px] p-2 md:p-4 space-y-4'>
+          <div className='border border-border rounded-[10px] space-y-4 md:space-y-6 shadow-sm py-2'>
+            <h2 className='text-lg font-semibold px-4 md:px-6 pb-2 border-b border-border'>Claim Identifiers</h2>
+            <div className='px-4 md:px-6 py-2 space-y-4 grid grid-cols-1 md:grid-cols-3'>
+                <DetailCard label="Total Billed Amount" value={claim.amount ? `₦${claim.amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A'} />
+                <DetailCard label='Date of encounter' value={claim.dateOfService ? formatDate(claim.dateOfService) : 'N/A'} />
+                <DetailCard label='Date Submitted' value={claim.dateSubmitted ? formatDate(claim.dateSubmitted) : 'N/A'} />
+                <DetailCard label='Claim type' value={claim.claimType || 'N/A'} />
+                <DetailCard label='Providers' value={claim.hospitalProvider || 'N/A'} />
+                <DetailCard label='Assigned Examiner' value={claim.assignedExaminer || 'N/A'} />
             </div>
+          </div>
 
-            <div className="flex-1 space-y-1">
-              <h4 className="text-xl font-semibold text-gray-900">{claim.userName || 'Unknown Enrollee'}</h4>
-              <div className="grid grid-cols-4 gap-4 text-[15px]">
-                <div className='flex flex-col'>
-                  <span className="font-medium">HMOID</span>
-                  <span className="font-semibold">{claim.hmoId || 'N/A'}</span>
+          {/* Enrollee Information */}
+          <div className="space-y-4 py-2 shadow-sm border border-border rounded-[10px]">
+            <h2 className='text-lg font-semibold px-4 md:px-6 pb-2 border-b border-border'>Enrollee information</h2>
+            <div className="flex flex-col space-y-2 md:flex-row items-start space-x-4 px-4 md:px-6 py-4">
+              <div className={`flex space-x-4`}>
+              {/* Avatar */}
+              <div className="shrink-0 w-20 h-20 rounded-[10px] bg-linear-to-br from-blue-400 to-primary flex items-center justify-center text-white text-2xl font-bold">
+                {initials}
+              </div>
+
+              <div className="flex-1 space-y-1">
+                <h4 className="text-xl font-semibold text-gray-900">{claim.userName || 'Unknown Enrollee'}</h4>
+                <div className="grid grid-cols-4 gap-4 text-[15px]">
+                  <div className='flex flex-col'>
+                    <span className="font-medium">HMOID</span>
+                    <span className="font-semibold">{claim.hmoId || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+              <div className="px-3 py-2 rounded-[10px] font-medium bg-primary text-white items-end">
+                Event Log
+              </div>
+            </div>
+          </div>
+
+          {/* Plan type and benefits Detail */}
+          <div className="border border-border rounded-[10px] space-y-4 py-4">
+            <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 pb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Plan Types & Benefits</h3>
+            </div>
+            <div className="flex flex-col bg-primary px-4 md:px-6 py-4 text-[15px] rounded-[10px] mx-4 md:mx-6">
+              <h2 className="text-xl font-bold text-white mb-4">{claim.planType || 'N/A'}</h2>
+              <div className='flex flex-col md:flex-row gap-4 w-full'>
+                <div className='flex flex-col px-4 w-full py-2 rounded-[5px] bg-white space-y-2'>
+                  <p className="text-sm font-medium">Policy start Date</p>
+                  <p className='font-semibold'>{claim.policyStartDate || 'N/A'}</p>
+                </div>
+                <div className='flex flex-col px-4 py-2 w-full rounded-[10px] bg-white space-y-2'>
+                  <p className="text-sm font-medium">Policy Expiry Date</p>
+                  <p className='font-semibold'>{claim.policyEndDate || 'N/A'}</p>
                 </div>
               </div>
             </div>
-
-            <div className="px-3 py-2 rounded-[10px] font-medium bg-primary text-white items-end">
-              Event Log
+            <div className="flex flex-col md:flex-row gap-4 text-[15px] w-full px-4 md:px-6">
+            <div className='flex flex-col bg-[#E5E7EB80] px-4 md:px-6 py-4 rounded-[5px] w-full'>
+              <span className="font-medium text-sm">Annual Coverage Limit</span>
+              <span className="font-semibold">{claim.totalAmount || 'N/A'}</span>
+            </div>
+            <div className='flex flex-col bg-[#E5E7EB80] px-4 md:px-6 py-4 rounded-[5px] w-full'>
+              <span className="font-medium">Remaining Balance</span>
+              <span className="font-semibold">₦{claim.totalAmount && claim.amount !== undefined ? (claim.totalAmount - claim.amount).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}</span>
+            </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div>
-        {/* Service Detail */}
-        <div className="border border-border rounded-[10px] space-y-4 py-4">
-          <div className="flex justify-between items-center border-b border-[#D9D9D9] px-6 pb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Plan Types & Benefits</h3>
-          </div>
-          <div className="flex flex-col bg-primary px-6 py-4 text-[15px] rounded-[10px] mx-6">
-            <h2 className="text-xl font-bold text-white mb-4">{claim.planType || 'N/A'}</h2>
-            <div className='flex gap-4 w-full'>
-              <div className='flex flex-col px-4 w-full py-2 rounded-[5px] bg-white space-y-2'>
-                <p className="text-sm font-medium">Policy start Date</p>
-                <p className='font-semibold'>{claim.policyStartDate || 'N/A'}</p>
-              </div>
-              <div className='flex flex-col px-4 py-2 w-full rounded-[10px] bg-white space-y-2'>
-                <p className="text-sm font-medium">Policy Expiry Date</p>
-                <p className='font-semibold'>{claim.policyEndDate || 'N/A'}</p>
-              </div>
+
+          {/* Medical Details */}
+          <div className='bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4'>
+            <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 pb-4">
+              <h3 className="text-lg font-semibold">Medical Details</h3>
             </div>
-          </div>
-          <div className="flex gap-4 text-[15px] w-full px-6">
-          <div className='flex flex-col bg-[#E5E7EB80] px-6 py-4 rounded-[5px] w-full'>
-            <span className="font-medium text-sm">Annual Coverage Limit</span>
-            <span className="font-semibold">{claim.totalAmount || 'N/A'}</span>
-          </div>
-          <div className='flex flex-col bg-[#E5E7EB80] px-6 py-4 rounded-[5px] w-full'>
-            <span className="font-medium">Remaining Balance</span>
-            <span className="font-semibold">₦{claim.totalAmount - (claim.amount || 0) ? (claim.totalAmount - (claim.amount || 0)).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}</span>
-          </div>
-          </div>
-        </div>
-
-        {/* Medical Details */}
-        <div className='bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4'>
-          <div className="flex justify-between items-center border-b border-[#D9D9D9] px-6 pb-4">
-            <h3 className="text-lg font-semibold">Medical Details</h3>
-          </div>
-
-          <div className='bg-[#F973160D] text-[#F97316]'>
-            <p className='uppercase font-medium'>Diagnosis</p>
-            <p>{claim.notes || 'N/A'}</p>
-          </div>
-
-          {/* Notes/Diagnosis */}
-          {claim.notes && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-6">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-4 md:mx-6">
               <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-              <p className="text-amber-800 whitespace-pre-line">{claim.notes}</p>
+              <p className="text-amber-800 whitespace-pre-line">{claim.notes || 'N/A'}</p>
             </div>
-          )}
 
-          {/* Treatment Description & Services Rendered */}
-          {claim.treatment && claim.treatment.length > 0 && (
-            <div className="px-6 py-4">
-              <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>
+            {/* Treatment Description & Services Rendered */}
+            
+            <div className="px-4 md:px-6 py-4">
+              <div className="flex gap-2 items-center text-[15px] bg-primary py-2 text-[#ffffff] px-4 md:px-6 w-fit mb-2 cursor-pointer rounded-[10px]" onClick={showPaCode}>
+                {isShowPaCode ? <FaRegEye/> : <FaEyeSlash />}
+                <span>Show PA Code</span>
+                {isShowPaCode && (
+                  <span>
+                    {claim.paCode ? claim.paCode : 'N/A'}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+                <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>
+                <div className="flex items-center w-fit gap-2 px-3 py-2 rounded-[10px] font-medium text-sm bg-primary text-white cursor-pointer">
+                  <FaRegEdit /> Edit
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
@@ -271,11 +358,11 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
                   <tbody>
                     {claim.treatment.map((item, index) => (
                       <tr key={index} className="border-b border-gray-200">
-                        <td className="px-4 py-3 text-sm text-primary">{item.itemCode}</td>
-                        <td className="px-4 py-3 text-sm">{item.description}</td>
-                        <td className="px-4 py-3 text-sm text-center">{item.quantity}</td>
-                        <td className="px-4 py-3 text-sm">₦{item.unitPrice.toFixed(2)}</td>
-                        <td className="px-4 py-3 text-sm font-semibold">₦{item.amount.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-sm text-primary">{item.itemCode || 'N/A'}</td>
+                        <td className="px-4 py-3 text-sm">{item.description || 'N/A'}</td>
+                        <td className="px-4 py-3 text-sm text-center">{item.quantity || 'N/A'}</td>
+                        <td className="px-4 py-3 text-sm">₦{item.unitPrice ? item.unitPrice.toFixed(2) : 'N/A'}</td>
+                        <td className="px-4 py-3 text-sm font-semibold">₦{item.amount ? item.amount.toFixed(2) : 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -283,69 +370,94 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
                     <tr className="bg-gray-50">
                       <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
                       <td className="px-4 py-3 font-bold text-primary">
-                        ₦{totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        ₦{totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
                       </td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Provider Information */}
-        <div className="bg-white border border-[#D9D9D9] rounded-[10px]">
-          <div className="flex justify-between items-center border-b border-[#D9D9D9] px-6 py-4">
-            <h3 className="text-lg font-semibold text-gray-900">Provider Information</h3>
           </div>
-          <div className="px-6 py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px]">
-              <div className='flex flex-col'>
-                <span className="font-medium">Hospital/Provider:</span>
-                <span className="font-semibold">{claim.hospitalProvider}</span>
-              </div>
-              <div className='flex flex-col'>
-                <span className="font-medium">User ID:</span>
-                <span className="font-semibold">{claim.userId}</span>
+
+          {/* Activity Log */}
+          <div className="bg-white border border-[#D9D9D9] rounded-[10px]">
+            <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 py-4">
+              <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
+            </div>
+            <div className="px-4 md:px-6 py-4">
+              <p className="text-gray-700">No activities recorded for this claim yet.</p>
+            </div>
+          </div>
+
+          {/* Provider Communication */}
+          <div className="bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4">
+            <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6">
+              <h3 className="text-lg font-semibold text-gray-900">Provider Communication</h3>
+            </div>
+            <div className="px-4 md:px-6 py-4 space-y-2">
+              {communications.map((comm, index) => (
+                <div key={index} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
+                  <p className="font-semibold">{comm.name}</p>
+                  <p className="text-gray-700">{comm.message}</p>
+                </div>
+              ))}
+              {comments.map((comm, index) => (
+                <div key={`comment-${index}`} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
+                  <p className="font-semibold">{comm.name}</p>
+                  <p className="text-gray-700">{comm.message}</p>
+                </div>
+              ))}
+            </div>
+            <div className="px-4 md:px-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Comment</h3>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Enter your comment"
+                rows={4}
+              />
+              <div className='flex justify-end'>
+              <button
+                onClick={handleAddComment}
+                className="mt-4 px-4 md:px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Post Comment
+              </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Provider Communication */}
-        <div className="bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4">
-          <div className="flex justify-between items-center border-b border-[#D9D9D9] px-6">
-            <h3 className="text-lg font-semibold text-gray-900">Provider Communication</h3>
-          </div>
-          <div className="px-6 py-4 space-y-2">
-            {communications.map((comm, index) => (
-              <div key={index} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
-                <p className="font-semibold">{comm.name}</p>
-                <p className="text-gray-700">{comm.message}</p>
-              </div>
-            ))}
-            {comments.map((comm, index) => (
-              <div key={`comment-${index}`} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
-                <p className="font-semibold">{comm.name}</p>
-                <p className="text-gray-700">{comm.message}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Comment</h3>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Enter your comment"
-              rows={4}
-            />
-            <button
-              onClick={handleAddComment}
-              className="mt-4 px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Post Comment
-            </button>
+         {/* Recent Claims */}
+        <div className='bg-[#ffffff] rounded-[10px] h-fit py-4 space-y-4'>
+          <h2 className="text-lg font-semibold px-4 md:px-6 border-b border-border pb-2">Recent Claims ({timeframeText})</h2>
+          <div className="px-4 space-y-3">
+            {recentClaims.length === 0 ? (
+              <p className="text-gray-500 text-sm">No recent claims found for this user.</p>
+            ) : (
+              recentClaims.slice(0, 5).map((recentClaim) => (
+                <div key={recentClaim.id} className="border border-gray-200 rounded-[10px] p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-sm text-primary">{recentClaim.hospitalProvider}</h3>
+                    <p className="font-semibold">₦{recentClaim.amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                  </div>
+                  <div className="flex flex-col mb-3">
+                    <span>{formatDate(recentClaim.dateOfService)}</span>
+                    <span>{recentClaim.claimType || 'N/A'}</span>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs w-fit font-semibold ${getStatusColor(recentClaim.status)}`}>
+                      {recentClaim.status}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/dashboard/superadmin/claims/${recentClaim.id}`}
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-colors"
+                  >
+                    View Claim
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

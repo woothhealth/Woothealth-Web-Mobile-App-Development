@@ -340,8 +340,8 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-20">
-      <div className="bg-white rounded-lg py-6 md:px-8 w-[90svw] mx-auto md:w-3xl space-y-4 md:space-y-8">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-white rounded-[15px] py-6 md:px-8 w-[90svw] mx-auto md:w-3xl space-y-4 md:space-y-8">
         <div className='flex justify-between px-4 md:px-0'>
           <h2 className="text-xl font-semibold">{ticket ? 'Edit Ticket' : 'Create a New Ticket'}</h2>
           <button className='w-fit outline-0' onClick={onClose}>

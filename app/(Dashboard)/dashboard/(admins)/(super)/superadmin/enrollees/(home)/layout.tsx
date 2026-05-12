@@ -9,13 +9,11 @@ export default function DashboardLayout({
   active,
   inactive,
   enroll,
-  header,
 }: Readonly<{
   children: React.ReactNode;
   active: React.ReactNode;
   inactive: React.ReactNode;
   enroll: React.ReactNode;
-  header: React.ReactNode;
 }>) {
   return (
     <AdminEnrolleesProvider>

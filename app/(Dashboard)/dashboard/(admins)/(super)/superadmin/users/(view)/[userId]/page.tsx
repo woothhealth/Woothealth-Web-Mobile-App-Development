@@ -92,9 +92,9 @@ async function getUser(userId: string): Promise<User | null> {
 
 function DetailCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-border px-4 py-2">
-      <span className="font-semibold w-1/3">{label}</span>
-      <span className="w-fit md:text-end text-sm md:text-base">{value}</span>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-border px-4 py-1 md:py-2">
+      <span className="font-semibold md:w-1/3">{label}</span>
+      <span className="w-fit md:text-end text-[15px] md:text-base">{value}</span>
     </div>
   );
 }
@@ -249,7 +249,7 @@ export default function UserProfilePage() {
         </div>
 
         {/* Right Column: Recent Activity/Feed */}
-        <div className='space-y-16'>
+        <div className='space-y-4 lg:space-y-16'>
           {/* Feed */}
         <div className="space-y-4 rounded-[10px] bg-white p-4 shadow-md h-fit">
           <div className="flex items-center justify-between border-b border-border pb-4">

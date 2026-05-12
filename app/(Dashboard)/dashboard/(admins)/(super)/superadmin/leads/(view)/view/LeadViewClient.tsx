@@ -26,7 +26,7 @@ export default function LeadViewClient({ lead }: LeadViewClientProps) {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2 bg-[#ffffff] rounded-[15px] p-4 md:p-6 shadow-sm">
+    <div className="grid gap-4 lg:grid-cols-2 bg-[#ffffff] rounded-[15px] p-4 md:p-6 shadow-sm w-[80%]">
       <div className="flex flex-col space-y-6">
           <div className="flex flex-col">
             <p className="text-2xl font-bold">{lead.clientName}</p>
@@ -68,12 +68,12 @@ export default function LeadViewClient({ lead }: LeadViewClientProps) {
           </div>
         </div>
         <div className="mt-6 flex justify-end">
-          <div
+          <button
             onClick={() => setShowStatusPopup(true)}
             className="w-fit rounded-xl bg-primary px-4 py-3 text-center text-sm font-medium text-white hover:bg-slate-50 transition"
           >
             Update Status
-          </div>
+          </button>
         </div>
       </div>
 

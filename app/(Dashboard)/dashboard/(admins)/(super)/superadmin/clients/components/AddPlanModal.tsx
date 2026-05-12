@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
+import { toast } from 'sonner';
 interface AddPlanModalProps {
   clientName: string;
   onClose: () => void;
@@ -24,7 +24,7 @@ export function AddPlanModal({ clientName, onClose }: AddPlanModalProps) {
   const handleSubmit = () => {
     if (validate()) {
       // TODO: Submit plan to API
-      alert(`Plan "${planName}" added with amount ₦${amount}`);
+      toast.success(`Plan "${planName}" added with amount ₦${amount}`);
       onClose();
     }
   };
@@ -37,7 +37,7 @@ export function AddPlanModal({ clientName, onClose }: AddPlanModalProps) {
 
         <div className="mt-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Plan Name</label>
+            <label className="block font-medium text-slate-700">Plan Name</label>
             <input
               type="text"
               value={planName}
@@ -49,7 +49,7 @@ export function AddPlanModal({ clientName, onClose }: AddPlanModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Amount (₦)</label>
+            <label className="block font-medium text-slate-700">Amount (₦)</label>
             <input
               type="number"
               value={amount}
@@ -70,8 +70,8 @@ export function AddPlanModal({ clientName, onClose }: AddPlanModalProps) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-slate-300"
-            disabled={Object.keys(errors).length > 0}
+            className="flex-1 rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 disabled:bg-primary/40"
+            disabled={planName.trim() === '' || amount.trim() === '' || isNaN(Number(amount))}
           >
             Add Plan
           </button>

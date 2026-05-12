@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft, FaUser, FaUserMd, FaFileAlt } from 'react-icons/fa';
+import { getAdminUserById, type AdminUser } from '@/lib/adminUser';
 
 type Telemedicine = {
   id: string;
@@ -59,6 +60,7 @@ async function getTelemedicine(telemedicineId: string): Promise<Telemedicine | n
 export default function TelemedicineViewClient({ telemedicineId }: TelemedicineViewClientProps) {
   const [telemedicine, setTelemedicine] = useState<Telemedicine | null>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<AdminUser | null>(null);
 
   useEffect(() => {
     const loadTelemedicine = async () => {
@@ -77,6 +79,40 @@ export default function TelemedicineViewClient({ telemedicineId }: TelemedicineV
 
     loadTelemedicine();
   }, [telemedicineId]);
+
+  useEffect(() => {
+    if (!telemedicine) {
+      setUser(null);
+      return;
+    }
+
+    const linkedUserId = telemedicine.patientId;
+    if (!linkedUserId) {
+      setUser(null);
+      return;
+    }
+
+    const loadUser = async () => {
+      try {
+        const userData = await getAdminUserById(linkedUserId);
+        setUser(userData);
+      } catch (err) {
+        console.error('Error loading linked user:', err);
+        setUser(null);
+      }
+    };
+
+    loadUser();
+  }, [telemedicine]);
+
+  function DetailCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex space-x-2">
+      <span className="">{label}:</span>
+      <span className="font-semibold">{value}</span>
+    </div>
+    );
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -99,9 +135,8 @@ export default function TelemedicineViewClient({ telemedicineId }: TelemedicineV
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-        <span className="ml-2">Loading telemedicine...</span>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -122,106 +157,76 @@ export default function TelemedicineViewClient({ telemedicineId }: TelemedicineV
 
   return (
     <div className="px-4 py-6 lg:px-8 lg:py-8">
-      <Link href="/dashboard/superadmin/telemedicine" className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900">
-        <FaArrowLeft /> Back to telemedicine
+      <Link href="/dashboard/superadmin/telemedicine" className="inline-flex items-center p-2 rounded-full border border-border font-medium text-slate-700 hover:text-slate-900">
+        <FaArrowLeft size={22} />
       </Link>
 
-      <div className="mt-6 rounded-3xl border border-[#E5E7EB] bg-white p-6 shadow-sm">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 rounded-[15px] bg-white py-6 shadow-sm space-y-4 w-[80%]">
+        <div className='flex justify-between px-6'>
+          <div className='flex flex-col space-y-1'>
+            <h2 className="text-3xl font-semibold text-gray-900">{telemedicine.id}</h2>
+            <div className='flex space-x-1 text-[15px]'>
+              <p className="">Date of Service</p>
+              <p className="">
+                {formatDate(telemedicine.dateOfService)}
+              </p>
+            </div>
+          </div>
+          <div>
+            <span className={`inline-block rounded-full px-4 py-1 text-sm font-medium ${getStatusColor(telemedicine.status)}`}>
+                {telemedicine.status.charAt(0).toUpperCase() + telemedicine.status.slice(1)}
+              </span>
+          </div>
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2 px-6">
           {/* Left side - Main details */}
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Telemedicine ID</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.telemedicineId}</p>
-            </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Date & Time</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{formatDate(telemedicine.dateOfService)}</p>
-            </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
+          <div className="">
+            <DetailCard label="Patient" value={telemedicine.patient} />
+            <DetailCard label="HMO ID" value={telemedicine.hmoId} />
+            <DetailCard label="Doctor" value={telemedicine.doctor} />
+            <DetailCard label="Specialization" value={telemedicine.specialization} />
+            <DetailCard label="Duration" value={telemedicine.duration} />
+            {/* <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
               <p className="text-sm text-slate-500">Patient</p>
               <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.patient}</p>
-            </div>
+              {user?.email && (
+                <p className="mt-1 text-sm text-slate-600 truncate">{user.email}</p>
+              )}
+            </div> */}
+          </div>
 
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">HMO ID</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.hmoId}</p>
+          {/* Right side - Status and documents */}
+          <div className="rounded-[10px] bg-[#E5E7EB4D] p-4">
+            <p className="text-[15px] font-semibold">Supported Documents({telemedicine.supportedDocuments})</p>
+            <div>
+              {telemedicine.supportedDocuments > 0 ? (
+                <div className="mt-2 flex items-center space-x-3 bg-primary/10 rounded-[5px] px-4 py-2 border border-primary">
+                  <FaFileAlt size={20} className="text-gray-600" />
+                  <p className="text-sm text-slate-600">
+                    {telemedicine.supportedDocuments} document{telemedicine.supportedDocuments !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-slate-600">No supported documents</p>
+              )}
             </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Doctor</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.doctor}</p>
-            </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Specialization</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.specialization}</p>
-            </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Duration</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{telemedicine.duration}</p>
-            </div>
-
-            {/* Action buttons */}
-            <div className="grid gap-4 lg:grid-cols-2">
+          </div>
+        </div>
+          {/* Action buttons */}
+            <div className="flex w-full space-x-4 px-6">
               <Link
                 href={`/dashboard/superadmin/doctors/view?id=${telemedicine.doctorId}`}
-                className="inline-flex items-center justify-center rounded-3xl bg-[#49A5EF] px-6 py-3 text-sm font-semibold text-white hover:bg-[#3d8ed8] gap-2"
+                className="inline-flex items-center justify-center rounded-[15px] bg-[#49A5EF] px-6 py-3 w-full font-semibold text-white hover:bg-[#3d8ed8] gap-2"
               >
                 <FaUserMd /> View Doctor Profile
               </Link>
               <Link
                 href={`/dashboard/superadmin/users/view?id=${telemedicine.patientId}`}
-                className="inline-flex items-center justify-center rounded-3xl bg-[#10B981] px-6 py-3 text-sm font-semibold text-white hover:bg-[#059669] gap-2"
+                className="inline-flex items-center justify-center rounded-[15px] bg-[#10B981] px-6 py-3 w-full font-semibold text-white hover:bg-[#059669] gap-2"
               >
                 <FaUser /> View Patient Profile
               </Link>
             </div>
-          </div>
-
-          {/* Right side - Status and documents */}
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
-              <p className="text-sm text-slate-500 mb-4">Status</p>
-              <div className="flex items-center gap-3">
-                <span className={`inline-flex px-3 py-2 text-sm font-semibold rounded-full ${getStatusColor(telemedicine.status)}`}>
-                  {telemedicine.status.charAt(0).toUpperCase() + telemedicine.status.slice(1)}
-                </span>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <FaFileAlt className="text-slate-500" />
-                <p className="text-sm text-slate-500">Supported Documents</p>
-              </div>
-              <p className="text-3xl font-semibold text-slate-900">{telemedicine.supportedDocuments}</p>
-              <p className="mt-2 text-sm text-slate-500">Total attached files</p>
-            </div>
-
-            {/* Additional info can be added here */}
-            <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-5">
-              <p className="text-sm text-slate-500">Session Details</p>
-              <div className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Type:</span>
-                  <span className="font-medium">Video Consultation</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Platform:</span>
-                  <span className="font-medium">Secure Telemedicine Portal</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Recording:</span>
-                  <span className="font-medium">Available</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

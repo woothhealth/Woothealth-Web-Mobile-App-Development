@@ -1,80 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdminRole, getAdminHeaders } from "@/lib/adminGuard";
+import { mockPaCodeDetails } from "@/app/(Dashboard)/dashboard/(admins)/(super)/superadmin/pa-code/mockPaCodeDetails";
 
-const mockPaCodes = [
-  {
-    "authorizationCode": "WHT-PA-367899",
-    "policyNumber": "",
-    "diagnosis": "[AUTHORIZATION REQUEST DETAILS]\nTariff Code: OPT1133\nTier: Tier A\nPrice: ₦16,800",
-    "providerName": "Dolu Hospital",
-    "createdDate": "2026-04-17",
-    "source": "provider",
-    "patientId": "WHT-0001-A",
-    "providerId": "WHP-10249-A",
-    "providerTier": "Tier A",
-    "patientPlan": "",
-    "patientsBenefits": [],
-    "status": "approved",
-    "bookingId": "69e1c36a0038dddd8f97",
-    "$id": "69e1e3ea53d96324f4d5",
-    "$sequence": 2,
-    "$createdAt": "2026-04-17T07:40:25.941+00:00",
-    "$updatedAt": "2026-04-17T07:46:06.174+00:00",
-    "$permissions": [
-      "read(\"any\")"
-    ],
-    "$databaseId": "main",
-    "$collectionId": "pa_codes"
-  },
-  {
-    "authorizationCode": "WHT-PA-367900",
-    "policyNumber": "POL-12345",
-    "diagnosis": "[AUTHORIZATION REQUEST DETAILS]\nTariff Code: MED2001\nTier: Tier B\nPrice: ₦25,000",
-    "providerName": "Sunshine Medical Center",
-    "createdDate": "2026-04-18",
-    "source": "provider",
-    "patientId": "WHT-0002-B",
-    "providerId": "WHP-10250-B",
-    "providerTier": "Tier B",
-    "patientPlan": "Premium Plan",
-    "patientsBenefits": ["Consultation", "Laboratory"],
-    "status": "under review",
-    "bookingId": "69e1c36a0038dddd8f98",
-    "$id": "69e1e3ea53d96324f4d6",
-    "$sequence": 3,
-    "$createdAt": "2026-04-18T08:30:15.123+00:00",
-    "$updatedAt": "2026-04-18T08:30:15.123+00:00",
-    "$permissions": [
-      "read(\"any\")"
-    ],
-    "$databaseId": "main",
-    "$collectionId": "pa_codes"
-  },
-  {
-    "authorizationCode": "WHT-PA-367901",
-    "policyNumber": "POL-67890",
-    "diagnosis": "[AUTHORIZATION REQUEST DETAILS]\nTariff Code: SURG500\nTier: Tier A\nPrice: ₦150,000",
-    "providerName": "Vision Care Optical",
-    "createdDate": "2026-04-19",
-    "source": "provider",
-    "patientId": "WHT-0003-C",
-    "providerId": "WHP-10251-C",
-    "providerTier": "Tier A",
-    "patientPlan": "Standard Plan",
-    "patientsBenefits": ["Surgery", "Anesthesia"],
-    "status": "declined",
-    "bookingId": "69e1c36a0038dddd8f99",
-    "$id": "69e1e3ea53d96324f4d7",
-    "$sequence": 4,
-    "$createdAt": "2026-04-19T09:15:45.678+00:00",
-    "$updatedAt": "2026-04-19T10:20:30.456+00:00",
-    "$permissions": [
-      "read(\"any\")"
-    ],
-    "$databaseId": "main",
-    "$collectionId": "pa_codes"
-  }
-];
+const mockPaCodes = Object.values(mockPaCodeDetails);
 
 export async function GET(req: Request) {
   try {

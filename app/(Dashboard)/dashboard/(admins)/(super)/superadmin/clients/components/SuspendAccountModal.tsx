@@ -45,7 +45,7 @@ export function SuspendAccountModal({ clientName, onClose }: SuspendAccountModal
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
             rows={3}
             placeholder="Please provide a reason for suspension..."
           />

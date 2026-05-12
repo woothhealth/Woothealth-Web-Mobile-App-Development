@@ -103,6 +103,8 @@ export async function GET(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     // Always try backend first, fallback to mock only if backend is completely unavailable
+    // Commented out to use mock data directly
+    /*
     if (BACKEND_URL) {
       try {
         if (telemedicineId) {
@@ -140,8 +142,10 @@ export async function GET(req: Request) {
         }
       } catch (backendError) {
         // Backend request failed, will fall back to mock
+        
       }
     }
+    */
 
     // Fallback to mock data only if backend is not available or failed
     if (telemedicineId) {

@@ -19,3 +19,17 @@ const Page = () => {
 }
 
 export default Page
+
+
+// import { getAdminCurrentUser } from '@/lib/adminCurrentUser';
+// import { normalizeRole } from '@/lib/permissions';
+// import RoleOverview from './RoleOverview';
+
+// const Page = async () => {
+//   const user = await getAdminCurrentUser();
+//   const role = normalizeRole(user?.role) || 'superadmin';
+
+//   return <RoleOverview role={role} />;
+// };
+
+// export default Page;

@@ -181,7 +181,7 @@ export default function PaCodesClient() {
       )}
       {/* Filter */}
       <div className="flex flex-col md:flex-row md:items-center justify-center w-full gap-4">
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center md:w-[60%] md:mx-auto">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center md:w-[80%] md:mx-auto">
           <input
             type="text"
             value={searchQuery}
@@ -190,7 +190,7 @@ export default function PaCodesClient() {
               setPage(1);
             }}
             placeholder="Search PA codes, provider, or patient"
-            className="w-full md:w-[55%] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]"
           />
           <select
             value={selectedStatus}
@@ -270,9 +270,9 @@ export default function PaCodesClient() {
                           {paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-2 py-2">
+                      <td className="px-2 py-2 border-b border-border">
                         <Link
-                          href={`/dashboard/superadmin/pa-code/view?id=${encodeURIComponent(paCode.id)}`}
+                          href={`/dashboard/superadmin/pa-code/${encodeURIComponent(paCode.id)}`}
                           rel="noreferrer"
                           className="flex items-center gap-2 px-3 py-1 text-sm text-[#49A5EF] hover:bg-blue-50 rounded"
                         >
@@ -320,9 +320,9 @@ export default function PaCodesClient() {
                           {paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-6 py-3">
+                      <td className="px-6 py-3 border-b border-border">
                         <Link
-                          href={`/dashboard/superadmin/pa-code/view?id=${encodeURIComponent(paCode.id)}`}
+                          href={`/dashboard/superadmin/pa-code/${encodeURIComponent(paCode.id)}`}
                           rel="noreferrer"
                           className="flex items-center gap-2 px-3 py-1 text-sm text-[#49A5EF] hover:bg-blue-50 rounded"
                         >

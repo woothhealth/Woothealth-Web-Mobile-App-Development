@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface DeactivateAccountModalProps {
   clientName: string;
@@ -24,7 +25,7 @@ export function DeactivateAccountModal({ clientName, onClose }: DeactivateAccoun
   const handleDeactivate = () => {
     if (validate()) {
       // TODO: Submit deactivation to API
-      alert(`Account for "${clientName}" deactivated\nReason: ${reason}`);
+      toast.success(`Account for "${clientName}" deactivated`);
       onClose();
     }
   };
@@ -64,7 +65,7 @@ export function DeactivateAccountModal({ clientName, onClose }: DeactivateAccoun
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
               rows={3}
               placeholder="Provide detailed reason..."
             />
@@ -81,8 +82,8 @@ export function DeactivateAccountModal({ clientName, onClose }: DeactivateAccoun
           </button>
           <button
             onClick={handleDeactivate}
-            className="flex-1 rounded-2xl bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:bg-slate-300"
-            disabled={Object.keys(errors).length > 0}
+            className="flex-1 rounded-2xl bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:bg-red-300"
+            disabled={confirmation !== clientName || reason.trim().length < 10}
           >
             Deactivate
           </button>

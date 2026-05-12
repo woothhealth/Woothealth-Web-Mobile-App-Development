@@ -114,8 +114,8 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
         <div className="mt-6 space-y-6">
           {/* Invoice Data Section */}
           <div className="">
-            <h3 className="font-semibold text-lg border-b border-border pb-2 px-6 uppercase">Invoice Detail</h3>
-            <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 px-6">
+            <h3 className="font-semibold text-lg border-b border-border pb-2 px-4 md:px-6 uppercase">Invoice Detail</h3>
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 px-4 md:px-6">
               <div>
                 <label className="block font-medium">Invoice Ref No</label>
                 <input
@@ -191,8 +191,8 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
 
           {/* Billed To Section */}
           <div className="">
-            <h3 className="font-semibold text-lg uppercase pb-2 px-6 border-b border-border">Billed To</h3>
-            <div className="mt-4 grid grid-cols-2 gap-4 px-6">
+            <h3 className="font-semibold text-lg uppercase pb-2 px-4 md:px-6 border-b border-border">Billed To</h3>
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 px-4 md:px-6">
               <div>
                 <label className="block font-medium">Client Name</label>
                 <input
@@ -237,7 +237,7 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
 
           {/* Invoice Items Section */}
           <div className="">
-            <div className="flex items-center justify-between border-b border-border pb-2 px-6">
+            <div className="flex items-center justify-between border-b border-border pb-2 px-4 md:px-6">
               <h3 className="font-semibold text-lg uppercase">Invoice Items</h3>
               <button
                 onClick={addItem}
@@ -247,7 +247,7 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
               </button>
             </div>
 
-            <div className="mt-4 space-y-3 px-6">
+            <div className="mt-4 space-y-3 px-4 md:px-6">
               {items.map((item, idx) => (
                 <div key={item.id} className="grid grid-cols-4 gap-2">
                   <div>
@@ -317,11 +317,11 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
 
             {/* Calculations */}
             <div className="mt-4 space-y-2 border-t border-border pt-4">
-              <div className="flex justify-between text-sm px-6">
+              <div className="flex justify-between text-sm px-4 md:px-6">
                 <span className="text-slate-600">Subtotal:</span>
                 <span className="font-medium">₦{subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between px-6">
+              <div className="flex items-center justify-between px-4 md:px-6">
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-slate-600">VAT (%):</label>
                   <input
@@ -334,7 +334,7 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
                 </div>
                 <span className="font-medium">₦{vatAmount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between font-semibold pt-2 border-t border-slate-200 px-6">
+              <div className="flex justify-between font-semibold pt-2 border-t border-slate-200 px-4 md:px-6">
                 <span>Total Due:</span>
                 <span className="text-primary">₦{totalDue.toLocaleString()}</span>
               </div>
@@ -342,7 +342,7 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
           </div>
 
           {/* Issued By */}
-          <div className="px-6">
+          <div className="px-4 md:px-6">
             <label className="block text-sm font-medium text-slate-700">Invoice Issued By</label>
             <input
               type="text"
@@ -354,7 +354,7 @@ export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: 
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-6 flex gap-3 px-6">
+        <div className="mt-6 flex gap-3 px-4 md:px-6">
           <button
             onClick={onClose}
             className="flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"

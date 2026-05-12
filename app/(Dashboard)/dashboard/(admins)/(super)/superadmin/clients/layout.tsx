@@ -1,15 +1,10 @@
-import "@/styles/globals.css";
-
-export default function TicketsLayout({
-  header,
+export default function ClientsLayout({
   children,
 }: Readonly<{
-  header: React.ReactNode;
   children: React.ReactNode;
 }>) {
   return (
-      <div className="w-full bg-[#FAFAFA] space-y-2">
-        <div className="sticky top-0 z-20">{header}</div>
+      <div className="w-full bg-[#FAFAFA] mt-2">
         <div className="md:px-4">{children}</div>
       </div>
   );

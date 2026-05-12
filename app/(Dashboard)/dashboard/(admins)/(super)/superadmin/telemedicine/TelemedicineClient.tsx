@@ -260,7 +260,7 @@ export default function TelemedicineClient() {
                         {openMenuId === item.id && (
                           <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
                             <Link
-                              href={`/dashboard/superadmin/telemedicine/view?id=${item.id}`}
+                              href={`/dashboard/superadmin/telemedicine/${item.id}`}
                               rel="noreferrer"
                               className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                               onClick={() => setOpenMenuId(null)}
@@ -333,7 +333,7 @@ export default function TelemedicineClient() {
                         {openMenuId === item.id && (
                           <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
                             <Link
-                              href={`/dashboard/superadmin/telemedicine/view?id=${item.id}`}
+                              href={`/dashboard/superadmin/telemedicine/${item.id}`}
                               rel="noreferrer"
                               className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                               onClick={() => setOpenMenuId(null)}

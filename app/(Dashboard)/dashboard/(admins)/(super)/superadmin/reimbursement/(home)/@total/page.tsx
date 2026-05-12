@@ -1,6 +1,6 @@
 'use client';
 
-import { useReimbursementStats } from '../ReimbursementStatsContext';
+import { useReimbursementStats } from '../../ReimbursementStatsContext';
 
 export default function TotalReimbursementCard() {
   const { stats, loading } = useReimbursementStats();

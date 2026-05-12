@@ -1,6 +1,6 @@
 'use client';
 
-import { useReimbursementStats } from '../ReimbursementStatsContext';
+import { useReimbursementStats } from '../../ReimbursementStatsContext';
 
 export default function PendingReviewCard() {
   const { stats, loading } = useReimbursementStats();

@@ -1,23 +1,18 @@
 import type { Metadata } from "next";
-import "@/styles/globals.css";
-
 
 export const metadata: Metadata = {
-  title: "WooHealth Providers",
-  description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
+  title: "WooHealth Coming Soon - Super Admin Dashboard",
+  description: "This page is under construction. Please check back later for updates.",
 };
 
-export default function ProvidersLayout({
+export default function ComingAdminLayout({
   children,
-  header,
 }: Readonly<{
   children: React.ReactNode;
-  header: React.ReactNode;
 }>) {
   return (
     <>
     <div className="w-full bg-[#FAFAFA]">
-      <div className="sticky top-0">{header}</div>
       <div className="px-4">{children}</div>
     </div>
     </>

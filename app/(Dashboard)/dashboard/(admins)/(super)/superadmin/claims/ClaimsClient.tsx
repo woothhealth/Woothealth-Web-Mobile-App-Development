@@ -14,6 +14,7 @@ type Claim = {
   hospitalProvider: string;
   amount: number;
   userName: string;
+  claimType: string;
   status: 'pending' | 'approved' | 'rejected';
   hmoId?: string;
 };

@@ -3,14 +3,12 @@ import Title from "../UIs/Title";
 import { BenefitsStatsProvider } from './BenefitsStatsContext';
 
 export default function BenefitsLayout({
-  header,
   total,
   active,
   draft,
   totalEnrollees,
   children,
 }: Readonly<{
-  header: React.ReactNode;
   active: React.ReactNode;
   draft: React.ReactNode;
   total: React.ReactNode;
@@ -20,7 +18,6 @@ export default function BenefitsLayout({
   return (
     <BenefitsStatsProvider>
       <div className="w-full bg-[#FAFAFA] space-y-2">
-        <div className="sticky top-0">{header}</div>
         <Title title="Benefits / Plan"/>
         <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-4 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[93%] md:w-[96%] formDiv">
           <div>{total}</div>

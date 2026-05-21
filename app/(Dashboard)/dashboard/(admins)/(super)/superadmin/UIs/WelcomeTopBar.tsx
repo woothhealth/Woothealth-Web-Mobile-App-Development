@@ -18,7 +18,8 @@ export default async function WelcomeTopBar() {
   // Truncate lastName: if > 6 chars, show first char + '.'
   const displayLastName = lastName.length > 6 ? lastName[0] + '.' : lastName;
 
-  const role = user.role || 'No assigned role';
+  const roleValue = (typeof user.role === 'string' ? user.role : Array.isArray(user.role) ? user.role[0] : null) || 'No assigned role';
+  const role = roleValue as string;
   const normalizedRole = normalizeRole(role);
   const displayRole = normalizedRole ? ROLE_DISPLAY_NAMES[normalizedRole] : role;
   const id = user.id || 'No ID';

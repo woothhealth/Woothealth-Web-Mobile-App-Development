@@ -1,0 +1,257 @@
+{
+  "title": "Welcome to Woot Health",
+  "slug": "provider-dashboard-faq",
+  "description": "Frequently asked questions about the Woot Health Provider Dashboard, enrollee verification, pre-authorization workflows, payment tracking, QR validation, notifications, and provider utilities.",
+  "categories": [
+    {
+      "id": 1,
+      "title": "Overview",
+      "faqs": [
+        {
+          "index": 1,
+          "question": "What is the Woot Health Provider Dashboard?",
+          "answer": "The Woot Health Provider Dashboard is a self-service platform that enables healthcare providers to verify enrollees, request and manage pre-authorization codes, track authorization and payment statuses, validate approvals through QR scanning, and manage provider-related operations from one place."
+        },
+        {
+          "index": 2,
+          "question": "Why was the Provider Dashboard created?",
+          "answer": "The dashboard was created to reduce delays, inefficiencies, and poor provider experiences caused by fragmented healthcare verification and authorization workflows."
+        },
+        {
+          "index": 3,
+          "question": "Who can use the Provider Dashboard?",
+          "answer": "The dashboard is designed for healthcare providers, hospitals, clinics, and authorized personnel within the Woot Health provider network."
+        },
+        {
+          "index": 4,
+          "question": "What problems does the dashboard solve?",
+          "answer": "The dashboard simplifies enrollee verification, pre-authorization requests, payment tracking, QR validation, and support access while reducing manual follow-ups and delays."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Goals & Objectives",
+      "faqs": [
+        {
+          "index": 5,
+          "question": "What is the primary goal of the Provider Dashboard?",
+          "answer": "The primary goal is to deliver a transparent, secure, scalable, and fast provider experience for enrollee verification and pre-authorization management across web and mobile."
+        },
+        {
+          "index": 6,
+          "question": "What are the key objectives of the platform?",
+          "answer": "The objectives include enabling instant enrollee verification, centralizing pre-authorization management, reducing delays, minimizing provider friction, supporting QR-based validation, and ensuring security and auditability."
+        },
+        {
+          "index": 7,
+          "question": "What business objectives does the dashboard support?",
+          "answer": "The dashboard helps improve provider satisfaction, reduce support workload, accelerate patient service delivery, and increase adoption of digital healthcare workflows."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Enrollee Verification",
+      "faqs": [
+        {
+          "index": 8,
+          "question": "How does enrollee verification work?",
+          "answer": "Providers can search for enrollees using unique identifiers such as enrollee ID. The system validates identity, plan status, coverage validity, and service eligibility in real time."
+        },
+        {
+          "index": 9,
+          "question": "What information is checked during verification?",
+          "answer": "The platform verifies enrollee identity, active plan status, coverage validity, and healthcare service eligibility."
+        },
+        {
+          "index": 10,
+          "question": "What happens if an enrollee record is inactive or invalid?",
+          "answer": "The dashboard displays an error and prevents unauthorized healthcare service delivery for invalid, expired, or inactive enrollee records."
+        },
+        {
+          "index": 11,
+          "question": "Why is real-time verification important?",
+          "answer": "Real-time verification reduces fraud, prevents service denial errors, and ensures healthcare services are delivered only to eligible enrollees."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "P-A Code Requests",
+      "faqs": [
+        {
+          "index": 12,
+          "question": "What is a P-A request?",
+          "answer": "A P-A request is a Prior Authorization request submitted by a provider before certain healthcare services are approved and delivered."
+        },
+        {
+          "index": 13,
+          "question": "How do providers create a P-A request?",
+          "answer": "After enrollee verification, providers can select a healthcare service, input required clinical information, and submit the request through the dashboard."
+        },
+        {
+          "index": 14,
+          "question": "What happens after a P-A request is submitted?",
+          "answer": "The support team reviews the request and generates a unique pre-authorization code linked to the enrollee, provider, service type, and request timestamp."
+        },
+        {
+          "index": 15,
+          "question": "Can duplicate P-A requests be submitted?",
+          "answer": "No. The system validates and prevents duplicate or conflicting pre-authorization requests."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "P-A History & Status Tracking",
+      "faqs": [
+        {
+          "index": 16,
+          "question": "Can providers view previous P-A requests?",
+          "answer": "Yes. Providers can access a centralized history of all past and ongoing pre-authorization requests."
+        },
+        {
+          "index": 17,
+          "question": "What statuses are available for P-A requests?",
+          "answer": "Statuses may include Pending, Approved, Rejected, Expired, and Used."
+        },
+        {
+          "index": 18,
+          "question": "Can providers filter request history?",
+          "answer": "Yes. Providers can filter requests by date, enrollee, service type, or request status."
+        },
+        {
+          "index": 19,
+          "question": "What details are included in request history?",
+          "answer": "Providers can view audit timestamps, request timelines, and detailed request information."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Payment Status",
+      "faqs": [
+        {
+          "index": 20,
+          "question": "Can providers track payment statuses?",
+          "answer": "Yes. Providers can monitor payment statuses associated with completed or approved healthcare services."
+        },
+        {
+          "index": 21,
+          "question": "What payment statuses are available?",
+          "answer": "Payment statuses may include Pending, Processing, Paid, and Failed."
+        },
+        {
+          "index": 22,
+          "question": "Why is payment visibility important?",
+          "answer": "Payment visibility reduces uncertainty and improves trust between providers and the platform."
+        },
+        {
+          "index": 23,
+          "question": "Is payment status different from authorization status?",
+          "answer": "Yes. Authorization status confirms service approval, while payment status reflects claim processing and settlement."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "QR Code Validation",
+      "faqs": [
+        {
+          "index": 24,
+          "question": "What is the purpose of QR code scanning?",
+          "answer": "QR scanning allows providers to instantly verify enrollee identity and validate associated pre-authorization codes using a mobile device."
+        },
+        {
+          "index": 25,
+          "question": "How does QR validation work?",
+          "answer": "Providers scan an enrollee QR code using the mobile app camera. The system automatically retrieves enrollee information and validates authorization details in real time."
+        },
+        {
+          "index": 26,
+          "question": "What happens if a QR code is invalid or expired?",
+          "answer": "The dashboard displays an error for invalid, expired, or previously used QR codes."
+        },
+        {
+          "index": 27,
+          "question": "Does the mobile app sync with the web dashboard?",
+          "answer": "Yes. QR validation and enrollee information synchronize seamlessly across mobile and web platforms."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Notifications & Audit Logs",
+      "faqs": [
+        {
+          "index": 28,
+          "question": "Will providers receive notifications?",
+          "answer": "Yes. The dashboard provides in-app and system notifications for important provider-related events."
+        },
+        {
+          "index": 29,
+          "question": "What types of notifications are available?",
+          "answer": "Notifications may include approvals, rejections, expirations, payment updates, and verification failures."
+        },
+        {
+          "index": 30,
+          "question": "What are audit logs used for?",
+          "answer": "Audit logs ensure accountability, transparency, and traceability by recording important provider and authorization activities."
+        },
+        {
+          "index": 31,
+          "question": "What information is stored in audit logs?",
+          "answer": "Audit logs capture enrollee verification activity, P-A request creation, status changes, timestamps, and user actions."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Provider Utilities",
+      "faqs": [
+        {
+          "index": 32,
+          "question": "Does the dashboard include a Help Center?",
+          "answer": "Yes. Providers can access guides, FAQs, and contextual support resources within the dashboard."
+        },
+        {
+          "index": 33,
+          "question": "Can providers manage account settings?",
+          "answer": "Yes. Providers can manage account preferences and notification settings through the Settings section."
+        },
+        {
+          "index": 34,
+          "question": "Is secure logout supported?",
+          "answer": "Yes. The platform supports secure logout and session termination to protect sensitive healthcare information."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Security & Support",
+      "faqs": [
+        {
+          "index": 35,
+          "question": "Is provider and enrollee data secure?",
+          "answer": "Yes. The dashboard is designed with security, auditability, and scalability in mind to protect sensitive healthcare data."
+        },
+        {
+          "index": 36,
+          "question": "Does the system support compliance and accountability?",
+          "answer": "Yes. Comprehensive audit logs and secure workflows ensure transparency and compliance across provider operations."
+        },
+        {
+          "index": 37,
+          "question": "How can providers get help?",
+          "answer": "Providers can access support through the Help Center and other support channels available within the dashboard."
+        },
+        {
+          "index": 38,
+          "question": "What happens if there is a verification or authorization issue?",
+          "answer": "Providers receive notifications and can review request details or contact support for assistance."
+        }
+      ]
+    }
+  ]
+}

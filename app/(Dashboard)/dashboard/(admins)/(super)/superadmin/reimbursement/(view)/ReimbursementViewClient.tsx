@@ -11,8 +11,9 @@ interface ReimbursementViewClientProps {
 
 async function getReimbursement(reimbursementId: string): Promise<Reimbursement | null> {
   try {
-    const response = await fetch(`/api/admin/reimbursements?id=${encodeURIComponent(reimbursementId)}`, {
+    const response = await fetch(`/api/admin/reimbursement?id=${encodeURIComponent(reimbursementId)}`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -21,19 +22,41 @@ async function getReimbursement(reimbursementId: string): Promise<Reimbursement 
 
     const data = await response.json();
 
+    const findMatch = (items: any[]): Reimbursement | null => {
+      const found = items.find((item) => item.id === reimbursementId || item.reimbursementId === reimbursementId);
+      if (found) return found;
+      return items.length === 1 ? items[0] : null;
+    };
+
     if (data.success) {
       if (data.data && data.data.reimbursements && Array.isArray(data.data.reimbursements)) {
-        const found = data.data.reimbursements.find((item: Reimbursement) => item.id === reimbursementId || item.reimbursementId === reimbursementId);
+        const found = findMatch(data.data.reimbursements);
         if (found) return found;
-        if (data.data.reimbursements.length === 1) return data.data.reimbursements[0];
       } else if (Array.isArray(data.data)) {
-        const found = data.data.find((item: Reimbursement) => item.id === reimbursementId || item.reimbursementId === reimbursementId);
+        const found = findMatch(data.data);
         if (found) return found;
-        if (data.data.length === 1) return data.data[0];
       } else if (data.data && typeof data.data === 'object') {
-        if ((data.data as Reimbursement).id === reimbursementId || (data.data as Reimbursement).reimbursementId === reimbursementId) {
-          return data.data as Reimbursement;
+        const claim = data.data as Reimbursement;
+        if (claim.id === reimbursementId || claim.reimbursementId === reimbursementId) {
+          return claim;
         }
+      }
+    }
+
+    if (data.data && data.data.reimbursements && Array.isArray(data.data.reimbursements)) {
+      const found = findMatch(data.data.reimbursements);
+      if (found) return found;
+    }
+
+    if (Array.isArray(data)) {
+      const found = findMatch(data);
+      if (found) return found;
+    }
+
+    if (data && typeof data === 'object') {
+      const claim = data as Reimbursement;
+      if (claim.id === reimbursementId || claim.reimbursementId === reimbursementId) {
+        return claim;
       }
     }
 

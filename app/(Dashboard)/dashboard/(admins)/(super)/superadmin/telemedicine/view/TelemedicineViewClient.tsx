@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft, FaUser, FaUserMd, FaFileAlt } from 'react-icons/fa';
 import { getAdminUserById, type AdminUser } from '@/lib/adminUser';
@@ -14,7 +14,7 @@ type Telemedicine = {
   doctor: string;
   specialization: string;
   duration: string;
-  status: 'completed' | 'ongoing' | 'scheduled';
+  status: string;
   supportedDocuments: number;
   patientId: string;
   doctorId: string;
@@ -24,37 +24,30 @@ interface TelemedicineViewClientProps {
   telemedicineId: string;
 }
 
+const normalizeTelemedicine = (telemedicine: any, fallbackId: string): Telemedicine => ({
+  id: telemedicine.$id || telemedicine.id || telemedicine.telemedicineId || fallbackId,
+  telemedicineId: telemedicine.telemedicineId || telemedicine.id || `TEL-${fallbackId.slice(-6)}`,
+  dateOfService: telemedicine.dateOfService || telemedicine.date_of_service || '',
+  patient: telemedicine.patient || telemedicine.patientName || '',
+  hmoId: telemedicine.hmoId || telemedicine.hmo_id || telemedicine.hmoID || '',
+  doctor: telemedicine.doctor || telemedicine.doctorName || '',
+  specialization: telemedicine.specialization || telemedicine.specializationName || '',
+  duration: telemedicine.duration || telemedicine.callDuration || '',
+  status: (telemedicine.status || 'scheduled').toString().toLowerCase(),
+  supportedDocuments: telemedicine.supportedDocuments ?? telemedicine.documentsCount ?? 0,
+  patientId: telemedicine.patientId || telemedicine.patient_id || '',
+  doctorId: telemedicine.doctorId || telemedicine.doctor_id || '',
+});
+
 async function getTelemedicine(telemedicineId: string): Promise<Telemedicine | null> {
-  const res = await fetch(`/api/admin/telemedicine?telemedicineId=${telemedicineId}`, { cache: 'no-store' });
+  const res = await fetch(`/api/admin/telemedicine?id=${telemedicineId}`, { cache: 'no-store' });
   if (!res.ok) return null;
 
   const data = await res.json();
+  const telemedicineData = data?.data ?? data;
+  if (!telemedicineData) return null;
 
-  let telemedicine: any = null;
-
-  // Handle the admin/telemedicine response format
-  if (data?.data) {
-    telemedicine = data.data;
-  } else if (data) {
-    telemedicine = data;
-  }
-
-  if (!telemedicine) return null;
-
-  return {
-    id: telemedicine.$id || telemedicine.id || telemedicineId,
-    telemedicineId: telemedicine.telemedicineId || `TEL-${telemedicineId.slice(-6)}`,
-    dateOfService: telemedicine.dateOfService || '',
-    patient: telemedicine.patient || '',
-    hmoId: telemedicine.hmoId || '',
-    doctor: telemedicine.doctor || '',
-    specialization: telemedicine.specialization || '',
-    duration: telemedicine.duration || '',
-    status: telemedicine.status || 'scheduled',
-    supportedDocuments: telemedicine.supportedDocuments || 0,
-    patientId: telemedicine.patientId || '',
-    doctorId: telemedicine.doctorId || '',
-  };
+  return normalizeTelemedicine(telemedicineData, telemedicineId);
 }
 
 export default function TelemedicineViewClient({ telemedicineId }: TelemedicineViewClientProps) {

@@ -74,7 +74,7 @@ export default function WelcomeWrapper({
                 {firstName} {displayLastName}
               </h3>
               <p className="text-[14px]">
-                ID: <span className="font-semibold text-[15px]">{role}</span>
+                {role}
               </p>
             </div>
 

@@ -73,14 +73,13 @@ const LoginForm = () => {
         setErrors({});
 
         startTransition(async () => {
-            // ✅ Post to server-side login API
-            const res = await fetch("/api/login", {
+            // ✅ Post to dedicated admin login endpoint
+            const res = await fetch("/api/admin/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: formData.get("email"),
                 password: formData.get("password"),
-                mode: "admin",
             }),
             });
 
@@ -93,14 +92,13 @@ const LoginForm = () => {
 
             toast.success("Login successful!");
 
-            // ✅ Redirect after cookie is set
-             if (result.role === "superadmin") {
-                router.push("/dashboard/superadmin");
-            } else if (result.role === "admin") {
-                router.push("/dashboard/superadmin");
-            } else {
-                router.push("/admin"); // fallback
-            }
+            // ✅ Use the redirect path from API response or fallback to role-based redirect
+            const redirectPath = result.redirectPath || (
+              result.role === "superadmin" ? "/dashboard/superadmin" : 
+              result.role === "admin" ? "/dashboard/superadmin" :
+              "/dashboard/superadmin"
+            );
+            router.push(redirectPath);
         });
     };
 

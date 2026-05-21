@@ -2,6 +2,8 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { FaTimes } from 'react-icons/fa';
+import CreateUserModal from './CreateModal';
 
 type UserProfile = {
   id: string;
@@ -22,267 +24,7 @@ type UserProfile = {
   autoBillingEnabled: boolean;
 };
 
-type CreateUserFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  role: string;
-  password: string;
-  status: 'active' | 'suspended';
-  gender: 'male' | 'female' | 'other';
-  dateOfBirth: string;
-};
 
-const CreateUserModal = ({ isOpen, onClose, onUserCreated }: {
-  isOpen: boolean;
-  onClose: () => void;
-  onUserCreated: () => void;
-}) => {
-  const [formData, setFormData] = useState<CreateUserFormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    role: '',
-    password: '',
-    status: 'active',
-    gender: 'male',
-    dateOfBirth: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/admin/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create user');
-      }
-
-      const result = await response.json();
-      onUserCreated();
-      onClose();
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        role: '',
-        password: '',
-        status: 'active',
-        gender: 'male',
-        dateOfBirth: '',
-      });
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 h-[90%] overflow-auto w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-slate-900">Create New User</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
-          >
-            ✕
-          </button>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
-              Phone
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              required
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-slate-700 mb-1">
-              Role
-            </label>
-            <input
-              type="text"
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleInputChange}
-              required
-              placeholder="e.g., admin, user, support"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-slate-700 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-slate-700 mb-1">
-                Gender
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-slate-700 mb-1">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              id="dateOfBirth"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleInputChange}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary border border-transparent rounded-lg hover:bg-[#4338ca] disabled:opacity-50 disabled:cursor-not-allowed transition"
-            >
-              {loading ? 'Creating...' : 'Create User'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 export default function UserTableClient() {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -296,33 +38,55 @@ export default function UserTableClient() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const totalFiltered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
     let filtered = users;
     if (statusFilter !== 'All status') {
-      filtered = users.filter((user) => user.status === statusFilter);
+      filtered = filtered.filter((user) => user.status === statusFilter);
     }
+
+    if (query) {
+      filtered = filtered.filter((user) =>
+        user.fullName.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.phone.toLowerCase().includes(query) ||
+        user.status.toLowerCase().includes(query)
+      );
+    }
+
     return filtered.length;
-  }, [users, statusFilter]);
+  }, [users, statusFilter, search]);
 
   const filteredUsers = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
     let filtered = users;
     if (statusFilter !== 'All status') {
-      filtered = users.filter((user) => user.status === statusFilter);
+      filtered = filtered.filter((user) => user.status === statusFilter);
     }
-    // Apply pagination
+
+    if (query) {
+      filtered = filtered.filter((user) =>
+        user.fullName.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.phone.toLowerCase().includes(query) ||
+        user.status.toLowerCase().includes(query)
+      );
+    }
+
     const startIndex = (currentPage - 1) * 20;
     return filtered.slice(startIndex, startIndex + 20);
-  }, [users, statusFilter, currentPage]);
+  }, [users, statusFilter, search, currentPage]);
 
-  const fetchUsers = async (searchTerm: string = '') => {
+  const fetchUsers = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
     try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        search: searchTerm,
-      });
-      const response = await fetch(`/api/admin/user?${params}`, {
+      if (users.length === 0) {
+        setLoading(true);
+      }
+      const response = await fetch('/api/admin/user', {
         credentials: 'include',
         signal: controller.signal,
       });
@@ -370,15 +134,15 @@ export default function UserTableClient() {
     }
   };
 
-  // Fetch users on mount and when search changes
+  // Fetch users once on mount
   useEffect(() => {
-    fetchUsers(search);
-  }, [search]);
+    fetchUsers();
+  }, []);
 
-  // Reset page when status filter changes
+  // Reset page when search or status filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter]);
+  }, [search, statusFilter]);
 
   // Update totalPages when filtered count changes
   useEffect(() => {
@@ -390,7 +154,7 @@ export default function UserTableClient() {
     Suspended: 'bg-[#FEF3C7] text-[#F59E0B]',
   };
 
-  if (loading) {
+  if (loading && users.length === 0) {
     return (
       <div className="space-y-6">
         <div className="flex flex-col space-y-4 md:space-y-0 space-x-0 md:space-x-8 md:flex-row md:items-center md:justify-between">
@@ -460,7 +224,7 @@ export default function UserTableClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-2 md:space-y-0 space-x-0 md:space-x-8 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col space-y-2 md:space-y-0 space-x-0 md:space-x-6 md:flex-row md:items-center md:justify-between">
         <div className="w-full">
           <label htmlFor="user-search" className="sr-only">Search users</label>
           <input
@@ -484,12 +248,7 @@ export default function UserTableClient() {
           </select>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}          className="md:hidden inline-flex items-center rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white shadow hover:bg-[#4338ca] transition"
-        >
-          Create User
-        </button>
-        <button
-          onClick={() => setShowCreateModal(true)}          className="flex items-center rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white shadow hover:bg-[#4338ca] transition"
+          onClick={() => setShowCreateModal(true)}          className="inline-flex items-center w-fit md:w-40 rounded-[15px] bg-primary px-4 py-2 font-medium text-white shadow hover:bg-primary/90 transition"
         >
           Create User
         </button>
@@ -507,7 +266,13 @@ export default function UserTableClient() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 bg-white">
-            {filteredUsers.length === 0 ? (
+            {!search ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-slate-500">
+                  Enter a search term to view users
+                </td>
+              </tr>
+            ) : filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-slate-500">
                   No users match your search.
@@ -584,7 +349,7 @@ export default function UserTableClient() {
       <CreateUserModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onUserCreated={() => fetchUsers(search)}
+        onUserCreated={() => fetchUsers()}
       />
     </div>
   );

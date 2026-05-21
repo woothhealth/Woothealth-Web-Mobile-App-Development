@@ -51,14 +51,14 @@ export const ROLE_PERMISSIONS: Record<RoleName, readonly Permission[]> = {
     'telemedicine',
     'prescription',
     'feedback',
-    'notification',
+    'notification', 'clients', 'validations', 'providers',
   ],
-  sales: ['overview', 'profile', 'leads', 'clients', 'enrollees'],
-  finance: ['overview', 'profile', 'finance', 'reimbursement'],
-  claims: ['overview', 'profile', 'claims', 'reimbursement', 'validations', 'paCodes'],
-  'ops': ['overview', 'profile', 'providers'],
-  underwriting: ['overview', 'profile', 'plans', 'benefits'],
-  hr: ['overview', 'profile', 'employees', 'roles'],
+  sales: ['overview', 'profile', 'leads', 'clients', 'enrollees', 'tickets', 'preEmployment', 'providers', 'plans', 'benefits', 'finance', 'reimbursement'],
+  finance: ['overview', 'profile', 'finance', 'reimbursement', 'tickets', 'providers'],
+  claims: ['overview', 'profile', 'claims', 'reimbursement', 'validations', 'paCodes', 'tickets', 'providers'],
+  'ops': ['overview', 'profile', 'providers', 'paCodes', 'prescription', 'reimbursement', 'validations', 'claims', 'tickets'],
+  underwriting: ['overview', 'profile', 'plans', 'benefits', 'claims', 'reimbursement', 'validations', 'paCodes', 'tickets', 'providers'],
+  hr: ['overview', 'profile', 'employees', 'roles', 'tickets'],
 };
 
 export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
@@ -331,6 +331,8 @@ export function normalizeRole(role?: string | null): RoleName | null {
   const knownRoles: Record<string, RoleName> = {
     superadmin: 'superadmin',
     csupport: 'csupport',
+    support: 'csupport',
+    'customer support': 'csupport',
     sales: 'sales',
     finance: 'finance',
     claims: 'claims',

@@ -193,11 +193,14 @@ export async function POST(req: Request) {
     if (guard) return guard;
 
     const body = await req.json();
+    console.log("POST /api/admin/user - Received body:", body);
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+    console.log("POST /api/admin/user - BACKEND_URL:", BACKEND_URL);
 
     if (BACKEND_URL) {
       try {
+        console.log("POST /api/admin/user - Attempting backend call to:", BACKEND_URL + "/admin/users/");
         const backendRes = await fetch(
           BACKEND_URL + "/admin/users/",
           {
@@ -211,18 +214,44 @@ export async function POST(req: Request) {
           }
         );
 
+        console.log("POST /api/admin/user - Backend response status:", backendRes.status);
+        console.log("POST /api/admin/user - Backend response ok:", backendRes.ok);
+
         if (backendRes.ok) {
           const data = await backendRes.json();
+          console.log("POST /api/admin/user - Backend response data:", data);
           return NextResponse.json(data);
+        } else {
+          // Return backend error instead of falling back to mock
+          // This handles validation errors (409, 400), auth errors, etc.
+          const errorData = await backendRes.text();
+          console.log("POST /api/admin/user - Backend response not ok, error data:", errorData);
+          
+          let parsedError: any = { error: errorData };
+          try {
+            parsedError = JSON.parse(errorData);
+          } catch (e) {
+            // If not valid JSON, keep the text error
+          }
+          
+          console.log("POST /api/admin/user - Returning backend error to frontend");
+          return NextResponse.json(parsedError, { status: backendRes.status });
         }
       } catch (backendError) {
-        // Backend request failed, will fall back to mock
+        console.log("POST /api/admin/user - Backend request failed with error:", backendError);
+        // Backend is unreachable/network error - fall back to mock only in this case
+        console.log("POST /api/admin/user - Backend unreachable, falling back to mock");
       }
+    } else {
+      console.log("POST /api/admin/user - No BACKEND_URL configured, using mock");
     }
 
-    // Fallback to mock
+    // Fallback to mock only if backend is completely unavailable
+    console.log("POST /api/admin/user - Falling back to mock data creation");
     const newUser = { ...body, $id: `WHT-${Date.now()}`, $createdAt: new Date().toISOString() };
+    console.log("POST /api/admin/user - Created mock user:", newUser);
     mockUsers.push(newUser);
+    console.log("POST /api/admin/user - Mock users array now has", mockUsers.length, "users");
     return NextResponse.json({
       success: true,
       data: newUser,

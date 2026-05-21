@@ -1,16 +1,23 @@
 import React from 'react';
 import { cookies } from 'next/headers';
-import { getAdminCurrentUser } from '@/lib/adminCurrentUser';
 import AdminDashboardUserProvider from '@/Components/AdminDashboardUserProvider';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { getCurrentUser } from '@/lib/currentUser';
 
 export default async function AdminDashboardProvider({ children }: { children: React.ReactNode }) {
-  const user = await getAdminCurrentUser();
+  const user = await getCurrentUser();
 
-  // Fetch admin profile data
+  const getProfileRole = (profile: any) => {
+    if (!profile) return null;
+    if (Array.isArray(profile)) return profile[0] || null;
+    return String(profile);
+  };
+
+  // Fetch admin profile data. Use auth role for session auth and profile role for RBAC.
   let adminProfile = {
     id: user?.id || null,
-    role: user?.role || 'superadmin',
+    role: user?.role || null,
+    authRole: user?.role || null,
     name: user?.name || null,
     email: user?.email || null,
   };
@@ -32,8 +39,11 @@ export default async function AdminDashboardProvider({ children }: { children: R
 
     if (res.ok) {
       const data = await res.json();
+      const profileRole = getProfileRole(data.role || data.roles);
+
       adminProfile = {
         ...adminProfile,
+        role: profileRole || adminProfile.role,
         name: data.name || adminProfile.name,
         email: data.email || adminProfile.email,
       };

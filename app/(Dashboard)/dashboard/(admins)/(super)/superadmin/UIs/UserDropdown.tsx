@@ -52,13 +52,13 @@ export default function UserDropdown({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-8 w-50 bg-white border border-gray-200 rounded-lg shadow-lg z-40">
+        <div className="absolute right-0 mt-8 w-50 bg-white border border-gray-200 rounded-lg shadow-lg z-40 overflow-hidden">
           {/* User Info Header */}
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="font-semibold text-[#333333]">
               {firstName} {lastName}
             </p>
-            <p className="text-sm text-[#333333]">{email}</p>
+            <p className="text-sm wrap-break-word text-[#333333]">{email}</p>
           </div>
 
           <div className="py-2">

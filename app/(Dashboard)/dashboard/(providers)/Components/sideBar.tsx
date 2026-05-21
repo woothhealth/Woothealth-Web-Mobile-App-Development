@@ -4,154 +4,97 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { GoSidebarExpand, GoSidebarCollapse } from "react-icons/go";
 import { usePathname } from 'next/navigation';
-import { FaUserAlt, FaUsers } from "react-icons/fa";
+import { FaRegFileExcel, FaUserAlt, FaUsers } from "react-icons/fa";
 import { RiLayoutMasonryFill } from "react-icons/ri";
 import { IoMdSettings } from "react-icons/io";
 import Link from 'next/link';
-import Logout from '@/UI/LogOut';
+
 import { HiMiniUserGroup } from 'react-icons/hi2';
-import { HiOutlineAcademicCap, HiOutlineBell, HiOutlineCamera, HiOutlineCash, HiOutlineChatAlt2, HiOutlineCheckCircle, HiOutlineChip, HiOutlineClipboardCheck, HiOutlineClipboardList, HiOutlineCreditCard, HiOutlineDocumentText, HiOutlineKey, HiOutlineOfficeBuilding, HiOutlineShieldCheck, HiOutlineTicket, HiOutlineTrendingUp, HiOutlineUserGroup, HiOutlineUsers } from 'react-icons/hi';
+import { HiOutlineBell, HiOutlineClipboardList, HiOutlineDocumentText, HiOutlineKey, HiOutlinePencil } from 'react-icons/hi';
+
+import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import LogoutButton from '@/UI/LogOut';
 
+type pathType = {
+    name: string,
+    url?: string,
+    icon: React.ReactNode,
+    isDropdown?: boolean,
+    children?: {
+        name?: string,
+        url?: string,
+        icon?: React.ReactNode,
+    }[]
+}
 
-const path = [
+const path : pathType[] = [
     {
-        name: 'Overview',
-        url: '/dashboard/superadmin',
+        name: 'Enrollee Verification',
+        url: '/dashboard/providers',
         icon: <RiLayoutMasonryFill/>
     },
     {
-        name: 'Users',
-        url: '/dashboard/superadmin/users',
-        icon: <HiOutlineUsers/>
-    },
-    {
-        name: 'Enrollees',
-        url: '/dashboard/superadmin/enrollees',
-        icon: <FaUsers/>
-    },
-    {
-        name: 'Clients',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/clients',
-        icon: <HiMiniUserGroup/>
-    },
-    {
-        name: 'Benefits/Plan',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/benefits',
-        icon: <HiOutlineClipboardList/>
-    },
-    {
-        name: 'Finance',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/finance',
-        icon: <HiOutlineCash/>
-    },
-    {
-        name: 'Leads',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/leads',
-        icon: <HiOutlineTrendingUp/>
-    },
-    {
-        name: 'Feedback',
-        url: '/dashboard/superadmin/coming',
-        // url: '/dashboard/superadmin/feedback',
-        icon: <HiOutlineChatAlt2/>
-    },
-    {
-        name: 'Tickets',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/tickets',
-        icon: <HiOutlineTicket/>
-    },
-    {
-        name: 'Employee',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/employees',
-        icon: <HiOutlineUserGroup/>
-    },
-    {
-        name: 'Providers',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/providers',
-        icon: <HiOutlineOfficeBuilding/>
+        name: 'PA Code',
+        icon: <HiOutlineKey/>,
+        isDropdown: true,
+        children: [
+            {
+                name: 'PA Code Creation',
+                url: '/dashboard/providers/pa-code',
+                icon: <HiOutlinePencil />
+            },
+            {
+                name: 'PA Code Tracking',
+                url: '/dashboard/providers/pa-code/tracking',
+                icon: <HiOutlineClipboardList />
+            }
+        ]
     },
     {
         name: 'Claims',
-        url: '/dashboard/superadmin/claims',
+        url: '/dashboard/providers/claims',
         icon: <HiOutlineDocumentText/>
     },
     {
-        name: 'Reimbursement',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/reimbursement',
-        icon: <HiOutlineCreditCard/>
+        name: 'Tariffs',
+        url: '/dashboard/providers/tariff',
+        icon: <FaRegFileExcel />
     },
     {
-        name: 'Validations',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/validations',
-        icon: <HiOutlineCheckCircle/>
+        name: 'Billing',
+        url: '/dashboard/providers/billings',
+        icon: <HiMiniUserGroup/>
     },
     {
-        name: 'PA Codes',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/pa-code',
-        icon: <HiOutlineKey/>
-    },
-    {
-        name: 'Prescription',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/prescription',
-        icon: <HiOutlineClipboardCheck/>
-    },
-    {
-        name: 'Telemedicine',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/telemedicine',
-        icon: <HiOutlineCamera/>
-    },
-    {
-        name: 'Pre-Employment Tests',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/pre-employment',
-        icon: <HiOutlineAcademicCap/>
-    },
-    {
-        name: 'Notification',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/notification',
+        name: 'Notifications',
+        url: '/dashboard/providers/notifications',
         icon: <HiOutlineBell/>
-    },
-    {
-        name: 'Roles',
-        // url: '/dashboard/superadmin/coming',
-        url: '/dashboard/superadmin/roles',
-        icon: <HiOutlineShieldCheck/>
-    },
-    {
-        name: 'Product & Tech',
-        url: '/dashboard/superadmin/coming',
-        // url: '/dashboard/superadmin/product',
-        icon: <HiOutlineChip/>
     }
 ]
 
-const path2 = [
+const path2 : pathType[] = [
     {
         name: 'Profile',
-        url: '/dashboard/superadmin/profile',
+        url: '/dashboard/providers/profile',
         icon: <FaUserAlt/>
+    },
+    {
+        name: 'Settings',
+        url: '/dashboard/providers/settings',
+        icon: <IoMdSettings/>
     }
 ]
 
 const SideBar = () => {
     const [isToggle, setIsToggle] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
     const click = () => {
         setIsToggle(!isToggle)
+    }
+
+    const toggleDropdown = (name: string) => {
+        setOpenDropdown(openDropdown === name ? null : name);
     }
 
     const pathname = usePathname()
@@ -160,7 +103,7 @@ const SideBar = () => {
     <section className='hidden lg:block lg:sticky lg:left-0 lg:top-0 px-6 h-screen w-fit border-r border-[#D9D9D9] pb-8'>
         {!isToggle && 
         <>
-        <div className='relative flex flex-col gap-6 h-fit w-[18vw]'>
+        <div className='relative flex flex-col gap-6 h-full w-[18vw]'>
             <div className='flex justify-between pt-8 pb-2 items-center'>
                 <Image src='/Logo2.png' height={100} width={500} alt='WootHealth Logo' className='h-10 w-fit' loading='eager' />
                 <GoSidebarExpand className='text-3xl cursor-pointer text-[#00000077] font-semibold' onClick={click} />
@@ -168,23 +111,59 @@ const SideBar = () => {
             <div className='flex flex-col gap-6 overflow-y-scroll custom-scrollbar h-[80vh] pr-2'>
             <div className='flex flex-col gap-1'>
                 {path.map((path, index) => {
-                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
-                return (
-                    <Link key={index} href={path.url}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
-                            <div className='text-xl'>
-                                {path.icon}
+                    const isActive = path.url ? pathname === path.url : false
+                    const isDropdownActive = path.isDropdown && path.children?.some(child => pathname === child.url)
+                    
+                    if (path.isDropdown) {
+                        return (
+                            <div key={index}>
+                                <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 pr-3 hover:bg-gray-100 cursor-pointer ${isDropdownActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}
+                                    onClick={() => toggleDropdown(path.name)}
+                                >
+                                    <div className='text-xl'>
+                                        {path.icon}
+                                    </div>
+                                    <span className='flex-1'>{path.name}</span>
+                                    {openDropdown === path.name ? 
+                                        <MdKeyboardArrowDown className='text-xl' /> : 
+                                        <MdKeyboardArrowRight className='text-xl' />
+                                    }
+                                </div>
+                                {openDropdown === path.name && (
+                                    <div className='ml-4 mt-1 space-y-1'>
+                                        {path.children?.map((child, childIndex) => {
+                                            const isChildActive = pathname === child.url
+                                            return (
+                                                <Link key={childIndex} href={child.url!}>
+                                                    <div className={`flex p-3 items-center text-[15px] text-[#00000077] font-semibold rounded-[15px] hover:bg-gray-100 ${isChildActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}>
+                                                        {child.icon && <div className='text-lg text-center mr-2'>{child.icon}</div>}
+                                                        {child.name}
+                                                    </div>
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                )}
                             </div>
-                            {path.name}
-                        </div>
-                    </Link>
-                )})}
+                        )
+                    }
+                    
+                    return (
+                        <Link key={index} href={path.url!}>
+                            <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                                <div className='text-xl'>
+                                    {path.icon}
+                                </div>
+                                {path.name}
+                            </div>
+                        </Link>
+                    )})}
             </div>
             <div className='flex flex-col gap-1 h-full'>
                 {path2.map((path, index) => {
-                    const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
+                    const isActive = pathname === path.url
                     return (
-                        <Link key={index} href={path.url}>
+                        <Link key={index} href={path.url!}>
                             <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                 <div className='text-xl'>
                                     {path.icon}
@@ -203,16 +182,49 @@ const SideBar = () => {
         }
        {isToggle && (
             <>
-            <div className='flex flex-col gap-6 h-fit w-fit'>
+            <div className='flex flex-col gap-6 h-full w-fit'>
                     <div className='sticky bg-[#FAFAFA] top-0 flex justify-between pt-8 pb-2 items-center gap-4'>
                         <Image src='/Woot_collapse.png' height={100} width={500} alt='WootHealth Logo' className='h-9 w-fit' loading='eager' />
                         <GoSidebarCollapse className='text-3xl text-[#00000077] font-semibold cursor-pointer' onClick={click} />
                     </div>
                     <div className='flex flex-col gap-1'>
                         {path.map((path, index) => {
-                        const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/dashboard/superadmin")
+                        const isActive = pathname === path.url
+                        const isDropdownActive = path.isDropdown && path.children?.some(child => pathname === child.url)
+                        
+                        if (path.isDropdown) {
+                            return (
+                                <div key={index}>
+                                    <div 
+                                        className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 cursor-pointer ${isDropdownActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}
+                                        onClick={() => toggleDropdown(path.name)}
+                                    >
+                                        <div className='text-2xl'>
+                                            {path.icon}
+                                        </div>
+                                    </div>
+                                    {openDropdown === path.name && (
+                                        <div className='mt-1 space-y-1'>
+                                            {path.children?.map((child, childIndex) => {
+                                                const isChildActive = pathname === child.url
+                                                return (
+                                                    <Link key={childIndex} href={child.url!}>
+                                                        <div className={`flex py-2 px-3 items-center justify-center text-sm text-[#00000077] font-medium rounded-lg hover:bg-gray-100 ${isChildActive ? 'bg-[#49A5EF] text-[#FFFFFF]' : ''}`}>
+                                                            <div className='text-xs text-center'>
+                                                                {child.name!.split(' ').map(word => word[0]).join('')}
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        }
+                        
                         return (
-                            <Link key={index} href={path.url}>
+                            <Link key={index} href={path.url!}>
                                 <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                     <div className='text-2xl'>
                                         {path.icon}
@@ -223,9 +235,9 @@ const SideBar = () => {
                     </div>
                     <div className='flex flex-col gap-1 h-full'>
                         {path2.map((path, index) => {
-                            const isActive = pathname === path.url || (pathname.startsWith(path.url) && path.url !== "/")
+                            const isActive = pathname === path.url
                             return (
-                                <Link key={index} href={path.url}>
+                                <Link key={index} href={path.url!}>
                                     <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl justify-center hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                                         <div className='text-2xl'>
                                             {path.icon}

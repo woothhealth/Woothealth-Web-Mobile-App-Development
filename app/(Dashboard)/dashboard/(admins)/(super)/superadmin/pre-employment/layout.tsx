@@ -1,4 +1,5 @@
 import Title from "../UIs/Title";
+import { PreEmploymentStatsProvider } from "./PreEmploymentStatsContext";
 
 export default function PreEmploymentLayout({
   children,
@@ -8,7 +9,9 @@ export default function PreEmploymentLayout({
   return (
     <div className="w-full bg-[#FAFAFA] space-y-4 mt-4">
       <Title title="Pre-Employment Tests" />
-      <div className="md:px-4">{children}</div>
+      <PreEmploymentStatsProvider>
+        <div className="md:px-4">{children}</div>
+      </PreEmploymentStatsProvider>
     </div>
   );
 }

@@ -1,19 +1,23 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FaEllipsisV, FaFilter, FaChevronDown, FaUsers, FaCreditCard, FaFileInvoice, FaPlus, FaPause, FaBan } from 'react-icons/fa';
 import Link from 'next/link';
 import { IoWalletOutline } from "react-icons/io5";
 import type { Client } from './mock-clients';
-import { mockClients } from './mock-clients';
+/* import { mockClients } from './mock-clients'; // switched to dynamic API */
+import { useAdminClients, createAdminClient } from '@/lib/adminClients';
 import { ViewEnrolleesModal } from './components/ViewEnrolleesModal';
 import { ViewPaymentModal } from './components/ViewPaymentModal';
 import { ViewInvoiceModal } from './components/ViewInvoiceModal';
 import { AddPlanModal } from './components/AddPlanModal';
 import { SuspendAccountModal } from './components/SuspendAccountModal';
 import { DeactivateAccountModal } from './components/DeactivateAccountModal';
+import { CreateClientModal } from './components/CreateClientModal';
+import { toast } from 'sonner';
+import { CreateInvoiceModal } from './components/CreateInvoice';
 
-type ModalType = 'enrollees' | 'payment' | 'invoice' | 'addPlan' | 'suspend' | 'deactivate' | null;
+type ModalType = 'enrollees' | 'payment' | 'invoice' | 'addPlan' | 'suspend' | 'deactivate' | 'createClient' | 'createInvoice' | null;
 
 export function ClientsClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,10 +28,18 @@ export function ClientsClient() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [clients, setClients] = useState<Client[]>([]);
+  const { data: clientsRes, isLoading, refetch } = useAdminClients();
+
+  useEffect(() => {
+    if (clientsRes && clientsRes.data) {
+      setClients(clientsRes.data);
+    }
+  }, [clientsRes]);
   const itemsPerPage = 10;
 
   const filtered = useMemo(() => {
-    return mockClients.filter((client) => {
+    return clients.filter((client) => {
       const matchesSearch =
         client.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,15 +50,15 @@ export function ClientsClient() {
 
       return matchesSearch && matchesStatus && matchesPlan;
     });
-  }, [searchTerm, statusFilter, planFilter]);
+  }, [clients, searchTerm, statusFilter, planFilter]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedClients = filtered.slice(startIndex, endIndex);
 
-  const handleOpenModal = (type: ModalType, client: Client) => {
-    setSelectedClient(client);
+  const handleOpenModal = (type: ModalType, client?: Client | null) => {
+    setSelectedClient(client || null);
     setActiveModal(type);
     setOpenActionMenu(null);
   };
@@ -119,11 +131,24 @@ export function ClientsClient() {
               </div>
             )}
           </div>
+
+          <button className="rounded-[10px] bg-primary px-4 py-3 text-sm md:w-38 font-medium text-white hover:bg-primary/90" onClick={() => handleOpenModal('createClient')}>
+            Create Client
+          </button>
       </div>
 
       {/* Clients List */}
       <div className="space-y-4">
-        {paginatedClients.map((client) => (
+        {!searchTerm && !statusFilter && !planFilter ? (
+          <div className="text-center py-12 text-slate-500">
+            <p className="text-lg">Enter a search term, status, or plan to view clients</p>
+          </div>
+        ) : paginatedClients.length === 0 ? (
+          <div className="text-center py-12 text-slate-500">
+            <p className="text-lg">No clients match your search criteria</p>
+          </div>
+        ) : (
+        paginatedClients.map((client) => (
           <div key={client.id} className="rounded-[15px] border border-border p-4 md:p-6 shadow-sm">
             {/* Header with Company Name, Status, Plan */}
             <div className="flex items-start justify-between">
@@ -174,7 +199,7 @@ export function ClientsClient() {
             </div>
 
             {/* Contact Information */}
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 items-start justify-between">
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 items-start justify-between">
               <div className="flex flex-col text-sm space-y-1">
                 <div className="flex space-x-2">
                   <p className="text-slate-600">Contact Person:</p>
@@ -195,7 +220,12 @@ export function ClientsClient() {
               </div>
               
               {/* Action Menu Button */}
-              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-4 justify-end">
+              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-4 col-span-2 justify-end">
+                <div>
+                  <button onClick={() => handleOpenModal('createInvoice', client)} className="flex gap-2 text-[#ffffff] items-center w-full px-4 py-2 text-left bg-primary cursor-pointer text-sm hover:bg-primary/80 rounded-[10px]">
+                    Create Invoice
+                  </button>
+                </div>
                   <div className="space-y-2">
                     <Link
                       href={`/dashboard/superadmin/clients/enrollees`}
@@ -239,7 +269,8 @@ export function ClientsClient() {
               </div>
             </div>
           </div>
-        ))}
+        ))
+        )}
       </div>
 
       {/* Pagination */}
@@ -274,6 +305,14 @@ export function ClientsClient() {
           onClose={() => setActiveModal(null)}
         />
       )}
+      {activeModal === 'createInvoice' && selectedClient && (
+        <CreateInvoiceModal
+          clientName={selectedClient.companyName}
+          clientEmail={selectedClient.email}
+          phone={selectedClient.phone}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
       {activeModal === 'payment' && selectedClient && (
         <ViewPaymentModal clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
       )}
@@ -288,10 +327,30 @@ export function ClientsClient() {
         <AddPlanModal clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
       )}
       {activeModal === 'suspend' && selectedClient && (
-        <SuspendAccountModal clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
+        <SuspendAccountModal clientId={selectedClient.id} clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
       )}
       {activeModal === 'deactivate' && selectedClient && (
-        <DeactivateAccountModal clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
+        <DeactivateAccountModal clientId={selectedClient.id} clientName={selectedClient.companyName} onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'createClient' && (
+        <CreateClientModal
+          onClose={() => setActiveModal(null)}
+          onCreate={async (newClient) => {
+            try {
+              const res = await createAdminClient(newClient);
+              const created = res?.data || res;
+              if (created) {
+                setClients(prev => [...prev, created]);
+                toast.success(`Client "${created.companyName || newClient.companyName}" created`);
+              }
+            } catch (err: any) {
+              console.error('Create client error', err);
+              toast.error('Failed to create client');
+            } finally {
+              setActiveModal(null);
+            }
+          }}
+        />
       )}
     </div>
   );

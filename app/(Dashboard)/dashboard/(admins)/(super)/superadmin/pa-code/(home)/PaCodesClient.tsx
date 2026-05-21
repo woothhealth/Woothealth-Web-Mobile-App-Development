@@ -206,6 +206,9 @@ export default function PaCodesClient() {
               </option>
             ))}
           </select>
+          <Link href="/dashboard/superadmin/pa-code/create" className="px-4 md:w-50 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/80">
+            Create PA Code
+          </Link>
         </div>
       </div>
 
@@ -243,9 +246,13 @@ export default function PaCodesClient() {
                   <span className="ml-2">Loading pa-codes...</span>
                 </div>
               </div>
+            ) : !searchQuery && selectedStatus === 'all' ? (
+              <div className="p-4 text-center text-slate-500">
+                Enter a search term to view PA codes.
+              </div>
             ) : paginatedPaCodes.length === 0 ? (
-              <div className="p-4 text-center">
-                No pa-codes found
+              <div className="p-4 text-center text-gray-500">
+                No PA codes match your search.
               </div>
             ) : (
               <table className="min-w-full table-fixed">
@@ -309,7 +316,20 @@ export default function PaCodesClient() {
                   <col style={{width: '10%'}} />
                 </colgroup>
                 <tbody>
-                  {paginatedPaCodes.map((paCode: PaCode) => (
+                  {!searchQuery ? (
+                    <tr>
+                      <td colSpan={headers.length} className="px-4 py-6 text-center text-slate-500">
+                        Enter a search term to view PA codes
+                      </td>
+                    </tr>
+                  ) : paginatedPaCodes.length === 0 ? (
+                    <tr>
+                      <td colSpan={headers.length} className="px-4 py-6 text-center text-slate-500">
+                        No PA codes match your search
+                      </td>
+                    </tr>
+                  ) : (
+                  paginatedPaCodes.map((paCode: PaCode) => (
                     <tr key={paCode.id} className="hover:bg-gray-50 text-[15px] divide-y divide-[#D9D9D9]">
                       <td className="px-6 py-3">{formatDate(paCode.createdDate)}</td>
                       <td className="px-6 py-3">{paCode.patientId}</td>
@@ -330,7 +350,8 @@ export default function PaCodesClient() {
                         </Link>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  )}
                 </tbody>
               </table>
             )}

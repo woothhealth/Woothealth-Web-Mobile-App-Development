@@ -1,15 +1,40 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { FaEllipsisV, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
-import { MOCK_REIMBURSEMENTS, Reimbursement } from './mockReimbursements';
+import { Reimbursement } from './mockReimbursements';
 
 const ITEMS_PER_PAGE = 15;
 
+const normalizeReimbursement = (item: any): Reimbursement => ({
+  id: item.id || item.$id || item.reimbursementId || item._id || '',
+  reimbursementId: item.reimbursementId || item.reimbursement_id || item.id || item.$id || '',
+  dateOfService: item.dateOfService || item.date_of_service || item.submittedDate || '',
+  submittedDate: item.submittedDate || item.submitted_date || item.createdAt || '',
+  patient: item.patient || item.patientName || item.fullName || '',
+  hmoId: item.hmoId || item.hmo_id || item.userId || '',
+  provider: item.provider || item.hospitalProvider || '',
+  service: item.service || item.treatment || '',
+  amount: typeof item.amount === 'string' ? Number(item.amount) : item.amount || 0,
+  status: (item.status || 'pending').toLowerCase() as 'pending' | 'approved' | 'rejected',
+  documentCount: item.documentCount ?? item.documents?.length ?? 0,
+  approvedAmount: item.approvedAmount ?? item.approved_amount ?? undefined,
+  paCode: item.paCode ?? item.pa_code ?? undefined,
+  comment: item.comment ?? item.notes ?? item.reviewNotes ?? undefined,
+});
+
+const extractReimbursements = (data: any): any[] => {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (data.data && Array.isArray(data.data)) return data.data;
+  if (data.data && data.data.reimbursements && Array.isArray(data.data.reimbursements)) return data.data.reimbursements;
+  return [];
+};
+
 export default function ReimbursementsClient() {
-  const [reimbursements, setReimbursements] = useState<Reimbursement[]>(MOCK_REIMBURSEMENTS);
+  const [reimbursements, setReimbursements] = useState<Reimbursement[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'provider' | 'patient' | 'status'>('provider');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Pending' | 'Approved' | 'Rejected'>('All');
@@ -20,6 +45,8 @@ export default function ReimbursementsClient() {
   const [editAmount, setEditAmount] = useState('');
   const [editService, setEditService] = useState('');
   const [editStatus, setEditStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const categories = [
     { label: 'Provider', value: 'provider' },
@@ -30,6 +57,35 @@ export default function ReimbursementsClient() {
   const statusOptions = ['All', 'Pending', 'Approved', 'Rejected'] as const;
 
   const headers = ['Date of Service', 'Patient', 'HMO ID', 'Provider', 'Amount', 'Status', 'Action'];
+
+  const fetchReimbursements = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/reimbursement', {
+        cache: 'no-store',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch reimbursements');
+      }
+
+      const data = await response.json();
+      const list = extractReimbursements(data).map(normalizeReimbursement);
+      setReimbursements(list);
+    } catch (fetchError) {
+      console.error('Error loading reimbursements:', fetchError);
+      setError('Unable to load reimbursements. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReimbursements();
+  }, []);
 
   const filteredReimbursements = useMemo(() => {
     const query = search.toLowerCase();
@@ -73,30 +129,82 @@ export default function ReimbursementsClient() {
     setOpenMenuId(null);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editTarget) return;
-    setReimbursements((prev) =>
-      prev.map((item) =>
-        item.id === editTarget.id
-          ? {
-              ...item,
-              amount: Number(editAmount) || item.amount,
-              service: editService,
-              status: editStatus,
-            }
-          : item
-      )
-    );
-    setEditTarget(null);
+
+    const payload = {
+      amount: Number(editAmount) || editTarget.amount,
+      service: editService,
+      status: editStatus,
+    };
+
+    try {
+      const response = await fetch(`/api/admin/reimbursement?id=${encodeURIComponent(editTarget.id)}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Failed to save reimbursement');
+      }
+
+      const data = await response.json().catch(() => null);
+      const updatedReimbursement = data?.data ? normalizeReimbursement(data.data) : { ...editTarget, ...payload };
+
+      setReimbursements((prev) =>
+        prev.map((item) => (item.id === editTarget.id ? { ...item, ...updatedReimbursement } : item))
+      );
+      toast.success('Reimbursement updated successfully.');
+      setEditTarget(null);
+    } catch (err) {
+      console.error('Error saving reimbursement:', err);
+      toast.error('Unable to save reimbursement. Please try again.');
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteTarget) return;
-    const deleted = deleteTarget;
-    setReimbursements((prev) => prev.filter((item) => item.id !== deleted.id));
-    setDeleteTarget(null);
-    toast.success(`Reimbursement for ${deleted.patient} deleted successfully.`);
+
+    try {
+      const response = await fetch(`/api/admin/reimbursement?id=${encodeURIComponent(deleteTarget.id)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Failed to delete reimbursement');
+      }
+
+      setReimbursements((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+      toast.success(`Reimbursement for ${deleteTarget.patient} deleted successfully.`);
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error('Error deleting reimbursement:', err);
+      toast.error('Unable to delete reimbursement. Please try again.');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-80 items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-[#49A5EF]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-700">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 py-4">
@@ -165,7 +273,7 @@ export default function ReimbursementsClient() {
           <tbody className="divide-y divide-[#D9D9D9] bg-white">
             {paginatedReimbursements.length === 0 ? (
               <tr>
-                <td colSpan={headers.length} className="px-5 py-10 text-center text-sm text-slate-500">
+                <td colSpan={headers.length} className="px-5 py-10 text-center text-slate-500">
                   No reimbursements match this search.
                 </td>
               </tr>

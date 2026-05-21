@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaChevronDown, FaEllipsisV, FaEye, FaPlus, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
 import DeleteConfirmModal from '../../DeleteConfirmModal';
-import { PreEmploymentTest, mockPreEmployment, PreEmploymentStatus } from '../mockPreEmployment';
+import { PreEmploymentTest, PreEmploymentStatus } from '../mockPreEmployment';
 
 const STATUS_OPTIONS: Array<{ label: string; value: PreEmploymentStatus | 'all' }> = [
   { label: 'All Status', value: 'all' },
@@ -115,7 +115,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-4 text-[14px]">
-            <label className="text-base font-semibold">
+            <label className="text-base ">
               Employee name
             </label>
             <input
@@ -126,7 +126,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
             />
           </div>
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Employee email
           </label>
             <input
@@ -138,7 +138,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
             />
           </div>
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Employee phone number
           </label>
             <input
@@ -149,7 +149,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
             />
           </div>
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Employee date of birth
           </label>
             <input
@@ -164,7 +164,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Company name
           </label>
             <select
@@ -180,7 +180,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
             </select>
           </div>
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Insurance plan
           </label>
             <input
@@ -191,7 +191,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
             />
           </div>
           <div className="space-y-4 text-[14px]">
-          <label className="text-base font-semibold">
+          <label className="text-base ">
             Provider
           </label>
             <select
@@ -210,7 +210,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
 
         <div className='mt-6 grid gap-4 md:grid-cols-2 items-start'>
           <div className="">
-            <p className="text-base font-semibold">Test types</p>
+            <p className="text-base">Test types</p>
             <div className="mt-3 grid gap-2 grid-cols-2">
               {TEST_TYPE_OPTIONS.map((testType) => {
                 const isSelected = selectedTests.includes(testType);
@@ -233,7 +233,7 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
           </div>
 
           <div className="text-base">
-            <p className="font-semibold">Scheduled timestamp</p>
+            <p className="">Scheduled timestamp</p>
             <p className="mt-1 text-[14px] w-full rounded-2xl border border-[#D9D9D9] bg-white px-4 py-2 focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]">{new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
           </div>
         </div>
@@ -281,9 +281,11 @@ function ScheduleTestModal({ onClose, onCreate }: { onClose: () => void; onCreat
 }
 
 export default function PreEmploymentClient() {
-  const [tests, setTests] = useState<PreEmploymentTest[]>(mockPreEmployment);
+  const [tests, setTests] = useState<PreEmploymentTest[]>([]);
   const [search, setSearch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<PreEmploymentStatus | 'all'>('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PreEmploymentTest | null>(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -304,6 +306,47 @@ export default function PreEmploymentClient() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch('/api/admin/pre-employment-tests?page=1&limit=100', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Failed to fetch pre-employment tests');
+        const data = await res.json();
+        let items: any[] = [];
+        if (Array.isArray(data)) items = data;
+        else if (Array.isArray(data.data)) items = data.data;
+        else items = [];
+
+        const normalized = items.map((it) => ({
+          id: it.$id || it.id || it.preEmploymentId || it._id || String(Date.now()),
+          dateOfService: it.dateOfService || new Date().toISOString(),
+          scheduledDate: it.scheduledDate || it.scheduledAt || new Date().toISOString(),
+          employeeName: it.employeeName || it.name || '',
+          employeeEmail: it.employeeEmail || it.email || '',
+          employeePhone: it.employeePhone || it.phone || '',
+          employeeDOB: it.employeeDOB || it.dob || '',
+          company: it.company || '',
+          insurancePlan: it.insurancePlan || '',
+          provider: it.provider || '',
+          testTypes: Array.isArray(it.testTypes) ? it.testTypes : (it.testTypes ? [it.testTypes] : []),
+          status: (it.status || 'scheduled') as PreEmploymentStatus,
+          createdAt: it.createdAt || it.$createdAt || new Date().toISOString(),
+        } as PreEmploymentTest));
+
+        setTests(normalized);
+      } catch (err: any) {
+        console.error(err);
+        setError(err?.message || 'Failed to load tests');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   const filteredTests = useMemo(() => {
@@ -342,14 +385,55 @@ export default function PreEmploymentClient() {
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-    setTests((current) => current.filter((item) => item.id !== deleteTarget.id));
-    toast.success('Pre-employment test deleted successfully.');
-    setDeleteTarget(null);
+    (async () => {
+      try {
+        const res = await fetch(`/api/admin/pre-employment-tests?id=${deleteTarget.id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete');
+        const data = await res.json();
+        setTests((current) => current.filter((item) => item.id !== deleteTarget.id));
+        toast.success(data?.message || 'Pre-employment test deleted successfully.');
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err?.message || 'Failed to delete test');
+      } finally {
+        setDeleteTarget(null);
+      }
+    })();
   };
 
   const handleCreateTest = (test: PreEmploymentTest) => {
-    setTests((current) => [test, ...current]);
-    setPage(1);
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/pre-employment-tests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(test),
+        });
+        if (!res.ok) throw new Error('Failed to create test');
+        const data = await res.json();
+        const created = data?.data ?? data;
+        const normalized: PreEmploymentTest = {
+          id: created.$id || created.id || test.id,
+          dateOfService: created.dateOfService || test.dateOfService,
+          scheduledDate: created.scheduledDate || test.scheduledDate,
+          employeeName: created.employeeName || test.employeeName,
+          employeeEmail: created.employeeEmail || test.employeeEmail,
+          employeePhone: created.employeePhone || test.employeePhone,
+          employeeDOB: created.employeeDOB || test.employeeDOB,
+          company: created.company || test.company,
+          insurancePlan: created.insurancePlan || test.insurancePlan,
+          provider: created.provider || test.provider,
+          testTypes: created.testTypes || test.testTypes,
+          status: (created.status || test.status) as PreEmploymentStatus,
+          createdAt: created.createdAt || test.createdAt,
+        };
+        setTests((current) => [normalized, ...current]);
+        setPage(1);
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err?.message || 'Failed to schedule test');
+      }
+    })();
   };
 
   return (
@@ -413,7 +497,7 @@ export default function PreEmploymentClient() {
 
       <div className="overflow-x-auto rounded-[10px] bg-[#ffffff] shadow-sm" ref={tableRef}>
         <table className="min-w-full table-fixed text-[15px]">
-          <thead className="text-left text-[18px] border-b border-[D9D9D9]">
+          <thead className="text-left text-[18px] border-b border-border">
             <tr>
               <th className="px-4 py-3">Date of Service</th>
               <th className="px-4 py-3">Employee</th>
@@ -427,13 +511,13 @@ export default function PreEmploymentClient() {
           <tbody>
             {paginatedTests.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-500">
+                <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
                   No pre-employment tests found.
                 </td>
               </tr>
             ) : (
               paginatedTests.map((test) => (
-                <tr key={test.id} className="border-t border-[#E5E7EB] hover:bg-[#F8FAFC]">
+                <tr key={test.id} className="hover:bg-[#F8FAFC]">
                   <td className="px-4 py-4 text-slate-900">{formatDate(test.dateOfService)}</td>
                   <td className="px-4 py-4 text-slate-900">{test.employeeName}</td>
                   <td className="px-4 py-4 text-slate-900">{test.company}</td>

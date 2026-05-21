@@ -3,72 +3,33 @@
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaEllipsisV } from 'react-icons/fa';
+import {
+  Ticket,
+  useAdminTickets,
+  createAdminTicket,
+  updateAdminTicket,
+  deleteAdminTicket,
+} from '@/lib/adminTickets';
 
-type Ticket = {
-  id: string;
-  date: string; // dd/mm/yy
-  title: string;
-  department: string;
-  assignedTo: string;
-  status: 'open' | 'In progress' | 'resolved';
-};
-
-const mockTickets: Ticket[] = [
-  {
-    id: '1',
-    date: '15/04/26',
-    title: 'Login Issue',
-    department: 'IT',
-    assignedTo: 'John Doe',
-    status: 'open',
-  },
-  {
-    id: '2',
-    date: '14/04/26',
-    title: 'Payment Error',
-    department: 'Finance',
-    assignedTo: 'Jane Smith',
-    status: 'In progress',
-  },
-  {
-    id: '3',
-    date: '13/04/26',
-    title: 'Account Setup',
-    department: 'HR',
-    assignedTo: 'Bob Johnson',
-    status: 'resolved',
-  },
-  {
-    id: '4',
-    date: '15/04/26',
-    title: 'Login Issue',
-    department: 'IT',
-    assignedTo: 'John Doe',
-    status: 'open',
-  },
-  {
-    id: '5',
-    date: '14/04/26',
-    title: 'Payment Error',
-    department: 'Finance',
-    assignedTo: 'Jane Smith',
-    status: 'In progress',
-  },
-  {
-    id: '6',
-    date: '13/04/26',
-    title: 'Account Setup',
-    department: 'HR',
-    assignedTo: 'Bob Johnson',
-    status: 'resolved',
-  },
-];
+// Commented out mock data - now using dynamic API calls
+// const mockTickets: Ticket[] = [
+//   {
+//     id: '1',
+//     date: '15/04/26',
+//     title: 'Login Issue',
+//     department: 'IT',
+//     assignedTo: 'John Doe',
+//     status: 'open',
+//   },
+//   ...more mock data
+// ];
 
 const departments = ['IT', 'Finance', 'HR', 'Marketing', 'Operations'];
 const assignees = ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Brown', 'Charlie Wilson'];
 
 export default function TicketsClient() {
-  const [tickets, setTickets] = useState<Ticket[]>(mockTickets);
+  const { data, isLoading, error, refetch } = useAdminTickets();
+  const tickets = data?.data ?? [];
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'title' | 'date' | 'department'>('title');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,34 +59,41 @@ export default function TicketsClient() {
   };
 
   const handleDeleteTicket = (id: string) => {
-    const ticket = tickets.find((item) => item.id === id);
+    const ticket = tickets.find((item: Ticket) => item.id === id);
     if (ticket) {
       setDeleteTarget(ticket);
       setOpenActionId(null);
     }
   };
 
-  const confirmDeleteTicket = () => {
+  const confirmDeleteTicket = async () => {
     if (!deleteTarget) return;
-    setTickets((current) => current.filter((ticket) => ticket.id !== deleteTarget.id));
-    toast.success(`Ticket “${deleteTarget.title}” deleted successfully.`);
-    setDeleteTarget(null);
+    try {
+      await deleteAdminTicket(deleteTarget.id);
+      toast.success(`Ticket "${deleteTarget.title}" deleted successfully.`);
+      setDeleteTarget(null);
+      setOpenActionId(null);
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete ticket.');
+    }
   };
 
-  const handleSaveTicket = (ticketData: Omit<Ticket, 'id'>) => {
-    if (editingTicket) {
-      setTickets(tickets.map(t => t.id === editingTicket.id ? { ...ticketData, id: editingTicket.id } : t));
-      toast.success(`Ticket “${ticketData.title}” updated successfully.`);
-    } else {
-      const newTicket: Ticket = {
-        ...ticketData,
-        id: Date.now().toString(),
-      };
-      setTickets([...tickets, newTicket]);
-      toast.success(`Ticket “${ticketData.title}” created successfully.`);
+  const handleSaveTicket = async (ticketData: Omit<Ticket, 'id'>) => {
+    try {
+      if (editingTicket) {
+        await updateAdminTicket(editingTicket.id, ticketData);
+        toast.success(`Ticket "${editingTicket.title}" updated successfully.`);
+      } else {
+        await createAdminTicket(ticketData);
+        toast.success(`Ticket "${ticketData.title}" created successfully.`);
+      }
+      setIsModalOpen(false);
+      setEditingTicket(null);
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to save ticket.');
     }
-    setIsModalOpen(false);
-    setEditingTicket(null);
   };
 
   const statusColors: Record<string, string> = {
@@ -159,10 +127,14 @@ export default function TicketsClient() {
           onClick={handleAddTicket}
           className="bg-[#49A5EF] text-white px-4 md:px-2 py-2 rounded-lg w-fit md:w-36 flex items-center justify-center gap-1 hover:bg-[#3a8bc7] transition"
         >
-          Create Ticket
+          <FaPlus /> Create Ticket
         </button>
       </div>
 
+      {isLoading && <div className="text-center py-8">Loading tickets...</div>}
+      {error && <div className="text-center py-8 text-red-500">Error loading tickets</div>}
+
+      {!isLoading && !error && (
       <div className="bg-[#ffffff] rounded-[10px] overflow-x-auto custom-scrollbar">
         <table className="md:min-w-full">
           <thead className="border-b border-[#D9D9D9] text-left">
@@ -176,12 +148,11 @@ export default function TicketsClient() {
             </tr>
           </thead>
           <tbody>
-            {filteredTickets.map((ticket) => (
+            {filteredTickets.map((ticket: Ticket) => (
               <tr key={ticket.id} className="hover:bg-gray-50 text-[15px] divide-y divide-[#D9D9D9]">
                 <td className="px-4 py-2 md:py-4">{ticket.date}</td>
                 <td className="px-4 py-2 md:py-4">{ticket.title}</td>
                 <td className="px-4 py-2 md:py-4">{ticket.department}</td>
-                <td className="px-4 py-2 md:py-4">{ticket.assignedTo}</td>
                 <td className="px-4 py-2 md:py-4">
                   <span className={`px-3 py-1 rounded-full ${statusColors[ticket.status] || 'bg-gray-100 text-gray-800'}`}>
                     {ticket.status}
@@ -215,7 +186,11 @@ export default function TicketsClient() {
             ))}
           </tbody>
         </table>
+        {filteredTickets.length === 0 && (
+          <div className="text-center py-8 text-gray-500">No tickets found</div>
+        )}
       </div>
+      )}
 
       {isModalOpen && (
         <TicketModal
@@ -227,7 +202,7 @@ export default function TicketsClient() {
 
       {deleteTarget && (
         <ConfirmDeleteModal
-          ticket={deleteTarget}
+          ticket={deleteTarget as Ticket}
           onCancel={() => setDeleteTarget(null)}
           onConfirm={confirmDeleteTicket}
         />
@@ -297,18 +272,15 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
     title: ticket?.title || '',
     description: '',
     department: ticket?.department || '',
-    assignedTo: ticket?.assignedTo || '',
     attachment: null as File | null,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
-  const [isAssigneeOpen, setIsAssigneeOpen] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.department) newErrors.department = 'Department is required';
-    if (!formData.assignedTo) newErrors.assignedTo = 'Assignee is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -321,7 +293,6 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
       date: new Date().toLocaleDateString('en-GB'), // dd/mm/yy
       title: formData.title,
       department: formData.department,
-      assignedTo: formData.assignedTo,
       status: 'open',
     };
     onSave(ticketData);
@@ -329,13 +300,6 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
 
   const handleDepartmentSelect = (dept: string) => {
     setFormData({ ...formData, department: dept });
-    setIsDepartmentOpen(false);
-    setIsAssigneeOpen(false);
-  };
-
-  const handleAssigneeSelect = (assignee: string) => {
-    setFormData({ ...formData, assignedTo: assignee });
-    setIsAssigneeOpen(false);
     setIsDepartmentOpen(false);
   };
 
@@ -379,7 +343,6 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm relative cursor-pointer"
               onClick={() => {
                 setIsDepartmentOpen(!isDepartmentOpen);
-                setIsAssigneeOpen(false);
               }}
             >
               {formData.department || 'Select Department'}
@@ -398,35 +361,6 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
               )}
             </div>
             {errors.department && <p className="text-red-500 text-sm mt-1">{errors.department}</p>}
-            </div>
-          </div>
-
-          <div className="flex flex-col space-y-1 md:space-y-0 md:flex-row md:space-x-20">
-            <label className="font-medium w-30">Assign To</label>
-            <div className='w-full'>
-            <div
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm relative cursor-pointer"
-              onClick={() => {
-                setIsAssigneeOpen(!isAssigneeOpen);
-                setIsDepartmentOpen(false);
-              }}
-            >
-              {formData.assignedTo || 'Select Assignee'}
-              {isAssigneeOpen && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded mt-1 z-10">
-                  {assignees.map((assignee) => (
-                    <div
-                      key={assignee}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => handleAssigneeSelect(assignee)}
-                    >
-                      {assignee}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            {errors.assignedTo && <p className="text-red-500 text-sm mt-1">{errors.assignedTo}</p>}
             </div>
           </div>
 

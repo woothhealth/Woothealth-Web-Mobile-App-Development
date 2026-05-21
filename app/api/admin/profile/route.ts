@@ -12,8 +12,8 @@ export async function GET(req: Request) {
       console.error('Missing BACKEND_URL environment variable');
       // Return mock data for development
       const mockData = {
-        name: "Admin User",
-        email: "admin@woothealth.com",
+        name: "Support User",
+        email: "support@woothealth.com",
         role: "superadmin",
         joinedDate: "2024-01-01"
       };
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     }
 
     const backendRes = await fetch(
-      BACKEND_URL + "/admin/profile",
+      BACKEND_URL + "/profile",
       {
         headers: {
           ...getAdminHeaders(cookieHeader),
@@ -35,9 +35,9 @@ export async function GET(req: Request) {
       console.warn(`Backend returned ${backendRes.status} for admin profile`);
       // Return mock data if backend fails
       const mockData = {
-        name: "Admin User",
-        email: "admin@woothealth.com",
-        role: "superadmin",
+        name: "Support User",
+        email: "support@woothealth.com",
+        role: "support",
         joinedDate: "2024-01-01"
       };
       return NextResponse.json(mockData, { status: 200 });

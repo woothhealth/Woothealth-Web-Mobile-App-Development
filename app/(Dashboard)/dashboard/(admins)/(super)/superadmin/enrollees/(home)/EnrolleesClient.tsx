@@ -5,7 +5,6 @@ import { LuUpload } from 'react-icons/lu';
 import Link from 'next/link';
 import { FaEllipsisV, FaEye, FaTimes, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
-import { mockEnrollees, type Enrollee } from '../mockEnrollees';
 import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
 
 interface AdminEnrollee {
@@ -22,7 +21,7 @@ const ITEMS_PER_PAGE = 20;
 export default function EnrolleesClient() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [enrolleesData, setEnrolleesData] = useState<AdminEnrollee[]>(mockEnrollees);
+  const [enrolleesData, setEnrolleesData] = useState<AdminEnrollee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -179,7 +178,7 @@ export default function EnrolleesClient() {
             Add Enrollee
           </button>
         </div>
-        {isLoading ? (
+        {loading && enrolleesData.length === 0 ? (
           <div className="overflow-x-auto custom-scrollbar pb-4 h-120 bg-[#ffffff] rounded-[10px]">
             <table className="min-w-full border border-gray-200 rounded-[10px] overflow-hidden">
               <tbody className='overflow-y-auto h-96'>
@@ -202,78 +201,92 @@ export default function EnrolleesClient() {
               </tbody>
             </table>
           </div>
+        ) : error ? (
+          <div className='flex justify-center h-64 mt-4'>
+            <p className="text-red-500">{error}</p>
+          </div>
         ) : apiError ? (
           <div className='flex justify-center h-64 mt-4'>
             <p className="text-red-500">{apiError}</p>
           </div>
-        ) : filteredEnrollees.length === 0 ? (
-          <div className='flex justify-center h-64 mt-4'>
-            <p className='text-lg'>No Enrollee found.</p>
-          </div>
         ) : (
           <>
-          <div className="overflow-x-auto custom-scrollbar pb-4 max:h-120 bg-[#ffffff] rounded-[10px]">
-            <table className="w-full overflow-hidden">
-              <thead className="border-b border-[#D9D9D9]">
-                <tr className=''>
-                  {headers.map((h) => (
-                    <th key={h} className="text-left text-[17px] px-6 py-4">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className='overflow-y-auto max:h-96'>
-                {paginatedEnrollees.map((enrollee) => (
-                  <tr key={enrollee.id} className="hover:bg-gray-50 text-[14px] text-[#000000] divide-y divide-[#D9D9D9]">
-                    <td className="px-6 py-3">{enrollee.name}</td>
-                    <td className="px-6 py-3">{enrollee.hmoId || '—'}</td>
-                    <td className="px-6 py-3">{enrollee.enrollmentDate || '—'}</td>
-                    <td className="px-6 py-3">{enrollee.expiryDate || '—'}</td>
-                    <td className="px-6 py-3 text-center">{enrollee.dependants || 0}</td>
-                    <td className="px-6 py-3">{enrollee.benefitBalance || '—'}</td>
-                    <td className="px-6 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[enrollee.status || 'active'] || ''}`}>
-                        {enrollee.status || 'active'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 border-b border-[#D9D9D9]">
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => setOpenActionMenu(openActionMenu === enrollee.id ? enrollee.id : null)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
-                        >
-                          <FaEllipsisV size={16} />
-                        </button>
-                        {openActionMenu === enrollee.id && (
-                          <div className="absolute right-0 top-full z-10 mt-2 w-32 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-lg">
-                            <Link
-                              href={`/dashboard/superadmin/enrollees/view?id=${enrollee.id}`}
-                              className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
-                              onClick={() => setOpenActionMenu(null)}
-                            >
-                              <FaEye size={14} />
-                              View
-                            </Link>
+            <div className="overflow-x-auto custom-scrollbar pb-4 max:h-120 bg-[#ffffff] rounded-[10px]">
+              <table className="w-full overflow-hidden">
+                <thead className="border-b border-[#D9D9D9]">
+                  <tr className=''>
+                    {headers.map((h) => (
+                      <th key={h} className="text-left text-[17px] px-6 py-4">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className='overflow-y-auto max:h-96'>
+                  {!search ? (
+                    <tr>
+                      <td colSpan={headers.length} className="px-6 py-8 text-center text-slate-500">
+                        Enter a search term to show matching enrollees.
+                      </td>
+                    </tr>
+                  ) : paginatedEnrollees.length === 0 ? (
+                    <tr>
+                      <td colSpan={headers.length} className="px-6 py-8 text-center text-slate-500">
+                        No enrollees match your search.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedEnrollees.map((enrollee) => (
+                      <tr key={enrollee.id} className="hover:bg-gray-50 text-[14px] text-[#000000] divide-y divide-[#D9D9D9]">
+                        <td className="px-6 py-3">{enrollee.name}</td>
+                        <td className="px-6 py-3">{enrollee.hmoId || '—'}</td>
+                        <td className="px-6 py-3">{enrollee.enrollmentDate || '—'}</td>
+                        <td className="px-6 py-3">{enrollee.expiryDate || '—'}</td>
+                        <td className="px-6 py-3 text-center">{enrollee.dependants || 0}</td>
+                        <td className="px-6 py-3">{enrollee.benefitBalance || '—'}</td>
+                        <td className="px-6 py-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[enrollee.status || 'active'] || ''}`}>
+                            {enrollee.status || 'active'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 border-b border-[#D9D9D9]">
+                          <div className="relative">
                             <button
                               type="button"
-                              onClick={() => handleDelete(enrollee)}
-                              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-slate-50"
+                              onClick={() => setOpenActionMenu(openActionMenu === enrollee.id ? enrollee.id : null)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
                             >
-                              <FaTrash size={14} />
-                              Delete
+                              <FaEllipsisV size={16} />
                             </button>
+                            {openActionMenu === enrollee.id && (
+                              <div className="absolute right-0 top-full z-10 mt-2 w-32 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-lg">
+                                <Link
+                                  href={`/dashboard/superadmin/enrollees/view?id=${enrollee.id}`}
+                                  className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                                  onClick={() => setOpenActionMenu(null)}
+                                >
+                                  <FaEye size={14} />
+                                  View
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(enrollee)}
+                                  className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-slate-50"
+                                >
+                                  <FaTrash size={14} />
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-            {totalPages > 1 && (
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {search && totalPages > 1 && (
               <div className="flex justify-center mt-4 gap-2">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
                   <button

@@ -1,21 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { FaX } from 'react-icons/fa6';
-import { Lead, leadStatuses, updateLeadStatus } from '../../mockLeads';
+import { LeadStatus, leadStatuses, useAdminLead, updateAdminLead } from '@/lib/adminLeads';
 
 interface LeadViewClientProps {
-  lead: Lead;
+  leadId?: string;
 }
 
-export default function LeadViewClient({ lead }: LeadViewClientProps) {
-  const [selectedStatus, setSelectedStatus] = useState<Lead['status']>(lead.status);
+export default function LeadViewClient({ leadId }: LeadViewClientProps) {
+  const { data, isLoading, error, refetch } = useAdminLead(leadId);
+  const lead = data?.data;
+  const [selectedStatus, setSelectedStatus] = useState<LeadStatus | undefined>(undefined);
   const [showStatusPopup, setShowStatusPopup] = useState(false);
 
-  const handleStatusChange = (status: Lead['status']) => {
+  useEffect(() => {
+    if (lead) {
+      setSelectedStatus(lead.status);
+    }
+  }, [lead]);
+
+  const handleStatusChange = async (status: LeadStatus) => {
+    if (!lead) return;
     setSelectedStatus(status);
-    updateLeadStatus(lead.id, status);
     setShowStatusPopup(false);
+
+    try {
+      await updateAdminLead(lead.id, { status });
+      toast.success('Lead status updated successfully.');
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update status.');
+    }
   };
 
   const statusColors: Record<string, string> = {
@@ -26,7 +43,7 @@ export default function LeadViewClient({ lead }: LeadViewClientProps) {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2 bg-[#ffffff] rounded-[15px] p-4 md:p-6 shadow-sm w-[80%]">
+    <div className="grid gap-4 lg:grid-cols-2 bg-[#ffffff] rounded-[15px] p-4 md:p-6 shadow-sm w-full md:w-[80%]">
       <div className="flex flex-col space-y-6">
           <div className="flex flex-col">
             <p className="text-2xl font-bold">{lead.clientName}</p>
@@ -58,7 +75,7 @@ export default function LeadViewClient({ lead }: LeadViewClientProps) {
       <div>
         <div className="">
           <div className='flex md:justify-end'>
-            <p className={`text-sm px-4 py-1 rounded-[5px] ${statusColors[selectedStatus] || 'bg-slate-200 text-slate-700'}`}>
+            <p className={`text-sm px-4 py-1 rounded-[5px] ${statusColors[selectedStatus as string] || 'bg-slate-200 text-slate-700'}`}>
               {selectedStatus}
             </p>
           </div>

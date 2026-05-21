@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { updateAdminClient } from '@/lib/adminClients';
 
 interface DeactivateAccountModalProps {
+  clientId?: string;
   clientName: string;
   onClose: () => void;
 }
 
-export function DeactivateAccountModal({ clientName, onClose }: DeactivateAccountModalProps) {
+export function DeactivateAccountModal({ clientId, clientName, onClose }: DeactivateAccountModalProps) {
   const [confirmation, setConfirmation] = useState('');
   const [reason, setReason] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -22,11 +24,20 @@ export function DeactivateAccountModal({ clientName, onClose }: DeactivateAccoun
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleDeactivate = () => {
-    if (validate()) {
-      // TODO: Submit deactivation to API
+  const handleDeactivate = async () => {
+    if (!validate()) return;
+    if (!clientId) {
+      toast.error('Missing client id');
+      return;
+    }
+
+    try {
+      await updateAdminClient(clientId, { status: 'Inactive', deactivationReason: reason });
       toast.success(`Account for "${clientName}" deactivated`);
       onClose();
+    } catch (err) {
+      console.error('Deactivate error', err);
+      toast.error('Failed to deactivate account');
     }
   };
 

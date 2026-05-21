@@ -10,8 +10,9 @@ export const useLogout = () => {
 
   const logout = () => {
     startTransition(async () => {
-      await logoutAction();
-      router.push("/login");
+      const res = await logoutAction();
+      const dest = res?.redirectTo || "/login";
+      router.push(dest);
     });
   };
 

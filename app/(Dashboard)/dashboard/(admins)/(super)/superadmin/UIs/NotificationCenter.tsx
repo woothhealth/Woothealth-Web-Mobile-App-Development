@@ -32,9 +32,10 @@ export default function NotificationCenter() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
     const now = new Date();
-    const diff = now.getTime() - date.getTime();
+    const diff = now.getTime() - d.getTime();
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
@@ -43,7 +44,7 @@ export default function NotificationCenter() {
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
+    return d.toLocaleDateString();
   };
 
   const getTypeColor = (type?: string) => {
@@ -69,7 +70,7 @@ export default function NotificationCenter() {
         
         {/* Red badge indicator for unread notifications */}
         {unreadCount > 0 && (
-          <div className="absolute -right-1 -top-1 p-0 lg:p-1 bg-red-500 rounded-full">
+          <div className="absolute -right-1 md:-right-2 -top-2 p-0 lg:p-0.5 bg-red-500 rounded-full">
             <span className="text-white text-[0.6rem] font-bold w-4 h-4 flex items-center justify-center">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
@@ -81,9 +82,9 @@ export default function NotificationCenter() {
       {isOpen && (
         <div className="absolute -right-10 lg-right-0 mt-4 w-55 lg:w-70 bg-white border border-gray-200 rounded-lg shadow-xl z-40 max-h-90 overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <div className="sticky top-0 px-4 py-3 border-b border-border">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-gray-800">Notifications</h3>
+              <h3 className="font-semibold text-sm md:text-base text-gray-800">Notifications</h3>
               {unreadCount > 0 && (
                 <button
                   onClick={() => {
@@ -91,7 +92,7 @@ export default function NotificationCenter() {
                       .filter((n) => !n.read)
                       .forEach((n) => markAsRead(n.id));
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                  className="text-[12px] md:text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
                 >
                   <MdDoneAll /> Mark all read
                 </button>
@@ -124,9 +125,6 @@ export default function NotificationCenter() {
                           <div className="w-2 h-2 bg-blue-500 rounded-full mt-1" />
                         )}
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {notification.message}
-                      </p>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-xs text-gray-400">
                           {formatTime(notification.timestamp)}

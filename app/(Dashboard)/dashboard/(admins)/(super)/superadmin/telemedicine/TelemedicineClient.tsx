@@ -12,46 +12,38 @@ type Telemedicine = {
   doctor: string;
   specialization: string;
   duration: string;
-  status: 'completed' | 'ongoing' | 'scheduled';
+  status: string;
 };
 
 const ITEMS_PER_PAGE = 20;
+
+const normalizeTelemedicine = (doc: any): Telemedicine => ({
+  id: doc.$id || doc.id || doc.telemedicineId || doc._id || Math.random().toString(),
+  dateOfService: doc.dateOfService || doc.date_of_service || '',
+  patient: doc.patient || doc.patientName || '',
+  hmoId: doc.hmoId || doc.hmo_id || doc.hmoID || '',
+  doctor: doc.doctor || doc.doctorName || '',
+  specialization: doc.specialization || doc.specializationName || '',
+  duration: doc.duration || doc.callDuration || '',
+  status: (doc.status || 'scheduled').toString().toLowerCase(),
+});
+
+const extractTelemedicine = (data: any): any[] => {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.data)) return data.data;
+  if (Array.isArray(data.data?.telemedicine)) return data.data.telemedicine;
+  return [];
+};
 
 async function getTelemedicine(): Promise<Telemedicine[]> {
   const res = await fetch('/api/admin/telemedicine?page=1&limit=20', { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch telemedicine');
 
   const data = await res.json();
+  const telemedicine = extractTelemedicine(data);
 
-  let telemedicine: any[] = [];
-
-  // Handle the admin/telemedicine response format
-  if (data?.data && Array.isArray(data.data)) {
-    telemedicine = data.data;
-  }
-  else if (Array.isArray(data)) {
-    telemedicine = data;
-  }
-  else {
-    console.warn('Unexpected telemedicine response structure:', data);
-    return [];
-  }
-
-  if (!Array.isArray(telemedicine) || telemedicine.length === 0) {
-    console.warn('No telemedicine found in response');
-    return [];
-  }
-
-  return telemedicine.map((doc: any) => ({
-    id: doc.$id || doc.id || Math.random().toString(),
-    dateOfService: doc.dateOfService || '',
-    patient: doc.patient || '',
-    hmoId: doc.hmoId || '',
-    doctor: doc.doctor || '',
-    specialization: doc.specialization || '',
-    duration: doc.duration || '',
-    status: doc.status || 'scheduled',
-  }));
+  return telemedicine.map((doc: any) => normalizeTelemedicine(doc));
 }
 
 export default function TelemedicineClient() {
@@ -60,7 +52,7 @@ export default function TelemedicineClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<'completed' | 'ongoing' | 'scheduled' | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<'completed' | 'ongoing' | 'scheduled' | 'accepted' | 'declined' | 'all'>('all');
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -69,6 +61,8 @@ export default function TelemedicineClient() {
     { label: 'Completed', value: 'completed' },
     { label: 'Ongoing', value: 'ongoing' },
     { label: 'Scheduled', value: 'scheduled' },
+    { label: 'Accepted', value: 'accepted' },
+    { label: 'Declined', value: 'declined' },
   ];
 
   const headers = ['Date of Service', 'Patient', 'HMO ID', 'Doctor', 'Specialization', 'Duration', 'Status', 'Action'];
@@ -144,6 +138,8 @@ export default function TelemedicineClient() {
       case 'completed': return 'text-green-600 bg-green-100';
       case 'ongoing': return 'text-blue-600 bg-blue-100';
       case 'scheduled': return 'text-yellow-600 bg-yellow-100';
+      case 'accepted': return 'text-teal-600 bg-teal-100';
+      case 'declined': return 'text-red-600 bg-red-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };

@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState } from "react";
 type AdminUser = {
   id?: string | null;
   role?: string | null;
+  authRole?: string | null;
   name?: string | null;
   email?: string | null;
 } | null;

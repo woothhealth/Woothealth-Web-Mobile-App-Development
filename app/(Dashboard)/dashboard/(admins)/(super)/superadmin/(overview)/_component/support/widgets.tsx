@@ -2,7 +2,19 @@
 
 import React from 'react';
 import { useAdminOverview } from '@/Components/AdminOverviewContext';
-import { MetricCard, QuickLinkCard, SectionBlock } from '../../roleViews/OverviewWidgets';
+import { MetricCard, SectionBlock, OverviewCustomSelect } from '../../roleViews/OverviewWidgets';
+import { LuUsers } from 'react-icons/lu';
+import { FaRegFileAlt, FaRegUser } from 'react-icons/fa';
+import { TbActivityHeartbeat } from 'react-icons/tb';
+import { IoWalletOutline } from 'react-icons/io5';
+import BarChartView from '../../../UIs/BarChart';
+import PieChartWithCustomizedLabel from '../../../UIs/PieChart';
+import { PiClockCounterClockwiseFill } from 'react-icons/pi';
+import RecentComponent from '../RecentComponent';
+import PendingComponent from '../PendingComponent';
+import TrackingComponent from '../TrackingComponent';
+import { TiClipboard } from 'react-icons/ti';
+import { LuClipboardList } from "react-icons/lu";
 
 const formatNumber = (value?: number, loading?: boolean) => {
   if (loading) return '...';
@@ -13,36 +25,38 @@ export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
 
   return (
-    <SectionBlock title='Support workload'>
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <MetricCard label='Open tickets' value={formatNumber(overview?.activeClients, loading)} description='Current support cases in queue.' />
-        <MetricCard label='Clients served' value={formatNumber(overview?.totalUsers, loading)} description='Clients with active support requests.' />
-        <MetricCard label='Member requests' value={formatNumber(overview?.totalEnrollees, loading)} description='Members in active plans.' />
+    <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
+      <div>
+        <MetricCard label='Total users' icon={<LuUsers />} value={formatNumber(overview?.totalUsers, loading)} description='Registered Accounts' iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
+      </div>
+      <div>
+        <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(overview?.totalEnrollees, loading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+      </div>
+      <div>
+        <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.activeClients, loading)} description='Last 30 Days' iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
+      </div>
+      <div>
+        <MetricCard label='Pending Tickets' icon={<LuClipboardList />} value={formatNumber(overview?.telemedicineRequests, loading)} description='All Time' iconBgColor='[#4755691A]' iconTextColor='[#475569]' />
+      </div>
+    </div>
+  );
+};
+
+export const ChartPage1 = () => {
+  return (
+    <SectionBlock title='Revenue Performance' icon={<IoWalletOutline />} side={<OverviewCustomSelect options={['Last 30 Days', 'Last 90 Days', 'Last Year']} selected='Last 30 Days' onChange={() => {}} />} >
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <BarChartView isAnimationActive={true}/>
       </div>
     </SectionBlock>
   );
 };
 
-export const Widget2 = () => {
-  const { overview, loading } = useAdminOverview();
-
+export const ChartPage2 = () => {
   return (
-    <SectionBlock title='Support pulse'>
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <MetricCard label='Telemedicine requests' value={formatNumber(overview?.telemedicineRequests, loading)} description='New member requests this week.' />
-        <MetricCard label='SLA status' value={formatNumber(overview?.activeClients, loading)} description='Response and resolution health.' />
-        <MetricCard label='Service reach' value={formatNumber(overview?.totalEnrollees, loading)} description='Members covered by support teams.' />
-      </div>
-    </SectionBlock>
-  );
-};
-
-export const ChartPage = () => {
-  return (
-    <SectionBlock title='Support trend'>
-      <div className='rounded-3xl border border-[#D9D9D9] bg-white p-6 min-h-[240px]'>
-        <p className='text-sm text-slate-600'>Track ticket volume and response velocity.</p>
-        <div className='mt-6 h-40 rounded-2xl bg-slate-100' />
+    <SectionBlock title='Claim status' icon={<FaRegFileAlt className='text-sm' />}>
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <PieChartWithCustomizedLabel isAnimationActive={true}/>
       </div>
     </SectionBlock>
   );
@@ -50,42 +64,24 @@ export const ChartPage = () => {
 
 export const ActivitiesPage = () => {
   return (
-    <SectionBlock title='Recent support actions'>
-      <div className='space-y-3 rounded-3xl border border-[#D9D9D9] bg-white p-6'>
-        <p className='text-sm text-slate-600'>Recent support handoffs and escalations.</p>
-        <ul className='space-y-2 text-sm text-slate-700'>
-          <li>• New validation requests assigned</li>
-          <li>• Urgent claim escalations</li>
-          <li>• Client onboarding follow-ups</li>
-        </ul>
-      </div>
+     <SectionBlock title='Recent Activities' icon={<PiClockCounterClockwiseFill />}>
+      <RecentComponent />
     </SectionBlock>
   );
 };
 
 export const TrackingPage = () => {
   return (
-    <SectionBlock title='Support tracking'>
-      <div className='rounded-3xl border border-[#D9D9D9] bg-white p-6'>
-        <p className='text-sm text-slate-600'>Track case age, escalation status, and support KPIs.</p>
-        <div className='mt-4 grid gap-4 md:grid-cols-3'>
-          <QuickLinkCard label='Queue' description='Review support waiting lists' />
-          <QuickLinkCard label='SLA' description='Track adherence to response goals' />
-          <QuickLinkCard label='Feedback' description='Monitor client satisfaction' />
-        </div>
-      </div>
+    <SectionBlock title='SLA Tracking' icon={<TiClipboard />}>
+      <TrackingComponent/>
     </SectionBlock>
   );
 };
 
-export const RecentPage = () => {
+export const PendingPage = () => {
   return (
-    <SectionBlock title='Support quick actions'>
-      <div className='grid gap-4 md:grid-cols-3'>
-        <QuickLinkCard label='Tickets' description='Open support queue' href='/dashboard/superadmin/tickets' />
-        <QuickLinkCard label='Validations' description='Review validation tasks' href='/dashboard/superadmin/validations' />
-        <QuickLinkCard label='Claims' description='Track claim processing' href='/dashboard/superadmin/claims' />
-      </div>
+    <SectionBlock>
+      <PendingComponent/>
     </SectionBlock>
   );
 };

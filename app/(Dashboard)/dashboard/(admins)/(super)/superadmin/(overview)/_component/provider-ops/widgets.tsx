@@ -2,7 +2,20 @@
 
 import React from 'react';
 import { useAdminOverview } from '@/Components/AdminOverviewContext';
-import { MetricCard, QuickLinkCard, SectionBlock } from '../../roleViews/OverviewWidgets';
+import { MetricCard, QuickLinkCard, SectionBlock, OverviewCustomSelect } from '../../roleViews/OverviewWidgets';
+import { LuUsers } from 'react-icons/lu';
+import { FaRegFileAlt, FaRegUser } from 'react-icons/fa';
+import { TbActivityHeartbeat } from 'react-icons/tb';
+import { IoWalletOutline } from 'react-icons/io5';
+import BarChartView from '../../../UIs/BarChart';
+import PieChartWithCustomizedLabel from '../../../UIs/PieChart';
+import { PiClockCounterClockwiseFill } from 'react-icons/pi';
+import RecentComponent from '../RecentComponent';
+import PendingComponent from '../PendingComponent';
+import TrackingComponent from '../TrackingComponent';
+import { TiClipboard } from 'react-icons/ti';
+import { RiErrorWarningLine } from 'react-icons/ri';
+import { MdPauseCircleOutline } from 'react-icons/md';
 
 const formatNumber = (value?: number, loading?: boolean) => {
   if (loading) return '...';
@@ -13,36 +26,38 @@ export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
 
   return (
-    <SectionBlock title='Provider operations metrics'>
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <MetricCard label='Active providers' value={formatNumber(overview?.activeClients, loading)} description='Providers engaged with clients.' />
-        <MetricCard label='Enrollees covered' value={formatNumber(overview?.totalEnrollees, loading)} description='Members supported by providers.' />
-        <MetricCard label='Provider requests' value={formatNumber(overview?.telemedicineRequests, loading)} description='Incoming provider-related requests.' />
+    <div className="block gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
+      <div>
+        <MetricCard label='Total Providers' icon={<LuUsers />} value={formatNumber(overview?.totalUsers, loading)} iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+      </div>
+      <div>
+        <MetricCard label='Active Providers' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.totalEnrollees, loading)} iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
+      </div>
+      <div>
+        <MetricCard label='Inactive Provider' icon={<RiErrorWarningLine />} value={formatNumber(overview?.activeClients, loading)} iconBgColor='[#EF44441A]' iconTextColor='[#EF4444]' />
+      </div>
+      <div>
+        <MetricCard label='Suspended Providers' icon={<MdPauseCircleOutline />} value={formatNumber(overview?.telemedicineRequests, loading)} iconBgColor='[#F59E0B1A]' iconTextColor='[#F59E0B]' />
+      </div>
+    </div>
+  );
+};
+
+export const ChartPage1 = () => {
+  return (
+    <SectionBlock title='Revenue Performance' icon={<IoWalletOutline />} side={<OverviewCustomSelect options={['Last 30 Days', 'Last 90 Days', 'Last Year']} selected='Last 30 Days' onChange={() => {}} />} >
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <BarChartView isAnimationActive={true}/>
       </div>
     </SectionBlock>
   );
 };
 
-export const Widget2 = () => {
-  const { overview, loading } = useAdminOverview();
-
+export const ChartPage2 = () => {
   return (
-    <SectionBlock title='Delivery pulse'>
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <MetricCard label='Total users' value={formatNumber(overview?.totalUsers, loading)} description='Users connected to providers.' />
-        <MetricCard label='Provider health' value={formatNumber(overview?.activeClients, loading)} description='Operational provider status.' />
-        <MetricCard label='Client reach' value={formatNumber(overview?.totalEnrollees, loading)} description='Members currently active.' />
-      </div>
-    </SectionBlock>
-  );
-};
-
-export const ChartPage = () => {
-  return (
-    <SectionBlock title='Provider performance'>
-      <div className='rounded-3xl border border-[#D9D9D9] bg-white p-6 min-h-[240px]'>
-        <p className='text-sm text-slate-600'>Monitor provider throughput and engagement over time.</p>
-        <div className='mt-6 h-40 rounded-2xl bg-slate-100' />
+    <SectionBlock title='Claim status' icon={<FaRegFileAlt className='text-sm' />}>
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <PieChartWithCustomizedLabel isAnimationActive={true}/>
       </div>
     </SectionBlock>
   );
@@ -50,42 +65,24 @@ export const ChartPage = () => {
 
 export const ActivitiesPage = () => {
   return (
-    <SectionBlock title='Recent provider activity'>
-      <div className='space-y-3 rounded-3xl border border-[#D9D9D9] bg-white p-6'>
-        <p className='text-sm text-slate-600'>Recent provider onboarding and service events.</p>
-        <ul className='space-y-2 text-sm text-slate-700'>
-          <li>• Provider applications in review</li>
-          <li>• Onboarding progress updates</li>
-          <li>• Provider service performance checks</li>
-        </ul>
-      </div>
+     <SectionBlock title='Recent Activities' icon={<PiClockCounterClockwiseFill />}>
+      <RecentComponent />
     </SectionBlock>
   );
 };
 
 export const TrackingPage = () => {
   return (
-    <SectionBlock title='Provider tracking'>
-      <div className='rounded-3xl border border-[#D9D9D9] bg-white p-6'>
-        <p className='text-sm text-slate-600'>Track provider quality, availability, and delivery metrics.</p>
-        <div className='mt-4 grid gap-4 md:grid-cols-3'>
-          <QuickLinkCard label='Onboarding' description='Track provider onboarding progress' />
-          <QuickLinkCard label='Capacity' description='Monitor current provider capacity' />
-          <QuickLinkCard label='Quality' description='Review provider performance' />
-        </div>
-      </div>
+    <SectionBlock title='Onboarding Providers SLA Tracking' icon={<TiClipboard />}>
+      <TrackingComponent/>
     </SectionBlock>
   );
 };
 
-export const RecentPage = () => {
+export const PendingPage = () => {
   return (
-    <SectionBlock title='Provider quick actions'>
-      <div className='grid gap-4 md:grid-cols-3'>
-        <QuickLinkCard label='Providers' description='Manage provider network' href='/dashboard/superadmin/providers' />
-        <QuickLinkCard label='Client assignments' description='Review provider-client assignments' href='/dashboard/superadmin/clients' />
-        <QuickLinkCard label='Performance' description='Open provider performance tools' href='/dashboard/superadmin/reports' />
-      </div>
+    <SectionBlock>
+      <PendingComponent/>
     </SectionBlock>
   );
 };

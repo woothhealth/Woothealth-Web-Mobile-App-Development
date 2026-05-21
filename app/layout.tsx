@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 // import { Montserrat } from 'next/font/google';
 import "@/styles/globals.css";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 // const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <NotificationProvider>
+          {children}
+        </NotificationProvider>
       </body>
     </html>
   );

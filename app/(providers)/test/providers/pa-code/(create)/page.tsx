@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import PaCodeForm from './PaCodeForm';
+import { createProviderPA } from '@/lib/providerPA';
 
 export interface TreatmentItem {
   id: string;
@@ -78,12 +79,24 @@ const PaCodeCreationPage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Build payload expected by backend
+      const total = formData.treatmentItems.reduce((s, it) => s + it.amount, 0);
+      const payload = {
+        patientId: formData.hmoid,
+        diagnosis: formData.diagnosis,
+        tariffCode: formData.treatmentItems[0]?.itemCode || '',
+        tier: formData.careType,
+        price: total.toFixed(2).toString(),
+        bookingId: '',
+      };
 
-      // Success
-      toast.success('PA Code request submitted successfully!');
-      console.log('PA Code submitted:', formData);
+      try {
+        await createProviderPA(payload);
+        toast.success('PA Code request submitted successfully!');
+      } catch (err: any) {
+        toast.error(err?.message || 'Failed to submit PA Code request');
+        console.error('PA submit error', err);
+      }
 
     } catch (error) {
       toast.error('Failed to submit PA Code request. Please try again.');

@@ -115,7 +115,7 @@ const LoginForm = () => {
         </div>
         <div className='flex flex-col gap-2 w-full'>
             <label htmlFor='email' className='md:text-lg text-base'>Email</label>
-            <input type='text' placeholder='Enter Your Email address' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]' id='email' name='email' onChange={handleChange}/>
+            <input type='text' placeholder='Enter Your Email address' className='bg-[#F8F9FA] border border-border outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm focus:outline-none focus:ring-1 focus:ring-[#120052]' id='email' name='email' onChange={handleChange}/>
             {errors.email && (
                 <p className="text-red-500/60 text-sm">{errors.email}</p>
             )}
@@ -124,7 +124,7 @@ const LoginForm = () => {
         <div className='flex flex-col gap-2 w-full'>
             <label htmlFor='password' className='md:text-lg text-base'>Password</label>
             <div className='relative'>
-                <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='**********' className='bg-[#F8F9FA] border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#49A5EF]' onChange={handleChange}/>
+                <input type={showPassword? 'text' : 'password'} name='password' id="password" placeholder='**********' className='bg-[#F8F9FA] border border-border outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm w-full focus:outline-none focus:ring-1 focus:ring-[#120052]' onChange={handleChange}/>
                 <button type='button'className='absolute bottom-3 right-4 transition-all ease-in-out' onClick={()=> setShowPassword(!showPassword)}>
                   {showPassword ? <LuEyeClosed/> : <LuEye/>}
                 </button>

@@ -24,20 +24,24 @@ export const EnrolleesStatsProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => {
     const fetchEmployeeStats = async () => {
       try {
-        const response = await fetch('/api/business/employees');
+        const response = await fetch('/api/admin/enrollees');
         if (response.ok) {
           const data = await response.json();
+          const enrollees = Array.isArray(data?.data) ? data.data as Array<{ status?: string }> : [];
+          const activeCount = enrollees.filter((enrollee) => enrollee?.status?.toLowerCase() === 'active').length;
+          const inactiveCount = enrollees.filter((enrollee) => enrollee?.status?.toLowerCase() === 'inactive').length;
+
           setStats({
-            active: data.stats?.active || 0,
-            totalEnrollees: data.stats?.totalEnrollees || 0,
-            slotsAvailable: data.stats?.slotsAvailable || 0,
+            active: data.stats?.active ?? activeCount,
+            totalEnrollees: data.stats?.totalEnrollees ?? data.total ?? enrollees.length,
+            slotsAvailable: data.stats?.slotsAvailable ?? inactiveCount,
           });
         } else {
-          setError('Failed to fetch employee stats');
+          setError('Failed to fetch enrollee stats');
           setStats({ active: 0, totalEnrollees: 0, slotsAvailable: 0 });
         }
       } catch (err) {
-        console.error('Network error fetching employee stats:', err);
+        console.error('Network error fetching enrollee stats:', err);
         setError('Network error');
         setStats({ active: 0, totalEnrollees: 0, slotsAvailable: 0 });
       } finally {

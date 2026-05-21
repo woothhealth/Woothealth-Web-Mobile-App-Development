@@ -10,6 +10,7 @@ type CurrentUser = {
   company: string | null;
   companyAddress: string | null;
   industry: string | null;
+  phone: string | null;
 };
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
@@ -44,6 +45,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
         companyAddress: payload.companyAddress || null,
         plan: payload.plan || null,
         industry: payload.industry || null,
+        phone: payload.phone || null,
       };
     }
 
@@ -59,6 +61,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
         companyAddress: null,
         plan: null,
         industry: null,
+        phone: null,
       };
     }
 

@@ -1,24 +1,33 @@
 'use client'
 
 import React from 'react';
-import { RoleOverviewHeader } from '../../roleViews/OverviewWidgets';
-import { Widget1, Widget2, RecentPage, ChartPage, ActivitiesPage, TrackingPage } from './widgets';
+import { Widget1, PendingPage, ChartPage1, ChartPage2, ActivitiesPage, TrackingPage } from './widgets';
+import Link from 'next/link';
+import { FaArrowRight } from 'react-icons/fa';
 
-const ProviderOpsOverview = () => {
+const ProviderOverview = () => {
   return (
     <div className='space-y-6'>
-      <RoleOverviewHeader
-        title='Provider operations'
-        description='Track provider performance, onboarding status, and operational health.'
-      />
       <Widget1 />
-      <Widget2 />
-      <ChartPage />
-      <ActivitiesPage />
-      <TrackingPage />
-      <RecentPage />
+      <div className="px-2 md:px-4 flex flex-col md:flex-row gap-4 md:gap-6">
+        <div className="md:w-[58%] md:space-y-4 border border-[#D9D9D9] rounded-[10px] h-fit">
+          <ActivitiesPage/>
+        </div>
+        <div className="md:w-[40%] space-y-4">
+          <div className="border border-[#D9D9D9] rounded-[10px]">
+            <PendingPage />
+          </div>
+          <div className="border border-[#D9D9D9] rounded-[10px]">
+            <TrackingPage />
+          </div>
+          <Link href="/dashboard/superadmin/tariff" className='w-full py-3 bg-primary text-white rounded-[10px] hover:bg-primary/90 transition-colors duration-300 flex justify-between items-center px-4'>
+            Tariffs
+            <FaArrowRight className='' />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ProviderOpsOverview;
+export default ProviderOverview;

@@ -4,18 +4,17 @@ import LoginForm from './LoginForm';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
+import { hasDashboardAccess, getDashboardPath } from '@/lib/roles';
 
 const FormSection: React.FC = async () => {
   const session = await getSession();
 
   if (session?.id && session?.role) {
-    // Redirect based on role
-    if (session.role === "superadmin") {
-      redirect("/dashboard/superadmin");
-    } else if (session.role === "admin") {
-      redirect("/dashboard/superadmin");
+    // Use centralized role logic to determine redirect path
+    if (hasDashboardAccess(session.role)) {
+      redirect(getDashboardPath(session.role));
     } else {
-      redirect("/admin"); // fallback for unknown roles
+      redirect("/admin"); // fallback for users without dashboard access
     }
   }
   return (
@@ -26,7 +25,7 @@ const FormSection: React.FC = async () => {
             <Image src='/Dashboard_image.png' alt='Logo' width={200} height={100} className='h-10 w-fit' priority/>
           </div>
           <div className='text-center -space-y-1'>
-            <h1 className='text-2xl font-bold text-white tracking-wider'>WOOTHEALTH</h1>
+            <h1 className='text-2xl font-bold text-white tracking-wider'>WOOT HEALTH</h1>
             <h3 className='italic text-sm text-[#ffffff]/80'>Health care simplified</h3>
           </div>
         </div>

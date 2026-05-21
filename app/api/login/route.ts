@@ -41,18 +41,39 @@ export async function POST(req: NextRequest) {
     );
 
     const user = res.data;
-
+    // Check if backend returned an error even with 200 status
+    if (user?.error) {
+      console.error('Backend returned error field:', user.error);
+      return NextResponse.json({ success: false, message: user.error }, { status: 400 });
+    }
     if (!user?.userId) {
+      console.error('Missing userId in backend response:', user);
       return NextResponse.json({ success: false, message: "Invalid credentials" });
     }
 
-    const userRole = String(user.role ?? "");
-    if (!allowedRoles.includes(userRole)) {
+    const userRoles: string[] = Array.isArray(user.role)
+      ? user.role.map(String)
+      : Array.isArray(user.roles)
+      ? user.roles.map(String)
+      : [String(user.role ?? user.roles ?? "")].filter(Boolean);
+    
+    if (userRoles.length === 0) {
+      console.error('User has no roles assigned in backend response');
+      return NextResponse.json({ success: false, message: "User has no role assigned" });
+    }
+    
+    // Check if user has at least one allowed role for this login mode
+    const hasAllowedRole = userRoles.some(role => allowedRoles.includes(String(role)));
+    if (!hasAllowedRole) {
+      console.warn(`User roles "${userRoles.join(', ')}" not in allowed roles: ${allowedRoles.join(', ')}`);
       return NextResponse.json({
         success: false,
         message: "This account is not allowed to log in from this page.",
       });
     }
+
+    // Determine primary role for cookie storage (prioritize admin roles)
+    const primaryRole = userRoles.find(role => allowedRoles.includes(String(role))) || userRoles[0];
 
     const cookieStore = (await cookies());
     cookieStore.set("session", user.userId, {
@@ -62,7 +83,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 8,
     });
-    cookieStore.set("role", userRole, {
+    cookieStore.set("role", String(primaryRole), {
       httpOnly: true,
       path: "/",
       sameSite: "lax",
@@ -106,12 +127,19 @@ export async function POST(req: NextRequest) {
       console.error("Failed to mirror PHPSESSID:", e);
     }
 
-    return NextResponse.json({ success: true, role: user.role });
+    return NextResponse.json({ success: true, role: String(primaryRole) });
   } catch (error: any) {
-    console.error(error.response?.data || error.message);
+    const backendResponse = error.response?.data;
+    const statusCode = error.response?.status;
+    console.error('Login API Error Details:', {
+      status: statusCode,
+      fullBackendResponse: JSON.stringify(backendResponse, null, 2),
+      error: error.message,
+      stack: error.stack,
+    });
     return NextResponse.json({
       success: false,
-      message: error.response?.data?.error || "Login failed",
-    });
+      message: error.response?.data?.error || error.response?.data?.message || "Login failed",
+    }, { status: error.response?.status || 500 });
   }
 }

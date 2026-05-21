@@ -49,6 +49,7 @@ export default function SuperadminLayout({ children }: { children: ReactNode }) 
   const currentPathIsSuperadmin = pathname?.startsWith('/dashboard/superadmin');
 
   if (currentPathIsSuperadmin && permission && !can(user, permission)) {
+    console.log(`[RBAC DEBUG] Access denied for route "${pathname}" - permission "${permission}" required`);
     return <UnauthorizedPage />;
   }
 

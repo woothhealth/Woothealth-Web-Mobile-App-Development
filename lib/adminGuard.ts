@@ -16,7 +16,7 @@ export const requireAdminRole = (cookieHeader: string) => {
     return NextResponse.json({ error: "Unauthorized: missing role" }, { status: 401 });
   }
 
-  if (role !== "admin") {
+  if (role !== "admin" && role !== "superadmin") {
     return NextResponse.json({ error: "Forbidden: admin role required" }, { status: 403 });
   }
 
@@ -24,8 +24,9 @@ export const requireAdminRole = (cookieHeader: string) => {
 };
 
 export const getAdminHeaders = (cookieHeader: string) => {
+  const role = parseRoleFromCookie(cookieHeader) || "admin";
   return {
     Cookie: cookieHeader,
-    "x-user-role": "admin",
+    "x-user-role": role,
   };
 };

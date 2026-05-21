@@ -137,7 +137,7 @@ const navItems = [
     },
     {
         name: 'Product & Tech',
-        url: '/dashboard/superadmin/coming',
+        url: '/dashboard/superadmin/products',
         icon: <HiOutlineChip/>,
         permission: 'product',
     },

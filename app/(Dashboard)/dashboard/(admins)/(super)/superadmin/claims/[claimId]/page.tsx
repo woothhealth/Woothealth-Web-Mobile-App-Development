@@ -229,15 +229,15 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
           </Link>
           <h3 className='text-xl font-semibold'>Claim Details</h3>
           <div className='space-x-4 space-y-2 flex flex-col md:flex-row text-sm md:text-base'>
-            <span className={`${getStatusColor(claim.status)} px-4 w-fit py-1 rounded-[15px] capitalize`}>{claim.status}</span>
-            <span className='px-4 py-1 w-fit rounded-[15px] text-primary bg-primary/20'>{claim.claimType || 'N/A'}</span>
+            <span className={`${getStatusColor(claim.status)} px-4 h-fit w-fit py-1 rounded-[15px] capitalize`}>{claim.status}</span>
+            <span className='px-4 py-1 w-fit h-fit rounded-[15px] text-primary bg-primary/20'>{claim.claimType || 'N/A'}</span>
           </div>
         </div>
         <div>
           <div>
             {claim.status === 'pending' && (
-              <div className='flex gap-2 text-[15px]'>
-                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-full font-medium hover:bg-green-700 transition'>Approve Claim</button>
+              <div className='flex gap-2 text-sm'>
+                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-40 font-medium hover:bg-green-700 transition'>Approve Claim</button>
                 <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-red-700 transition'>Query Provider</button>
                 <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject Claim</button>
               </div>

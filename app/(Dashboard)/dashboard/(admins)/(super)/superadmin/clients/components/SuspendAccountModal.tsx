@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { updateAdminClient } from '@/lib/adminClients';
 
 interface SuspendAccountModalProps {
+  clientId?: string;
   clientName: string;
   onClose: () => void;
 }
 
-export function SuspendAccountModal({ clientName, onClose }: SuspendAccountModalProps) {
+export function SuspendAccountModal({ clientId, clientName, onClose }: SuspendAccountModalProps) {
   const [reason, setReason] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -19,11 +22,20 @@ export function SuspendAccountModal({ clientName, onClose }: SuspendAccountModal
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSuspend = () => {
-    if (validate()) {
-      // TODO: Submit suspension to API
-      alert(`Account for "${clientName}" suspended\nReason: ${reason}`);
+  const handleSuspend = async () => {
+    if (!validate()) return;
+    if (!clientId) {
+      toast.error('Missing client id');
+      return;
+    }
+
+    try {
+      await updateAdminClient(clientId, { status: 'Suspended', suspensionReason: reason });
+      toast.success(`Account for "${clientName}" suspended`);
       onClose();
+    } catch (err) {
+      console.error('Suspend error', err);
+      toast.error('Failed to suspend account');
     }
   };
 

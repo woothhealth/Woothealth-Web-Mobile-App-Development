@@ -3,41 +3,24 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaEllipsisV } from 'react-icons/fa';
-
-type Employee = {
-  id: string;
-  name: string;
-  department: string;
-  role: string;
-  email: string;
-  phone: string;
-  status: 'Active' | 'Inactive';
-};
-
-const mockEmployees: Employee[] = [
-  { id: '1', name: 'Amaka Okoro', department: 'Finance', role: 'Manager', email: 'amaka.okoro@example.com', phone: '+234 801 234 5678', status: 'Active' },
-  { id: '2', name: 'Chris Nwosu', department: 'IT', role: 'Developer', email: 'chris.nwosu@example.com', phone: '+234 802 345 6789', status: 'Active' },
-  { id: '3', name: 'Sade Bello', department: 'HR', role: 'Recruiter', email: 'sade.bello@example.com', phone: '+234 803 456 7890', status: 'Inactive' },
-  { id: '4', name: 'Kunle Akin', department: 'Sales', role: 'Executive', email: 'kunle.akin@example.com', phone: '+234 804 567 8901', status: 'Active' },
-  { id: '5', name: 'Grace Uche', department: 'Operations', role: 'Coordinator', email: 'grace.uche@example.com', phone: '+234 805 678 9012', status: 'Inactive' },
-  { id: '6', name: 'Femi Ade', department: 'Marketing', role: 'Specialist', email: 'femi.ade@example.com', phone: '+234 806 789 0123', status: 'Active' },
-  { id: '7', name: 'Nina Okafor', department: 'Finance', role: 'Analyst', email: 'nina.okafor@example.com', phone: '+234 807 890 1234', status: 'Active' },
-  { id: '8', name: 'Tunde Ayodele', department: 'IT', role: 'Support', email: 'tunde.ayodele@example.com', phone: '+234 808 901 2345', status: 'Inactive' },
-  { id: '9', name: 'Idris Musa', department: 'HR', role: 'Assistant', email: 'idris.musa@example.com', phone: '+234 809 012 3456', status: 'Active' },
-  { id: '10', name: 'Zainab Abubakar', department: 'Sales', role: 'Representative', email: 'zainab.abubakar@example.com', phone: '+234 810 123 4567', status: 'Active' },
-  { id: '11', name: 'Chioma Eze', department: 'Operations', role: 'Supervisor', email: 'chioma.eze@example.com', phone: '+234 811 234 5678', status: 'Active' },
-  { id: '12', name: 'Maryam Usman', department: 'Marketing', role: 'Designer', email: 'maryam.usman@example.com', phone: '+234 812 345 6789', status: 'Inactive' },
-];
-
-const departments = ['Finance', 'IT', 'HR', 'Sales', 'Operations', 'Marketing'];
-const roles = ['Manager', 'Developer', 'Recruiter', 'Executive', 'Coordinator', 'Specialist', 'Analyst', 'Support', 'Assistant', 'Representative', 'Supervisor', 'Designer'];
-const statuses = ['All status', 'Active', 'Inactive'];
+import {
+  useAdminEmployees,
+  createAdminEmployee,
+  updateAdminEmployee,
+  deleteAdminEmployee,
+  Employee,
+  departments,
+  employeeRoles as roles,
+  employeeStatuses,
+} from '@/lib/adminEmployees';
 
 const ROWS_PER_PAGE = 10;
-const TOTAL_EMPLOYEES = 300;
+const statuses = ['All status', ...employeeStatuses];
 
 export default function EmployeesClient() {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const { data, isLoading, error, refetch } = useAdminEmployees();
+  const employees = data?.data || [];
+  
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('All roles');
   const [filterDepartment, setFilterDepartment] = useState('All departments');
@@ -52,7 +35,7 @@ export default function EmployeesClient() {
   const filteredEmployees = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return employees.filter((employee) => {
+    return employees.filter((employee : Employee) => {
       const matchesSearch =
         employee.name.toLowerCase().includes(query) ||
         employee.email.toLowerCase().includes(query) ||
@@ -96,37 +79,40 @@ export default function EmployeesClient() {
   };
 
   const handleDeleteEmployee = (id: string) => {
-    const employee = employees.find(emp => emp.id === id);
+    const employee = employees.find((emp: Employee) => emp.id === id);
     if (employee) {
       setDeleteTarget(employee);
     }
   };
 
-  const confirmDeleteEmployee = () => {
+  const confirmDeleteEmployee = async () => {
     if (deleteTarget) {
-      setEmployees((current) => current.filter((employee) => employee.id !== deleteTarget.id));
-      toast.success(`Employee "${deleteTarget.name}" has been deleted successfully.`);
+      try {
+        await deleteAdminEmployee(deleteTarget.id);
+        toast.success(`Employee "${deleteTarget.name}" has been deleted successfully.`);
+        refetch();
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to delete employee');
+      }
       setDeleteTarget(null);
     }
   };
 
-  const handleSaveEmployee = (employeeData: Omit<Employee, 'id'>) => {
-    if (editingEmployee) {
-      setEmployees((current) =>
-        current.map((employee) =>
-          employee.id === editingEmployee.id ? { ...employeeData, id: editingEmployee.id } : employee
-        )
-      );
-      showToast(`Employee "${employeeData.name}" has been updated successfully.`);
-    } else {
-      setEmployees((current) => [
-        { ...employeeData, id: Date.now().toString() },
-        ...current,
-      ]);
-      showToast(`Employee "${employeeData.name}" has been added successfully.`);
+  const handleSaveEmployee = async (employeeData: Omit<Employee, 'id'>) => {
+    try {
+      if (editingEmployee) {
+        await updateAdminEmployee(editingEmployee.id, employeeData);
+        showToast(`Employee "${employeeData.name}" has been updated successfully.`);
+      } else {
+        await createAdminEmployee(employeeData);
+        showToast(`Employee "${employeeData.name}" has been added successfully.`);
+      }
+      setIsModalOpen(false);
+      setEditingEmployee(null);
+      refetch();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save employee', 'error');
     }
-    setIsModalOpen(false);
-    setEditingEmployee(null);
   };
 
   const statusColors: Record<string, string> = {
@@ -138,28 +124,46 @@ export default function EmployeesClient() {
   const startRange = Math.min((page - 1) * ROWS_PER_PAGE + 1, filteredEmployees.length);
   const endRange = Math.min(page * ROWS_PER_PAGE, filteredEmployees.length);
 
+  if (isLoading) {
+    return (
+      <div className="p-4 mb-8 w-full mx-auto">
+        <div className="text-center py-12 text-slate-500">Loading employees...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 mb-8 w-full mx-auto">
+        <div className="text-center py-12 text-red-500">Error loading employees: {(error as any).message}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 mb-8 w-full mx-auto">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
         <div className="flex flex-col space-y-2 md:space-y-0 md:gap-4 lg:flex-row lg:items-center lg:gap-3 w-full lg:w-auto z-10">
-          <input
-            type="search"
-            placeholder="Search name, email or phone"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="min-w-[280px] flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
-          />
+          <div className="flex w-full items-center gap-3">
+            <input
+              type="search"
+              placeholder="Search name, email or phone"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="min-w-[280px] flex-1 rounded-lg border border-border bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
+            />
+          </div>
 
           <div className="relative">
             <button
               type="button"
               onClick={() => handleOpenFilter('role')}
-              className="w-full border border-slate-300 bg-white px-6 py-3 text-left text-sm text-slate-900 shadow-sm transition hover:border-slate-400"
+              className="w-full md:w-30 border border-slate-300 bg-white px-6 py-3 text-left text-sm text-slate-900 shadow-sm transition rounded-lg hover:border-border"
             >
               {filterRole}
             </button>
             {openFilter === 'role' && (
-              <div className="absolute z-10 mt-2 w-full md:w-fit rounded-xl border border-slate-200 bg-white shadow-lg h-80 custom-scrollbar overflow-auto">
+              <div className="absolute z-10 mt-2 w-full md:w-fit rounded-xl border border-border bg-white shadow-lg h-80 custom-scrollbar overflow-auto">
                 <div
                   className="cursor-pointer px-4 py-3 text-sm hover:bg-slate-100"
                   onClick={() => {
@@ -189,12 +193,12 @@ export default function EmployeesClient() {
             <button
               type="button"
               onClick={() => handleOpenFilter('department')}
-              className="w-36 rounded-lg border border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-900 shadow-sm transition hover:border-slate-400"
+              className="w-36 rounded-lg border border-border bg-white px-4 py-3 text-left text-sm text-slate-900 shadow-sm transition hover:border-border"
             >
               {filterDepartment}
             </button>
             {openFilter === 'department' && (
-              <div className="absolute z-10 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg">
+              <div className="absolute z-10 mt-2 w-full rounded-xl border border-border bg-white shadow-lg">
                 <div
                   className="cursor-pointer px-4 py-3 text-sm hover:bg-slate-100"
                   onClick={() => {
@@ -224,12 +228,12 @@ export default function EmployeesClient() {
             <button
               type="button"
               onClick={() => handleOpenFilter('status')}
-              className="w-26 rounded-lg border border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-900 shadow-sm transition hover:border-slate-400"
+              className="w-26 rounded-lg border border-border bg-white px-4 py-3 text-left text-sm text-slate-900 shadow-sm transition hover:border-border"
             >
               {filterStatus}
             </button>
             {openFilter === 'status' && (
-              <div className="absolute z-10 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg">
+              <div className="absolute z-10 mt-2 w-full rounded-xl border border-border bg-white shadow-lg">
                 {statuses.map((status) => (
                   <div
                     key={status}
@@ -256,7 +260,7 @@ export default function EmployeesClient() {
       </div>
 
       <div className="overflow-x-auto rounded-[10px] bg-white shadow-sm custom-scrollbar">
-        <table className="min-w-full divide-y divide-slate-200 text-[15px]">
+        <table className="min-w-full divide-y divide-border text-[15px]">
           <thead className="font-semibold text-lg">
             <tr>
               <th className="px-4 py-4 text-left">Name</th>
@@ -269,58 +273,66 @@ export default function EmployeesClient() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 bg-white">
-            {paginatedEmployees.map((employee) => (
-              <tr key={employee.id} className="hover:bg-slate-50">
-                <td className="px-4 py-4 text-slate-900 whitespace-nowrap w-fit">{employee.name}</td>
-                <td className="px-4 py-4 text-slate-600">{employee.department}</td>
-                <td className="px-4 py-4 text-slate-600">{employee.role}</td>
-                <td className="px-4 py-4 text-slate-600">{employee.email}</td>
-                <td className="px-4 py-4 text-slate-600 whitespace-nowrap w-fit">{employee.phone}</td>
-                <td className="text-center py-2 text-slate-700">
+            {paginatedEmployees.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
+                  No employees found
+                </td>
+              </tr>
+            ) : (
+              paginatedEmployees.map((employee : Employee) => (
+                <tr key={employee.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-4 text-slate-900 whitespace-nowrap w-fit">{employee.name}</td>
+                  <td className="px-4 py-4 text-slate-600">{employee.department}</td>
+                  <td className="px-4 py-4 text-slate-600">{employee.role}</td>
+                  <td className="px-4 py-4 text-slate-600">{employee.email}</td>
+                  <td className="px-4 py-4 text-slate-600 whitespace-nowrap w-fit">{employee.phone}</td>
+                  <td className="text-center py-2 text-slate-700">
                     <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusColors[employee.status]}`}>
                       {employee.status}
                     </span>
-                </td>
-                <td className="px-4 py-4 text-center">
-                  <div className="relative">
-                    <button
-                      onClick={() => setOpenMenuId(openMenuId === employee.id ? null : employee.id)}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      <FaEllipsisV />
-                    </button>
-                    {openMenuId === employee.id && (
-                      <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
-                        <button
-                          onClick={() => {
-                            handleEditEmployee(employee);
-                            setOpenMenuId(null);
-                          }}
-                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                        >
-                          <FaEdit /> Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleDeleteEmployee(employee.id);
-                            setOpenMenuId(null);
-                          }}
-                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-                        >
-                          <FaTrash /> Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === employee.id ? null : employee.id)}
+                        className="text-slate-500 hover:text-slate-700"
+                      >
+                        <FaEllipsisV />
+                      </button>
+                      {openMenuId === employee.id && (
+                        <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
+                          <button
+                            onClick={() => {
+                              handleEditEmployee(employee);
+                              setOpenMenuId(null);
+                            }}
+                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                          >
+                            <FaEdit /> Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteEmployee(employee.id);
+                              setOpenMenuId(null);
+                            }}
+                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                          >
+                            <FaTrash /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between text-sm text-slate-600">
-        <p>Showing {startRange}-{endRange} of {TOTAL_EMPLOYEES} employees</p>
+        <p>Showing {startRange}-{endRange} of {filteredEmployees.length} employees</p>
         <div className="flex items-center gap-2">
           <button
             type="button"

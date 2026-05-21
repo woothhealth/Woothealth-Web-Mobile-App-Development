@@ -23,10 +23,12 @@ const RoleOverview: React.FC<RoleOverviewProps> = ({ role }) => {
     superadmin: SuperadminOverview,
     admin: AdminOverview,
     support: SupportOverview,
+    csupport: SupportOverview,
     sales: SalesOverview,
     finance: FinanceOverview,
     claims: ClaimsOverview,
     'provider ops': ProviderOpsOverview,
+    ops: ProviderOpsOverview,
     underwriting: UnderwritingOverview,
     hr: HrOverview,
   };

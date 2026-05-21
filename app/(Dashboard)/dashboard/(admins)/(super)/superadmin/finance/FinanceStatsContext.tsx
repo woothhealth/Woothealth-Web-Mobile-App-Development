@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useAdminFinance } from '@/lib/adminFinance';
 
 interface FinanceStats {
   moneyGenerated: number;
@@ -10,7 +11,7 @@ interface FinanceStats {
 }
 
 interface FinanceStatsContextType {
-  stats: FinanceStats | null;
+  stats: FinanceStats;
   loading: boolean;
   error: string | null;
 }
@@ -18,56 +19,33 @@ interface FinanceStatsContextType {
 const FinanceStatsContext = createContext<FinanceStatsContextType | undefined>(undefined);
 
 export const FinanceStatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [stats, setStats] = useState<FinanceStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useAdminFinance();
 
-  useEffect(() => {
-    const fetchFinanceStats = async () => {
-      try {
-        const response = await fetch('/api/admin/finance');
-        if (response.ok) {
-          const data = await response.json();
-          const invoices = data.data || [];
-          
-          const moneyGenerated = invoices
-            .filter((invoice: any) => invoice.status === 'Paid')
-            .reduce((sum: number, inv: any) => sum + inv.amount, 0);
-          
-          const receivables = invoices
-            .filter((invoice: any) => invoice.status !== 'Paid')
-            .reduce((sum: number, inv: any) => sum + inv.amount, 0);
-          
-          const totalRevenue = invoices.reduce((sum: number, inv: any) => sum + inv.amount, 0);
-          
-          const refundRequest = invoices
-            .filter((invoice: any) => invoice.status === 'Refund Request')
-            .length;
+  const invoices = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data)
+    ? data
+    : [];
 
-          setStats({
-            moneyGenerated,
-            receivables,
-            totalRevenue,
-            refundRequest,
-          });
-        } else {
-          setError('Failed to fetch finance stats');
-          setStats({ moneyGenerated: 0, receivables: 0, totalRevenue: 0, refundRequest: 0 });
-        }
-      } catch (err) {
-        console.error('Network error fetching finance stats:', err);
-        setError('Network error');
-        setStats({ moneyGenerated: 0, receivables: 0, totalRevenue: 0, refundRequest: 0 });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFinanceStats();
-  }, []);
+  const stats: FinanceStats = {
+    moneyGenerated: invoices
+      .filter((invoice: any) => invoice.status === 'Paid')
+      .reduce((sum: number, inv: any) => sum + inv.amount, 0),
+    receivables: invoices
+      .filter((invoice: any) => invoice.status !== 'Paid')
+      .reduce((sum: number, inv: any) => sum + inv.amount, 0),
+    totalRevenue: invoices.reduce((sum: number, inv: any) => sum + inv.amount, 0),
+    refundRequest: invoices.filter((invoice: any) => invoice.status === 'Refund Request').length,
+  };
 
   return (
-    <FinanceStatsContext.Provider value={{ stats, loading, error }}>
+    <FinanceStatsContext.Provider
+      value={{
+        stats,
+        loading: isLoading,
+        error: error instanceof Error ? error.message : null,
+      }}
+    >
       {children}
     </FinanceStatsContext.Provider>
   );

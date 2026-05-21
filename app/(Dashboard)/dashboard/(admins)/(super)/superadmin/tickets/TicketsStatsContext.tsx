@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
+import { useAdminTickets } from '@/lib/adminTickets';
 
 interface TicketsStats {
   total: number;
@@ -18,46 +19,31 @@ interface TicketsStatsContextType {
 const TicketsStatsContext = createContext<TicketsStatsContextType | undefined>(undefined);
 
 export const TicketsStatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [stats, setStats] = useState<TicketsStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useAdminTickets();
+  const tickets = data?.data ?? [];
 
-  useEffect(() => {
-    const fetchTicketsStats = async () => {
-      try {
-        const response = await fetch('/api/admin/tickets');
-        if (response.ok) {
-          const data = await response.json();
-          const tickets = data.data || [];
-          const total = tickets.length;
-          const open = tickets.filter((ticket: any) => ticket.status === 'open').length;
-          const progress = tickets.filter((ticket: any) => ticket.status === 'progress').length;
-          const resolved = tickets.filter((ticket: any) => ticket.status === 'resolved').length;
+  const stats = useMemo(() => {
+    const total = tickets.length;
+    const open = tickets.filter((ticket: any) => ticket.status === 'open').length;
+    const progress = tickets.filter((ticket: any) => ticket.status === 'In progress').length;
+    const resolved = tickets.filter((ticket: any) => ticket.status === 'resolved').length;
 
-          setStats({
-            total,
-            open,
-            progress,
-            resolved,
-          });
-        } else {
-          setError('Failed to fetch tickets stats');
-          setStats({ total: 0, open: 0, progress: 0, resolved: 0 });
-        }
-      } catch (err) {
-        console.error('Network error fetching tickets stats:', err);
-        setError('Network error');
-        setStats({ total: 0, open: 0, progress: 0, resolved: 0 });
-      } finally {
-        setLoading(false);
-      }
+    return {
+      total,
+      open,
+      progress,
+      resolved,
     };
-
-    fetchTicketsStats();
-  }, []);
+  }, [tickets]);
 
   return (
-    <TicketsStatsContext.Provider value={{ stats, loading, error }}>
+    <TicketsStatsContext.Provider
+      value={{
+        stats,
+        loading: isLoading,
+        error: error instanceof Error ? error.message : error ?? null,
+      }}
+    >
       {children}
     </TicketsStatsContext.Provider>
   );

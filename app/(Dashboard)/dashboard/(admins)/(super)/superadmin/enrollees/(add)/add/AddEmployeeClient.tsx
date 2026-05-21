@@ -63,7 +63,7 @@ const AddEmployeeClient = () => {
     }
 
     try {
-      const res = await fetch('/api/business/employees', {
+      const res = await fetch('/api/admin/enrollees', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formInput),
@@ -72,15 +72,15 @@ const AddEmployeeClient = () => {
       const data = await res.json();
 
       if (res.status === 201) {
-        // Verify we actually got a created employee, not just a list response
+        // Verify we actually got a created enrollee, not just a list response
         if (data && typeof data === 'object' && data.success === true && Array.isArray(data.data) && data.data.length === 0) {
-          // Backend returned list format instead of created employee - this is an error
+          // Backend returned list format instead of created enrollee - this is an error
           setErrorMessage('Error');
-          console.error('❌ Frontend detected backend returning list instead of created employee:', data);
+          console.error('❌ Frontend detected backend returning list instead of created enrollee:', data);
         } else {
-          // Success - we got a proper created employee response
+          // Success - we got a proper created enrollee response
           setIsSubmitted(true);
-          setMessage(data?.message || 'Employee added successfully!');
+          setMessage(data?.message || 'Enrollee added successfully!');
           setErrorMessage('');
           // Reset form after successful submission
           setFormInput({
@@ -96,16 +96,16 @@ const AddEmployeeClient = () => {
           });
         }
       } else if (res.status === 409) {
-        const msg = data?.error || data?.details?.data?.error || 'Employee already exists.';
+        const msg = data?.error || data?.details?.data?.error || 'Enrollee already exists.';
         setErrorMessage(msg);
       } else if (res.status === 400) {
-        const msg = data?.error || data?.details?.data?.error || 'Invalid employee data.';
+        const msg = data?.error || data?.details?.data?.error || 'Invalid enrollee data.';
         setErrorMessage(msg);
       } else if (res.status === 500) {
         const msg = data?.error || 'Server error occurred. Please try again.';
         setErrorMessage(msg);
       } else {
-        const msg = data?.error || data?.details?.data?.error || 'Failed to add employee. Please try again.';
+        const msg = data?.error || data?.details?.data?.error || 'Failed to add enrollee. Please try again.';
         setErrorMessage(msg);
       }
     } catch (err) {
@@ -119,13 +119,13 @@ const AddEmployeeClient = () => {
     return (
       <>
     <section className='py-4 md:p-4'>
-      <Link href='/dashboard/business/employees' className='border p-1 rounded-full inline-flex'>
+      <Link href='/dashboard/superadmin/enrollees' className='border p-1 rounded-full inline-flex'>
         <FaArrowLeft className='text-2xl'/>
       </Link>
       <div className='flex flex-col md:justify-center md:items-center mt-6'>
         <div className='flex flex-col gap-6 md:w-lg'>
             <div>
-                <p className='text-[18px] text-center md:text-start'>Add an employee?</p>
+                <p className='text-[18px] text-center md:text-start'>Add an enrollee?</p>
                 <p className='text-[16px] text-gray-600 text-center md:text-start'>Complete the form below to begin their enrollment.</p>
             </div>
             <div className='pt-3 md:pt-8 pb-10 px-6 bg-[#FFFFFF] rounded-[10px]'>
@@ -133,17 +133,17 @@ const AddEmployeeClient = () => {
                   <div className="text-center border-green-200 py-4 mx-6 md:mx-0">
                     <FaCheckCircle className="h-16 w-16 text-green-600/40 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold mb-2">
-                      Employee added Successfully!
+                      Enrollee added Successfully!
                     </h3>
                     <p className=" mb-6">
-                      Thank you for the addition. Please refresh the employee list to see the new employee.
+                      Thank you for the addition. Please refresh the enrollee list to see the new enrollee.
                     </p>
                     <div className="flex items-center justify-center gap-4 flex-col md:flex-row">
                       <Link
-                        href={`/dashboard/business/employees`}
+                        href={`/dashboard/superadmin/enrollees`}
                         className="bg-[#49A5EF]/780 text-white px-4 md:px-10 font-semibold py-2 md:py-3 rounded-lg mr-4"
                       >
-                        View Employee List
+                        View Enrollee List
                       </Link>
                       <button
                         onClick={() => {
@@ -253,7 +253,7 @@ const AddEmployeeClient = () => {
                     {message && !errorMessage && <span className="text-green-600/80 text-sm text-center">{message}</span>}
 
                     <button type='submit' disabled={isSubmitting} className='bg-[#49A5EF] text-[#FFFFFF] px-12 py-3 font-semibold rounded-sm mt-3'>
-                      {isSubmitting ? 'Adding Employee...' : 'Add Employee'}
+                      {isSubmitting ? 'Adding Enrollee...' : 'Add Enrollee'}
                     </button>
                 </form>
               </div>

@@ -4,11 +4,21 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { FaPlus, FaEdit, FaEye, FaTrash, FaTimes, FaEllipsisV } from 'react-icons/fa';
-import { Lead, leadStatuses, mockLeads, salesReps, clientTypes } from '../mockLeads';
+import {
+  Lead,
+  clientTypes,
+  leadStatuses,
+  salesReps,
+  useAdminLeads,
+  createAdminLead,
+  updateAdminLead,
+  deleteAdminLead,
+} from '@/lib/adminLeads';
 import DeleteConfirmModal from '../../DeleteConfirmModal';
 
 export default function LeadsClient() {
-  const [leads, setLeads] = useState<Lead[]>(mockLeads);
+  const { data, isLoading, error, refetch } = useAdminLeads();
+  const leads = data?.data ?? [];
   const [search, setSearch] = useState('');
   const [filterRep, setFilterRep] = useState('All sales reps');
   const [filterStatus, setFilterStatus] = useState('All status');
@@ -18,19 +28,9 @@ export default function LeadsClient() {
   const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const stats = useMemo(
-    () => ({
-      newLead: leads.filter((lead) => lead.status === 'New Lead').length,
-      contacted: leads.filter((lead) => lead.status === 'Contacted').length,
-      converted: leads.filter((lead) => lead.status === 'Converted').length,
-      lost: leads.filter((lead) => lead.status === 'Lost').length,
-    }),
-    [leads]
-  );
-
   const filteredLeads = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return leads.filter((lead) => {
+    return leads.filter((lead: Lead) => {
       const matchesSearch =
         lead.clientName.toLowerCase().includes(query) ||
         lead.email.toLowerCase().includes(query) ||
@@ -59,34 +59,41 @@ export default function LeadsClient() {
   };
 
   const handleDeleteLead = (id: string) => {
-    const leadToDelete = leads.find((lead) => lead.id === id);
-    setLeads((current) => current.filter((lead) => lead.id !== id));
+    const leadToDelete = leads.find((lead: Lead) => lead.id === id);
     if (leadToDelete) {
-      toast.success(`Lead for ${leadToDelete.clientName} deleted successfully.`);
+      setDeleteTarget(leadToDelete);
     }
-    setDeleteTarget(null);
     setOpenMenuId(null);
   };
 
-  const handleSaveLead = (leadData: Omit<Lead, 'id' | 'dateAdded'>) => {
-    if (editingLead) {
-      setLeads((current) =>
-        current.map((lead) =>
-          lead.id === editingLead.id ? { ...lead, ...leadData } : lead
-        )
-      );
-    } else {
-      setLeads((current) => [
-        {
-          ...leadData,
-          id: Date.now().toString(),
-          dateAdded: new Date().toISOString().slice(0, 10),
-        },
-        ...current,
-      ]);
+  const confirmDeleteLead = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteAdminLead(deleteTarget.id);
+      toast.success(`Lead for ${deleteTarget.clientName} deleted successfully.`);
+      setDeleteTarget(null);
+      setOpenMenuId(null);
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete lead.');
     }
-    setIsModalOpen(false);
-    setEditingLead(null);
+  };
+
+  const handleSaveLead = async (leadData: Omit<Lead, 'id' | 'dateAdded'>) => {
+    try {
+      if (editingLead) {
+        await updateAdminLead(editingLead.id, leadData);
+        toast.success(`Lead “${editingLead.clientName}” updated successfully.`);
+      } else {
+        await createAdminLead(leadData);
+        toast.success(`Lead “${leadData.clientName}” added successfully.`);
+      }
+      setIsModalOpen(false);
+      setEditingLead(null);
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to save lead.');
+    }
   };
 
   const statusColors: Record<string, string> = {
@@ -162,7 +169,7 @@ export default function LeadsClient() {
                 >
                   All status
                 </div>
-                {leadStatuses.map((status) => (
+                {leadStatuses.map((status: string) => (
                   <div
                     key={status}
                     className="cursor-pointer px-4 py-3 text-sm hover:bg-slate-100"
@@ -200,14 +207,14 @@ export default function LeadsClient() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 bg-white">
-            {filteredLeads.map((lead) => (
+            {filteredLeads.map((lead: Lead) => (
               <tr key={lead.id} className="hover:bg-slate-50">
                 <td className="px-4 py-4 text-slate-900 whitespace-nowrap w-fit">{lead.dateAdded}</td>
                 <td className="px-4 py-4 text-slate-900 whitespace-nowrap w-fit">{lead.clientName}</td>
                 <td className="px-4 py-4 text-slate-600">{lead.email}</td>
                 <td className="px-4 py-4 text-slate-600">{lead.assignedTo}</td>
                 <td className="px-4 py-4 text-slate-600 text-center">
-                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusColors[lead.status]}`}>
+                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusColors[lead.status as string]}`}>
                     {lead.status}
                   </span>
                 </td>
@@ -245,6 +252,11 @@ export default function LeadsClient() {
                 </td>
               </tr>
             ))}
+            {filteredLeads.length === 0 && (
+              <tr>
+                <td colSpan={7} className="text-center py-8 text-gray-500">No leads found</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -269,7 +281,7 @@ export default function LeadsClient() {
             </>
           }
           onCancel={() => setDeleteTarget(null)}
-          onConfirm={() => handleDeleteLead(deleteTarget.id)}
+          onConfirm={confirmDeleteLead}
         />
       )}
 

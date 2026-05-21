@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useAdminBenefits } from '@/lib/adminBenefits';
 
 interface BenefitsStats {
   total: number;
@@ -10,7 +11,7 @@ interface BenefitsStats {
 }
 
 interface BenefitsStatsContextType {
-  stats: BenefitsStats | null;
+  stats: BenefitsStats;
   loading: boolean;
   error: string | null;
 }
@@ -18,46 +19,29 @@ interface BenefitsStatsContextType {
 const BenefitsStatsContext = createContext<BenefitsStatsContextType | undefined>(undefined);
 
 export const BenefitsStatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [stats, setStats] = useState<BenefitsStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useAdminBenefits();
 
-  useEffect(() => {
-    const fetchBenefitsStats = async () => {
-      try {
-        const response = await fetch('/api/admin/benefits');
-        if (response.ok) {
-          const data = await response.json();
-          const benefits = data.data || [];
-          const total = benefits.length;
-          const active = benefits.filter((benefit: any) => benefit.status === 'active').length;
-          const draft = benefits.filter((benefit: any) => benefit.status === 'draft').length;
-          const totalEnrollees = benefits.filter((benefit: any) => benefit.enrollees > 0).length; // or some logic
+  const benefits = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data)
+    ? data
+    : [];
 
-          setStats({
-            total,
-            active,
-            draft,
-            totalEnrollees,
-          });
-        } else {
-          setError('Failed to fetch benefits stats');
-          setStats({ total: 0, active: 0, draft: 0, totalEnrollees: 0 });
-        }
-      } catch (err) {
-        console.error('Network error fetching benefits stats:', err);
-        setError('Network error');
-        setStats({ total: 0, active: 0, draft: 0, totalEnrollees: 0 });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBenefitsStats();
-  }, []);
+  const stats: BenefitsStats = {
+    total: benefits.length,
+    active: benefits.filter((benefit: any) => benefit.status === 'active').length,
+    draft: benefits.filter((benefit: any) => benefit.status === 'draft').length,
+    totalEnrollees: benefits.filter((benefit: any) => benefit.enrollees > 0).length,
+  };
 
   return (
-    <BenefitsStatsContext.Provider value={{ stats, loading, error }}>
+    <BenefitsStatsContext.Provider
+      value={{
+        stats,
+        loading: isLoading,
+        error: error instanceof Error ? error.message : null,
+      }}
+    >
       {children}
     </BenefitsStatsContext.Provider>
   );

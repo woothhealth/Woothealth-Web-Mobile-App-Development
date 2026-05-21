@@ -1,4 +1,4 @@
-import { RoleName } from './permissions';
+import { normalizeRole, RoleName } from './permissions';
 
 /**
  * Roles that have access to the admin/dashboard
@@ -35,15 +35,17 @@ export const ROLE_DASHBOARD_PATHS: Record<RoleName, string> = {
  */
 export function hasDashboardAccess(role?: string | null): boolean {
   if (!role) return false;
-  return DASHBOARD_ADMIN_ROLES.includes(role as RoleName);
+  const normalized = normalizeRole(role);
+  return normalized !== null && DASHBOARD_ADMIN_ROLES.includes(normalized);
 }
 
 /**
  * Get the dashboard redirect path for a role
  */
 export function getDashboardPath(role?: string | null): string {
-  if (!role || !hasDashboardAccess(role)) {
+  const normalized = normalizeRole(role);
+  if (!normalized || !hasDashboardAccess(normalized)) {
     return '/admin';
   }
-  return ROLE_DASHBOARD_PATHS[role as RoleName] || '/dashboard/superadmin';
+  return ROLE_DASHBOARD_PATHS[normalized] || '/dashboard/superadmin';
 }

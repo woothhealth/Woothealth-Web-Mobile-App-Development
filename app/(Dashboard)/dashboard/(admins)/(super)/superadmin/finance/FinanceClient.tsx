@@ -3,15 +3,19 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { FaSearch, FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa';
-import { Invoice, mockInvoices, AccountType, InvoiceStatus } from './mock-finance';
+import type { Invoice, AccountType, InvoiceStatus } from './mock-finance';
 import EditInvoiceModal from './components/EditInvoiceModal';
 import DeleteConfirmModal from '../DeleteConfirmModal';
+import {
+  useAdminFinance,
+  updateAdminFinance,
+  deleteAdminFinance,
+} from '@/lib/adminFinance';
 
 const accountTypes: ('All' | AccountType)[] = ['All', 'Retail Account', 'Business Account'];
 const statuses: ('All' | InvoiceStatus)[] = ['All', 'Paid', 'Pending', 'Overdue', 'Refund Request', 'Cancelled'];
 
 const ROWS_PER_PAGE = 10;
-const TOTAL_INVOICES = 300;
 
 const getStatusColor = (status: InvoiceStatus) => {
   switch (status) {
@@ -31,7 +35,7 @@ const getStatusColor = (status: InvoiceStatus) => {
 };
 
 export default function FinanceClient() {
-  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
+  const { data, isLoading: isLoadingFinance, error, refetch } = useAdminFinance();
   const [search, setSearch] = useState('');
   const [accountTypeFilter, setAccountTypeFilter] = useState<'All' | AccountType>('All');
   const [statusFilter, setStatusFilter] = useState<'All' | InvoiceStatus>('All');
@@ -40,6 +44,11 @@ export default function FinanceClient() {
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Invoice | null>(null);
   const [page, setPage] = useState(1);
+
+  const invoices: Invoice[] = useMemo(() => {
+    const raw = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+    return raw as Invoice[];
+  }, [data]);
 
   const filteredInvoices = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -61,9 +70,17 @@ export default function FinanceClient() {
     return filteredInvoices.slice(start, start + ROWS_PER_PAGE);
   }, [filteredInvoices, page]);
 
-  const totalPages = Math.ceil(filteredInvoices.length / ROWS_PER_PAGE);
-  const startIndex = (page - 1) * ROWS_PER_PAGE + 1;
+  const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / ROWS_PER_PAGE));
+  const startIndex = filteredInvoices.length > 0 ? (page - 1) * ROWS_PER_PAGE + 1 : 0;
   const endIndex = Math.min(page * ROWS_PER_PAGE, filteredInvoices.length);
+
+  if (isLoadingFinance) {
+    return <div className="py-8 text-center text-slate-600">Loading finance records...</div>;
+  }
+
+  if (error) {
+    return <div className="py-8 text-center text-red-600">Failed to load finance records: {error instanceof Error ? error.message : String(error)}</div>;
+  }
 
   const handleEditInvoice = (invoice: Invoice) => {
     setEditingInvoice(invoice);
@@ -77,20 +94,30 @@ export default function FinanceClient() {
     setOpenActionMenu(null);
   };
 
-  const confirmDeleteInvoice = () => {
+  const confirmDeleteInvoice = async () => {
     if (!deleteTarget) return;
-    setInvoices((current) => current.filter((invoice) => invoice.id !== deleteTarget.id));
-    toast.success(`Invoice ${deleteTarget.invoiceId} deleted successfully.`);
-    setDeleteTarget(null);
+
+    try {
+      await deleteAdminFinance(deleteTarget.id);
+      toast.success(`Invoice ${deleteTarget.invoiceId} deleted successfully.`);
+      setDeleteTarget(null);
+      await refetch();
+    } catch (error: any) {
+      console.error('Delete invoice failed:', error);
+      toast.error(error?.message || 'Failed to delete invoice');
+    }
   };
 
-  const handleSaveInvoice = (updatedInvoice: Invoice) => {
-    setInvoices((current) =>
-      current.map((invoice) =>
-        invoice.id === updatedInvoice.id ? updatedInvoice : invoice
-      )
-    );
-    setEditingInvoice(null);
+  const handleSaveInvoice = async (updatedInvoice: Invoice) => {
+    try {
+      await updateAdminFinance(updatedInvoice.id, updatedInvoice);
+      toast.success(`Invoice ${updatedInvoice.invoiceId} updated successfully.`);
+      setEditingInvoice(null);
+      await refetch();
+    } catch (error: any) {
+      console.error('Update invoice failed:', error);
+      toast.error(error?.message || 'Failed to update invoice');
+    }
   };
 
   return (
@@ -186,49 +213,63 @@ export default function FinanceClient() {
             </tr>
           </thead>
           <tbody>
-            {paginatedInvoices.map((invoice) => (
-              <tr key={invoice.id} className="border-b border-gray-200 hover:bg-gray-50 text-[15px] md:text-base">
-                <td className="px-4 py-2 md:py-3 text-gray-900 whitespace-nowrap w-fit">{invoice.invoiceId}</td>
-                <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.client}</td>
-                <td className="px-4 py-2 md:py-3 text-gray-900">₦{invoice.amount.toLocaleString()}</td>
-                <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.accountType}</td>
-                <td className="px-4 py-2 md:py-3 text-center">
-                  <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(invoice.status)}`}>
-                    {invoice.status}
-                  </span>
-                </td>
-                <td className="relative px-4 py-2 md:py-3">
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => setOpenActionMenu(openActionMenu === invoice.id ? null : invoice.id)}
-                      className="rounded-full p-2 text-gray-500 hover:bg-gray-100 outline-0"
-                    >
-                      <FaEllipsisV size={16} />
-                    </button>
-                  </div>
-
-                  {/* Action Menu */}
-                  {openActionMenu === invoice.id && (
-                    <div className="absolute right-0 top-full z-20 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-lg">
-                      <button
-                        onClick={() => handleEditInvoice(invoice)}
-                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#49A5EF] hover:bg-gray-50"
-                      >
-                        <FaEdit size={14} />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteInvoice(invoice.id)}
-                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-50 border-t border-gray-200"
-                      >
-                        <FaTrash size={14} />
-                        Delete
-                      </button>
-                    </div>
-                  )}
+            {!search.trim() ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-500">
+                  Enter a search term to view invoices.
                 </td>
               </tr>
-            ))}
+            ) : paginatedInvoices.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-500">
+                  No invoices match your search.
+                </td>
+              </tr>
+            ) : (
+              paginatedInvoices.map((invoice) => (
+                <tr key={invoice.id} className="border-b border-gray-200 hover:bg-gray-50 text-[15px] md:text-base">
+                  <td className="px-4 py-2 md:py-3 text-gray-900 whitespace-nowrap w-fit">{invoice.invoiceId}</td>
+                  <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.client}</td>
+                  <td className="px-4 py-2 md:py-3 text-gray-900">₦{invoice.amount.toLocaleString()}</td>
+                  <td className="px-4 py-2 md:py-3 text-gray-900">{invoice.accountType}</td>
+                  <td className="px-4 py-2 md:py-3 text-center">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(invoice.status)}`}>
+                      {invoice.status}
+                    </span>
+                  </td>
+                  <td className="relative px-4 py-2 md:py-3">
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => setOpenActionMenu(openActionMenu === invoice.id ? null : invoice.id)}
+                        className="rounded-full p-2 text-gray-500 hover:bg-gray-100 outline-0"
+                      >
+                        <FaEllipsisV size={16} />
+                      </button>
+                    </div>
+
+                    {/* Action Menu */}
+                    {openActionMenu === invoice.id && (
+                      <div className="absolute right-0 top-full z-20 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-lg">
+                        <button
+                          onClick={() => handleEditInvoice(invoice)}
+                          className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#49A5EF] hover:bg-gray-50"
+                        >
+                          <FaEdit size={14} />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteInvoice(invoice.id)}
+                          className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-50 border-t border-gray-200"
+                        >
+                          <FaTrash size={14} />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -236,7 +277,7 @@ export default function FinanceClient() {
       {/* Pagination */}
       <div className="mt-6 flex flex-col md:flex-row md:items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing {filteredInvoices.length > 0 ? startIndex : 0}-{endIndex} of {TOTAL_INVOICES} invoices
+          Showing {filteredInvoices.length > 0 ? startIndex : 0}-{endIndex} of {filteredInvoices.length} invoices
         </p>
         <div className="flex gap-2">
           <button

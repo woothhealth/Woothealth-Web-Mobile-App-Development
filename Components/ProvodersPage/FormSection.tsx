@@ -24,7 +24,7 @@ const FormSection: React.FC = async () => {
             <Image src='/Dashboard_image.png' alt='Logo' width={200} height={100} className='h-10 w-fit' priority/>
           </div>
           <div className='text-center -space-y-1'>
-            <h1 className='text-2xl font-bold text-white tracking-wider'>WOOTHEALTH</h1>
+            <h1 className='text-2xl font-bold text-white tracking-wider'>WOOT HEALTH</h1>
             <h3 className='italic text-sm text-[#ffffff]/80'>Health care simplified</h3>
           </div>
         </div>

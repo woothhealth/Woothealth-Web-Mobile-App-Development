@@ -17,7 +17,7 @@ export interface Prescription {
   doctor: string;
   specialization: string;
   status: PrescriptionStatus;
-  diagnosis: string;
+  diagnosis?: string;
   details: PrescriptionDetail[];
 }
 

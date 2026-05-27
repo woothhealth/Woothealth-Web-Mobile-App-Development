@@ -52,7 +52,7 @@ export const PaCodesStatsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
         const normalized = parsePaCodes(paCodes);
         const approvedCount = normalized.filter((paCode) => paCode.status === 'approved').length;
-        const underReviewCount = normalized.filter((paCode) => paCode.status === 'under review').length;
+        const underReviewCount = normalized.filter((paCode) => paCode.status === 'under review' || paCode.status === 'pending').length;
         const declinedCount = normalized.filter((paCode) => paCode.status === 'declined').length;
 
         setStats({ approved: approvedCount, underReview: underReviewCount, declined: declinedCount });

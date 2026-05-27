@@ -23,7 +23,6 @@ export async function GET(req: Request) {
 
     const target = buildBackendUrl(BACKEND_URL, { admin: true, id, page, limit });
     const forwarded = getForwardedHeaders(cookieHeader, true);
-    console.error('Forwarding headers to backend (notifications):', { hasCookie: !!cookieHeader, role: forwarded['x-user-role'], cookiePreview: cookieHeader ? String(cookieHeader).slice(0, 100) : null });
     const backendRes = await fetch(target, {
       headers: forwarded,
       credentials: 'include',

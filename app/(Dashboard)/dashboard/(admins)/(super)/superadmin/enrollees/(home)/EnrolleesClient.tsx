@@ -127,7 +127,7 @@ export default function EnrolleesClient() {
       const created = await response.json().catch(() => null);
       const newItem: AdminEnrollee = {
         id: created?.id || `enrollee-${Date.now()}`,
-        name: newEnrollee.name || '',
+        name: newEnrollee.userName || '',
         email: newEnrollee.email || '',
         status: newEnrollee.status || 'active',
         hmoId: newEnrollee.hmoId || '',
@@ -165,7 +165,7 @@ export default function EnrolleesClient() {
         <div className="flex flex-col md:flex-row gap-4 mb-8 lg:w-[90%] lg:mx-auto">
           <input
             type="text"
-            placeholder="Search by name, email..."
+            placeholder="Search by HMO ID, Name, Email..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="flex-1 border border-[#E5E7EB] rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#d7d9df]"

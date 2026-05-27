@@ -16,7 +16,6 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
     companyName: '',
     status: 'Active' as Client['status'],
     clientType: 'Business' as Client['planType'],
-    contactPerson: '',
     email: '',
     planType: 'Business' as Client['planType'],
     phone: '',
@@ -32,11 +31,15 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [bulkFileName, setBulkFileName] = useState('');
+  const [bulkPreview, setBulkPreview] = useState('');
+  const [bulkUsers, setBulkUsers] = useState<any[] | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.companyName.trim()) newErrors.companyName = 'Client name is required';
-    if (!formData.contactPerson.trim()) newErrors.contactPerson = 'Contact person is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
     if (!formData.registrationDate.trim()) newErrors.registrationDate = 'Registration date is required';
@@ -51,23 +54,66 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
-      const newClient: Omit<Client, 'id' | 'registrationDate'> = {
-        ...formData,
-        totalEnrollees: 0,
-        activePlan: 0,
-        monthlyPremium: 0,
-        outstanding: 0,
-        walletBalance: 0,
-      };
-      onCreate?.(newClient);
+  const handleSubmit = async () => {
+    if (!validate()) {
+      toast.error('Please fix validation errors');
+      return;
+    }
+    // debug: indicate submission started
+    // eslint-disable-next-line no-console
+    console.log('CreateClientModal.handleSubmit start', { bulkFile, formData });
+    toast('Submitting...');
+    setUploading(true);
+    try {
+      // If a bulk file is present, upload to bulk endpoint
+      if (bulkFile) {
+        // Ensure CSV was parsed into users
+        if (!bulkUsers || bulkUsers.length === 0) {
+          toast.error('No users parsed from CSV. Check file format and headers');
+          setUploading(false);
+          return;
+        }
+
+        const res = await fetch('/api/admin/bulk-users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ users: bulkUsers }),
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          console.error('bulk-users failed:', res.status, text);
+          throw new Error(text || 'Bulk upload failed');
+        }
+        toast.success('Bulk upload successful');
+        setBulkFile(null);
+        setBulkFileName('');
+        setBulkPreview('');
+        setBulkUsers(null);
+        onClose();
+        return;
+      }
+
+      // Regular single-client create
+      const payload = { ...formData };
+      const res = await fetch('/api/admin/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to create client');
       toast.success(`Client "${formData.companyName}" created successfully`);
       onClose();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'An error occurred');
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleChange = (field: keyof typeof formData, value: string) => {
+  const handleChange = (field: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -88,14 +134,13 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
             </button>
         </div>
 
-        <form className="py-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">  
+        <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="py-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">  
           <div className='flex flex-col items-center space-y-1 text-[#959595]'>
             <input 
               type="file"
               accept="image/*"
               className="hidden"
               id="client-logo-upload"
-              value={formData.photo || ''}
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -107,8 +152,13 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
                 }
               }}
             />
-            <label htmlFor="client-logo-upload" className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-border bg-slate-50 text-sm hover:bg-slate-100">
-              <FaUser size={24} />
+            <label htmlFor="client-logo-upload" className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-border bg-slate-50 text-sm hover:bg-slate-100 overflow-hidden">
+              {formData.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={formData.photo} alt="client" className="h-full w-full object-cover" />
+              ) : (
+                <FaUser size={24} />
+              )}
             </label>
             <p className="mt-1">Upload photo</p>
           </div>
@@ -266,14 +316,38 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
         <div className='mt-8 flex flex-col items-center justify-center border-dashed border-2 border-border rounded-[10px] py-6'>
           <input
             type="file"
-            accept="csv"
+            accept=".csv,text/csv"
             className="hidden"
             id="bulk-upload"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
-                // Handle bulk upload logic here
-                toast.success('Bulk upload feature is not implemented yet');
+                setBulkFile(file);
+                setBulkFileName(file.name);
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const text = String(reader.result || '');
+                  const allLines = text.split(/\r?\n/).filter(l => l.trim());
+                  // preview first 10 lines
+                  const previewLines = allLines.slice(0, 10);
+                  setBulkPreview(previewLines.join('\n'));
+
+                  // parse CSV: first line headers, remaining rows
+                  if (allLines.length > 0) {
+                    const [headerLine, ...rows] = allLines;
+                    const headers = headerLine.split(',').map(h => h.trim());
+                    const users = rows.map(r => {
+                      const cols = r.split(',');
+                      const obj: Record<string, string> = {};
+                      headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+                      return obj;
+                    }).filter(u => Object.values(u).some(v => v !== ''));
+                    setBulkUsers(users);
+                  } else {
+                    setBulkUsers([]);
+                  }
+                };
+                reader.readAsText(file);
               }
             }}
           />
@@ -285,14 +359,27 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
           <label htmlFor="bulk-upload" className="mt-4 inline-flex cursor-pointer items-center rounded-[10px] bg-primary px-4 py-2 text-[15px] hover:bg-primary/90 text-white">
             Upload File
           </label>
+
+          {bulkFile && (
+            <div className="mt-4 w-full px-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-slate-700">Selected file: <strong>{bulkFileName}</strong></div>
+                <button type="button" onClick={() => { setBulkFile(null); setBulkFileName(''); setBulkPreview(''); }} className="text-sm text-red-500">Remove</button>
+              </div>
+              <pre className="mt-2 max-h-40 overflow-auto rounded bg-slate-50 p-3 text-xs font-mono text-slate-700">{bulkPreview}</pre>
+            </div>
+          )}
         </div>
 
          <div className="mt-6 flex justify-center w-full space-x-3">
           <button
-            onClick={handleSubmit}
-            className="rounded-[10px] w-full bg-primary px-4 py-2 font-medium text-white hover:bg-primary/90"
+            type="submit"
+            data-is-submitting={uploading}
+            aria-busy={uploading}
+            disabled={uploading}
+            className={`rounded-[10px] w-full px-4 py-2 font-medium text-white ${uploading ? 'bg-primary/70' : 'bg-primary hover:bg-primary/90'}`}
           >
-            Create Client
+            {uploading ? 'Creating...' : 'Create Client'}
           </button>
         </div>
       </form>

@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import PaCodeForm from '../PaCodeForm';
 import Link from 'next/link';
-import { IoIosArrowBack } from 'react-icons/io';
-import Title from '../../../UIs/Title';
+import { MdArrowBack } from 'react-icons/md';
 
 export interface TreatmentItem {
   id: string;
@@ -20,13 +19,14 @@ export interface PaCodeFormData {
   hmoid: string;
   dateOfEncounter: string;
   careType: string;
-  diagnosis: string;
+  diagnosis: string[];
   treatmentItems: TreatmentItem[];
   requestedBy: string;
 }
 
 const PaCodeCreationPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
   const handleSubmitPaCode = async (formData: PaCodeFormData) => {
     if (isSubmitting) return;
@@ -52,7 +52,7 @@ const PaCodeCreationPage = () => {
         return;
       }
 
-      if (!formData.diagnosis.trim()) {
+      if (!formData.diagnosis || formData.diagnosis.length === 0) {
         toast.error('Diagnosis is required');
         setIsSubmitting(false);
         return;
@@ -81,12 +81,41 @@ const PaCodeCreationPage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Build payload expected by backend
+      const total = formData.treatmentItems.reduce((s, it) => s + it.amount, 0);
+      const authorizationCode = `WHT-PA-${Math.floor(100000 + Math.random() * 900000)}`;
+      const payload = {
+        patientId: formData.hmoid,
+        diagnosis: (formData.diagnosis || []).join('; '),
+        tariffCode: formData.treatmentItems[0]?.itemCode || '',
+        tier: formData.careType,
+        price: total.toFixed(2).toString(),
+        bookingId: '',
+        authorizationCode,
+      };
 
-      // Success
-      toast.success('PA Code request submitted successfully!');
-      console.log('PA Code submitted:', formData);
+      try {
+        const res = await fetch('/api/admin/pa-codes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.message || `Request failed with status ${res.status}`);
+        }
+
+        toast.success('PA Code request submitted successfully!');
+        // toggle the flag so child detects every success
+        setSubmissionSuccess(s => !s);
+      } catch (err: any) {
+        toast.error(err?.message || 'Failed to submit PA Code request');
+        console.error('PA submit error', err);
+      }
 
     } catch (error) {
       toast.error('Failed to submit PA Code request. Please try again.');
@@ -97,18 +126,16 @@ const PaCodeCreationPage = () => {
   };
 
   return (
-    <div className="h-full px-4 md:px-0 py-4 space-y-4">
-      <div className="flex items-center">
-        <Link href="/dashboard/superadmin/pa-code" className="border border-border rounded-full p-2 flex items-center w-fit">
-          <IoIosArrowBack size={24} className="" />
-        </Link>
-        <Title title="Create PA Code" />
-      </div>
+    <div className="h-full px-4 md:px-0 py-4">
       <div className="w-full mx-auto">
+        <Link href="/dashboard/superadmin/pa-code" className="flex items-center text-sm text-gray-600 mb-4 hover:text-gray-800 transition-colors border-2 border-border w-fit rounded-full p-2">
+          <MdArrowBack size={20} />
+        </Link>
         {/* PA Code Form */}
         <PaCodeForm
           onSubmit={handleSubmitPaCode}
           isSubmitting={isSubmitting}
+          submissionSuccess={submissionSuccess}
         />
       </div>
     </div>

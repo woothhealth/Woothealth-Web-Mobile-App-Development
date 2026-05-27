@@ -6,7 +6,7 @@ import { NotificationProvider } from "@/context/NotificationContext";
 // const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WooHealth",
+  title: "Woot Health",
   description: "Woot Health is a digital health platform that provides access to healthcare services, including retail health plans, telemedicine, provider networks, and related health services.",
 };
 

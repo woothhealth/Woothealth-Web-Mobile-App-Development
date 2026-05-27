@@ -114,8 +114,18 @@ export async function POST(req: Request) {
         if (backendRes.ok) {
           const data = await backendRes.json();
           return NextResponse.json(data);
+        } else {
+          const respText = await backendRes.text().catch(() => null);
+          console.error("Backend POST returned non-OK", {
+            url: BACKEND_URL + "/admin/pa-codes/",
+            status: backendRes.status,
+            statusText: backendRes.statusText,
+            response: respText,
+            requestBodySample: JSON.stringify(body).slice(0, 1000),
+          });
         }
       } catch (backendError) {
+        console.error("Backend POST request error", backendError);
         // Backend request failed, will fall back to mock
       }
     }

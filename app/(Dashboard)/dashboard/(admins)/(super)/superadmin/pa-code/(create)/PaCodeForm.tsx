@@ -1,20 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import diagnosisData from '@/data/diagnosis-data.json';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import type { PaCodeFormData, TreatmentItem } from './create/page';
 
 interface PaCodeFormProps {
   onSubmit: (formData: PaCodeFormData) => void;
   isSubmitting: boolean;
+  submissionSuccess?: boolean;
 }
 
-const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
-  const [formData, setFormData] = useState<PaCodeFormData>({
+const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submissionSuccess }) => {
+  const initialFormData: PaCodeFormData = {
     hmoid: '',
     dateOfEncounter: '',
     careType: '',
-    diagnosis: '',
+    diagnosis: [],
     treatmentItems: [
       {
         id: '1',
@@ -26,9 +28,15 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
       }
     ],
     requestedBy: '',
-  });
+  };
+
+  const [formData, setFormData] = useState<PaCodeFormData>(initialFormData);
+  const [diagnosisSearch, setDiagnosisSearch] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Calculate total amount whenever treatment items change
   useEffect(() => {
@@ -36,7 +44,31 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
     // Update the total display (we'll show this in the UI)
   }, [formData.treatmentItems]);
 
-  const validateField = (name: string, value: string | number) => {
+  // update diagnosis suggestions when user types in search box
+  useEffect(() => {
+    const term = (diagnosisSearch || '').toString().trim().toLowerCase();
+    if (!term || term.length < 1) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const items = (diagnosisData as any[])
+        .map((d) => (d.searchText || '').toString())
+        .filter(Boolean)
+        .map((raw) => {
+          const parts = raw.split(/\s+/);
+          const name = parts.length > 1 ? parts.slice(1).join(' ') : raw;
+          return { raw, name };
+        })
+        .filter(({ raw, name }) => raw.toLowerCase().includes(term) || name.toLowerCase().includes(term));
+      const uniq = Array.from(new Set(items.map((i) => i.name))).slice(0, 10);
+      setSuggestions(uniq);
+    } catch (err) {
+      setSuggestions([]);
+    }
+  }, [diagnosisSearch]);
+
+  const validateField = (name: string, value: any) => {
     const newErrors = { ...errors };
 
     switch (name) {
@@ -62,8 +94,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
         }
         break;
       case 'diagnosis':
-        if (!value || (typeof value === 'string' && !value.trim())) {
+        if (!value || (Array.isArray(value) && value.length === 0) || (typeof value === 'string' && !value.trim())) {
           newErrors.diagnosis = 'Diagnosis is required';
+        } else if (Array.isArray(value) && value.length > 5) {
+          newErrors.diagnosis = 'You can select up to 5 diagnoses';
         } else {
           delete newErrors.diagnosis;
         }
@@ -82,8 +116,38 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'diagnosisSearch') {
+      setDiagnosisSearch(value);
+      validateField('diagnosis', formData.diagnosis);
+      setShowSuggestions(true);
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
     validateField(name, value);
+  };
+
+  const addDiagnosis = (value: string) => {
+    if (!value) return;
+    setFormData(prev => {
+      const existing = Array.isArray(prev.diagnosis) ? prev.diagnosis : [];
+      if (existing.includes(value)) return prev;
+      if (existing.length >= 5) {
+        setErrors(err => ({ ...err, diagnosis: 'You can select up to 5 diagnoses' }));
+        return prev;
+      }
+      const updated = { ...prev, diagnosis: [...existing, value] };
+      validateField('diagnosis', updated.diagnosis);
+      return updated;
+    });
+    setDiagnosisSearch('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
+  const removeDiagnosis = (value: string) => {
+    setFormData(prev => ({ ...prev, diagnosis: (prev.diagnosis || []).filter((d: string) => d !== value) }));
+    validateField('diagnosis', (formData.diagnosis || []).filter((d: string) => d !== value));
   };
 
   const handleTreatmentItemChange = (id: string, field: keyof TreatmentItem, value: string | number) => {
@@ -95,7 +159,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
 
           // Auto-calculate amount when quantity or unitPrice changes
           if (field === 'quantity' || field === 'unitPrice') {
-            updatedItem.amount = (updatedItem.quantity || 0) * (updatedItem.unitPrice || 0);
+            updatedItem.amount = (updatedItem.quantity) * (updatedItem.unitPrice);
           }
 
           return updatedItem;
@@ -138,8 +202,11 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
     e.preventDefault();
 
     // Validate all fields
-    const fieldsToValidate = ['hmoid', 'dateOfEncounter', 'careType', 'diagnosis', 'requestedBy'];
-    fieldsToValidate.forEach(field => validateField(field, formData[field as keyof PaCodeFormData] as string));
+    validateField('hmoid', formData.hmoid);
+    validateField('dateOfEncounter', formData.dateOfEncounter);
+    validateField('careType', formData.careType);
+    validateField('diagnosis', formData.diagnosis);
+    validateField('requestedBy', formData.requestedBy);
 
     // Check treatment items
     const invalidItems = formData.treatmentItems.filter(
@@ -162,6 +229,18 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
     }
   };
 
+  useEffect(() => {
+    // run reset on any change to submissionSuccess (toggle from parent)
+    if (typeof submissionSuccess !== 'undefined') {
+      setIsSubmitted(true);
+      setFormData(initialFormData);
+      setErrors({});
+      setDiagnosisSearch('');
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [submissionSuccess]);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8 bg-[#ffffff] rounded-[15px] shadow-sm p-6">
       {/* Basic Information */}
@@ -179,7 +258,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
               value={formData.hmoid}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] ${
                 errors.hmoid ? 'border-red-500' : 'border-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               placeholder="Enter HMOID"
@@ -199,7 +278,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
               value={formData.dateOfEncounter}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] ${
                 errors.dateOfEncounter ? 'border-red-500' : 'border-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
             />
@@ -217,7 +296,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
               value={formData.careType}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] ${
                 errors.careType ? 'border-red-500' : 'border-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
             >
@@ -232,27 +311,58 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
             {errors.careType && <p className="mt-1 text-sm text-red-600">{errors.careType}</p>}
           </div>
 
-         
-        </div>
-
-        {/* Diagnosis */}
-        <div className="mt-6">
-          <label htmlFor="diagnosis" className="block mb-2">
-            Diagnosis *
+          {/* Diagnosis */}
+        <div className="relative">
+          <label htmlFor="diagnosisSearch" className="block mb-2">
+            Diagnosis
           </label>
-          <textarea
-            id="diagnosis"
-            name="diagnosis"
-            value={formData.diagnosis}
+          <input
+            id="diagnosisSearch"
+            name="diagnosisSearch"
+            value={diagnosisSearch}
             onChange={handleInputChange}
             disabled={isSubmitting}
-            rows={4}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] ${
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none capitalize focus:ring-1 focus:ring-[#49A5EF] text-sm ${
               errors.diagnosis ? 'border-red-500' : 'border-gray-300'
-            } disabled:bg-gray-100 disabled:cursor-not-allowed resize-none`}
-            placeholder="Enter diagnosis details"
+            } disabled:bg-gray-100 disabled:cursor-not-allowed`}
+            placeholder="Search diagnosis"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (diagnosisSearch.trim()) addDiagnosis(diagnosisSearch.trim());
+              }
+            }}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
+            onFocus={() => { if ((diagnosisSearch || '').length >= 1) setShowSuggestions(true); }}
           />
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute mt-2 max-h-44 w-full overflow-auto border border-gray-200 rounded bg-white shadow z-50">
+              {suggestions.map((s) => (
+                <div
+                  key={s}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    addDiagnosis(s);
+                  }}
+                  className="px-3 capitalize py-2 hover:bg-gray-100 cursor-pointer text-[15px]"
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="mt-2">
+            <div className="flex flex-wrap gap-2">
+              {(formData.diagnosis || []).map((d) => (
+                <div key={d} className="px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2 text-sm">
+                  <span className="capitalize">{d}</span>
+                  <button type="button" onClick={() => removeDiagnosis(d)} className="text-red-500">×</button>
+                </div>
+              ))}
+            </div>
+          </div>
           {errors.diagnosis && <p className="mt-1 text-sm text-red-600">{errors.diagnosis}</p>}
+        </div>
         </div>
       </div>
 
@@ -266,8 +376,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-[#D9D9D9]">
-                <th className="px-4 py-3 text-left text-[15px] font-semibold">Item Code</th>
-                <th className="px-4 py-3 text-left text-[15px] font-semibold">Description</th>
+                <th className="px-4 py-3 text-left text-[15px] font-semibold">Item</th>
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Quantity</th>
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Unit Price</th>
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Amount</th>
@@ -289,31 +398,19 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
                   </td>
                   <td className="px-4 py-3">
                     <input
-                      type="text"
-                      value={item.description}
-                      onChange={(e) => handleTreatmentItemChange(item.id, 'description', e.target.value)}
-                      disabled={isSubmitting}
-                      className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#49A5EF] disabled:bg-gray-100"
-                      placeholder="Enter description"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
                       type="number"
-                      min="1"
                       value={item.quantity}
-                      onChange={(e) => handleTreatmentItemChange(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleTreatmentItemChange(item.id, 'quantity', parseInt(e.target.value))}
                       disabled={isSubmitting}
                       className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#49A5EF] disabled:bg-gray-100"
+                      placeholder="0"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <input
                       type="number"
-                      min="0"
-                      step="0.01"
                       value={item.unitPrice}
-                      onChange={(e) => handleTreatmentItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleTreatmentItemChange(item.id, 'unitPrice', parseFloat(e.target.value))}
                       disabled={isSubmitting}
                       className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#49A5EF] disabled:bg-gray-100"
                       placeholder="0.00"
@@ -378,7 +475,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting }) => {
               value={formData.requestedBy}
               onChange={handleInputChange}
               disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] ${
                 errors.requestedBy ? 'border-red-500' : 'border-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               placeholder="Enter requester name"

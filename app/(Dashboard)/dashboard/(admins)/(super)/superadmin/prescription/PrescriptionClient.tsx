@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { FaSearch, FaEllipsisV, FaEye, FaTrash } from 'react-icons/fa';
@@ -24,6 +24,9 @@ const getStatusColor = (status: string) => {
 
 export default function PrescriptionClient() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(mockPrescriptions);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usedMockData, setUsedMockData] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'patient' | 'hmoId' | 'doctor'>('patient');
   const [deleteTarget, setDeleteTarget] = useState<Prescription | null>(null);
@@ -66,6 +69,68 @@ export default function PrescriptionClient() {
     setDeleteTarget(prescription);
     setOpenActionMenu(null);
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      setUsedMockData(false);
+      try {
+        const res = await fetch(`/api/admin/prescription?page=${page}&limit=${ROWS_PER_PAGE}`, { credentials: 'include' });
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const json = await res.json();
+        const items: any[] = Array.isArray(json?.data) ? json.data : json?.prescriptions || [];
+
+        if (!Array.isArray(items) || items.length === 0) {
+          // no data from API — fall back to mock
+          if (mounted) {
+            setPrescriptions([]);
+            setUsedMockData(false);
+            setLoading(false);
+          }
+          return;
+        }
+
+        const mapped: Prescription[] = items.map((it: any) => ({
+          id: it.id || it.$id || it.prescriptionId || String(it._id || Date.now()),
+          date: it.date || it.createdAt || it.submittedDate || new Date().toISOString(),
+          patient: it.patient || it.patientName || it.userName || it.user || 'Unknown',
+          hmoId: it.hmoId || it.userId || it.policyNumber || it.hmo_id || '',
+          doctor: it.doctor || it.attendingDoctor || it.provider || 'Doctor',
+          specialization: it.specialization || it.speciality || it.department || '',
+          status: (it.status || it.state || 'pending').toLowerCase(),
+          diagnosis: it.diagnosis || it.notes || '',
+          details: Array.isArray(it.details) ? it.details.map((d: any) => ({
+                  medicationName: d.medicationName || d.name || d.drug || '',
+                  dosage: d.dosage || d.strength || '',
+                  frequency: d.frequency || d.schedule || '',
+                  duration: d.duration || d.days || '',
+                  quantity: typeof d.quantity === 'number' ? d.quantity : Number(d.quantity) || 0,
+                  instructions: d.instructions || d.note || '',
+                }))
+              : [],
+        }));
+
+        if (mounted) {
+          setPrescriptions(mapped);
+        }
+      } catch (err: any) {
+        console.warn('Failed to fetch prescriptions, using mock', err);
+        if (mounted) {
+          setPrescriptions(mockPrescriptions);
+          setUsedMockData(true);
+          setError(err?.message || 'Network error');
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false };
+  }, [page]);
 
   const confirmDeletePrescription = () => {
     if (!deleteTarget) return;

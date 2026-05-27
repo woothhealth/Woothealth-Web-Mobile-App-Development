@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 type NotificationItem = {
   id: string;
@@ -23,7 +23,17 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
-const NOTIFICATIONS_API = (process.env.NEXT_PUBLIC_NOTIFICATIONS_API as string) || '/api/notification';
+const DEFAULT_NOTIFICATIONS_API = (process.env.NEXT_PUBLIC_NOTIFICATIONS_API as string) || '/api/notification';
+
+const getNotificationsApi = () => {
+  if (typeof window === 'undefined') return DEFAULT_NOTIFICATIONS_API;
+  const path = window.location.pathname || '';
+  // Use admin notifications proxy when on admin dashboard pages
+  if (path.includes('/dashboard/superadmin') || path.includes('/dashboard/admin')) {
+    return '/api/admin/notifications';
+  }
+  return DEFAULT_NOTIFICATIONS_API;
+};
 
 const normalize = (n: any): NotificationItem => {
   const id = n.$id || n.notificationId || n.notification_id || n.id || String(Math.random());
@@ -46,14 +56,17 @@ const normalize = (n: any): NotificationItem => {
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const intervalRef = useRef<number | null>(null);
+  const POLL_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 
   const load = useCallback(async () => {
     try {
       // If running in browser and there's no session/role cookie, skip loading notifications.
       // Always attempt to fetch notifications from the proxy. Session cookies are often HttpOnly
       // and not visible via `document.cookie`, so client-side checks are unreliable.
-      console.debug('NotificationProvider: fetching', NOTIFICATIONS_API);
-      const res = await fetch(`${NOTIFICATIONS_API}?page=1&limit=50`, { cache: 'no-store', credentials: 'include' });
+      const api = getNotificationsApi();
+      console.debug('NotificationProvider: fetching', api);
+      const res = await fetch(`${api}?page=1&limit=50`, { cache: 'no-store', credentials: 'include' });
       if (!res.ok) {
         const text = await res.text();
         console.error('Notifications proxy error', res.status, text);
@@ -73,11 +86,60 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, []);
 
+  const fetchNewNotifications = useCallback(async () => {
+    try {
+      const api = getNotificationsApi();
+      // fetch the most recent page and merge any new items
+      const res = await fetch(`${api}?page=1&limit=20`, { cache: 'no-store', credentials: 'include' });
+      if (!res.ok) {
+        console.error('Notifications poll error', res.status, await res.text());
+        return;
+      }
+      const payload = await res.json();
+      let items: any[] = [];
+      if (Array.isArray(payload)) items = payload;
+      else if (Array.isArray(payload.data)) items = payload.data;
+      else items = [];
+      const normalized = items.map(normalize);
+      if (normalized.length === 0) return;
+
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id));
+        const newOnes = normalized.filter((n) => !existingIds.has(n.id));
+        if (newOnes.length === 0) return prev;
+        // preserve any local read/dismiss state for overlapping items
+        const mergedNew = newOnes.map((n) => {
+          const found = prev.find((p) => p.id === n.id);
+          return found ? { ...n, read: found.read } : n;
+        });
+        return [...mergedNew, ...prev];
+      });
+    } catch (err) {
+      console.error('Notifications poll error', err);
+    }
+  }, []);
+
   useEffect(() => {
     // Run a single load on mount. Disable polling while notifications backend is being debugged.
     load();
+    // Start polling for new notifications every POLL_INTERVAL_MS
+    if (typeof window !== 'undefined') {
+      intervalRef.current = window.setInterval(() => {
+        fetchNewNotifications();
+      }, POLL_INTERVAL_MS) as unknown as number;
+    }
     return () => {};
   }, [load]);
+
+  // cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
 
   const addNotification = useCallback((title: string, message: string, type = 'info') => {
     const id = `local-${Date.now()}-${Math.random()}`;
@@ -90,7 +152,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // optimistic update
     setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: true } : n)));
     try {
-      const res = await fetch(`${NOTIFICATIONS_API}?id=${encodeURIComponent(id)}`, {
+      const api = getNotificationsApi();
+      const res = await fetch(`${api}?id=${encodeURIComponent(id)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'read' }),
@@ -110,7 +173,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const dismissNotification = useCallback(async (id: string) => {
     setNotifications((s) => s.filter((n) => n.id !== id));
     try {
-      await fetch(`${NOTIFICATIONS_API}?id=${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
+      const api = getNotificationsApi();
+      await fetch(`${api}?id=${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
     } catch (err) {
       console.error('dismissNotification error', err);
     }

@@ -189,7 +189,7 @@ export default function PaCodesClient() {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Search PA codes, provider, or patient"
+            placeholder="Search HMO ID, PA codes, Provider, or Patient Name"
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]"
           />
           <select

@@ -5,23 +5,27 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaEye, FaEyeSlash, FaChevronDown, FaChevronUp, FaCheck, FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
-import { mockRoles, Role } from '../../mockRoles';
+import { Role as RoleType } from '../../mockRoles';
+import { fetchRole } from '../../rolesService';
 
 export default function RolesViewClient() {
   const searchParams = useSearchParams();
   const roleId = searchParams.get('id');
-  const [role, setRole] = useState<Role | null>(null);
+  const [role, setRole] = useState<RoleType | null>(null);
   const [showUsers, setShowUsers] = useState(false);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editRoleDraft, setEditRoleDraft] = useState<Role | null>(null);
+  const [editRoleDraft, setEditRoleDraft] = useState<RoleType | null>(null);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     if (roleId) {
-      const foundRole = mockRoles.find(r => r.id === roleId);
-      setRole(foundRole || null);
+      fetchRole(roleId)
+        .then((r) => { if (mounted) setRole(r); })
+        .catch(() => { if (mounted) setRole(null); });
     }
+    return () => { mounted = false };
   }, [roleId]);
 
   useEffect(() => {

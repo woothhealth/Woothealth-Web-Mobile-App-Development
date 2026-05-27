@@ -26,7 +26,7 @@ export default function ClaimsClient() {
   const [localClaims, setLocalClaims] = useState<Claim[]>(claims);
   const [deleteTarget, setDeleteTarget] = useState<Claim | null>(null);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'patient' | 'provider' | 'status'>('patient');
+  const [selectedCategory, setSelectedCategory] = useState<'patient'| 'userID' | 'provider' | 'status'>('patient');
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const tableRef = useRef<HTMLDivElement | null>(null);
@@ -145,18 +145,18 @@ export default function ClaimsClient() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#ffffff] rounded-[10px] overflow-hidden md:w-[95%] mx-auto">
+      <div className="bg-[#ffffff] rounded-[10px] overflow-hidden">
         {/* Header */}
         <div className="hidden md:block">
           <table className="min-w-full table-fixed">
             <colgroup>
               <col style={{width: '15%'}} />
               <col style={{width: '15%'}} />
-              <col style={{width: '10%'}} />
+              <col style={{width: '15%'}} />
               <col style={{width: '20%'}} />
               <col style={{width: '15%'}} />
               <col style={{width: '10%'}} />
-              <col style={{width: '15%'}} />
+              <col style={{width: '10%'}} />
             </colgroup>
             <thead className="border-b border-[#D9D9D9]">
               <tr>
@@ -268,11 +268,11 @@ export default function ClaimsClient() {
                 <colgroup>
                   <col style={{width: '15%'}} />
                   <col style={{width: '15%'}} />
-                  <col style={{width: '10%'}} />
+                  <col style={{width: '15%'}} />
                   <col style={{width: '20%'}} />
                   <col style={{width: '15%'}} />
                   <col style={{width: '10%'}} />
-                  <col style={{width: '15%'}} />
+                  <col style={{width: '10%'}} />
                 </colgroup>
                 <tbody>
                   {paginatedClaims.map((claim: Claim) => (

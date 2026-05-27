@@ -5,15 +5,9 @@ import { FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
 
 const expectedHeaders = [
-  'tariffCode',
-  'serviceName',
-  'providerType',
-  'tierA',
-  'tierAPlus',
-  'tierB',
-  'tierC',
-  'tierD',
-  'description',
+  's/n',
+  'service',
+  'price'
 ];
 
 interface AddTariffModalProps {
@@ -143,7 +137,7 @@ export default function AddTariffModal({ isOpen, onClose, onTariffAdded }: AddTa
 
     try {
       const tariffs = await parseCsvFile(csvFile);
-      const response = await fetch('/api/admin/tariff', {
+      const response = await fetch('/api/admin/tariffs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

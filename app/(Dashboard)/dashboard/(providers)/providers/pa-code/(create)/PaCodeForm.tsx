@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-// diagnosis data for autocomplete
 import diagnosisData from '@/data/diagnosis-data.json';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import type { PaCodeFormData, TreatmentItem } from './page';

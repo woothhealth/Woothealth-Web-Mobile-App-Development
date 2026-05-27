@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaEye, FaEllipsisV, FaTrash, FaChevronDown, FaChevronUp, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEllipsisV, FaTrash, FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
 import DeleteConfirmModal from '../../DeleteConfirmModal';
-import { Role, ModuleAccess, Permission, MODULES, PERMISSIONS, mockRoles } from '../mockRoles';
+import { Role, ModuleAccess, Permission, MODULES, PERMISSIONS } from '../mockRoles';
 import { FaCheck } from 'react-icons/fa6';
 
 export default function RolesClient() {
-  const [roles, setRoles] = useState<Role[]>(mockRoles);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
@@ -23,16 +24,64 @@ export default function RolesClient() {
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-    setRoles((current) => current.filter((role) => role.id !== deleteTarget.id));
-    toast.success('Role deleted successfully.');
+    // Optimistic UI update
+    const id = deleteTarget.id;
+    setRoles((current) => current.filter((role) => role.id !== id));
     setDeleteTarget(null);
+
+    fetch('/api/admin/role', {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to delete role');
+        toast.success('Role deleted successfully.');
+      })
+      .catch(() => {
+        toast.error('Failed to delete role. Refresh to retry.');
+      });
   };
 
   const handleCreateRole = (role: Role) => {
-    setRoles((current) => [role, ...current]);
-    setShowCreateModal(false);
-    toast.success('Role created successfully.');
+    // POST to API then prepend
+    const payload = { ...role };
+    fetch('/api/admin/role', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        const created: Role = data?.data || payload;
+        setRoles((current) => [created, ...current]);
+        setShowCreateModal(false);
+        toast.success('Role created successfully.');
+      })
+      .catch(() => {
+        toast.error('Failed to create role.');
+      });
   };
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    fetch('/api/admin/role', { credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load roles');
+        const json = await res.json();
+        const list: Role[] = json?.data || [];
+        if (mounted) setRoles(list);
+      })
+      .catch(() => {
+        toast.error('Failed to load roles.');
+      })
+      .finally(() => mounted && setLoading(false));
+    return () => { mounted = false };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -50,46 +99,50 @@ export default function RolesClient() {
 
       <div className="">
         <div className='space-y-2'>
-          {roles.length === 0 ? (
-              <div>
-                <p className="px-4 py-10 text-center text-sm text-slate-500">
-                  No roles found.
-                </p>
+          {loading ? (
+            <div className="px-4 py-6">
+              <p className="text-sm text-slate-500">Loading roles...</p>
+            </div>
+          ) : roles.length === 0 ? (
+            <div>
+              <p className="px-4 py-10 text-center text-sm text-slate-500">
+                No roles found.
+              </p>
+            </div>
+          ) : (
+            roles.map((role) => (
+              <div key={role.id} className="bg-[#ffffff] flex items-center justify-between px-4 py-2 rounded-[15px]">
+                <span className="text-lg font-medium">{role.name}</span>
+                <span className="relative text-center">
+                  <button
+                    onClick={() => setOpenActionMenu(openActionMenu === role.id ? null : role.id)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-200"
+                  >
+                    <FaEllipsisV />
+                  </button>
+                  {openActionMenu === role.id && (
+                    <div className="absolute right-4 top-full z-10 mt-2 w-36 overflow-hidden rounded-3xl border border-[#E5E7EB] bg-white shadow-lg">
+                      <Link
+                        href={`/dashboard/superadmin/roles/view?id=${role.id}`}
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                        onClick={() => setOpenActionMenu(null)}
+                      >
+                        <FaEye />
+                        View
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(role.id)}
+                        className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-slate-50"
+                      >
+                        <FaTrash />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </span>
               </div>
-            ) : (
-              roles.map((role) => (
-                <div key={role.id} className="bg-[#ffffff] flex items-center justify-between px-4 py-2 rounded-[15px]">
-                  <span className="text-lg font-medium">{role.name}</span>
-                  <span className="relative text-center">
-                    <button
-                      onClick={() => setOpenActionMenu(openActionMenu === role.id ? null : role.id)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-200"
-                    >
-                      <FaEllipsisV />
-                    </button>
-                    {openActionMenu === role.id && (
-                      <div className="absolute right-4 top-full z-10 mt-2 w-36 overflow-hidden rounded-3xl border border-[#E5E7EB] bg-white shadow-lg">
-                        <Link
-                          href={`/dashboard/superadmin/roles/view?id=${role.id}`}
-                          className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
-                          onClick={() => setOpenActionMenu(null)}
-                        >
-                          <FaEye />
-                          View
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(role.id)}
-                          className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-slate-50"
-                        >
-                          <FaTrash />
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </span>
-                </div>
-              ))
-            )}
+            ))
+          )}
         </div>
       </div>
 

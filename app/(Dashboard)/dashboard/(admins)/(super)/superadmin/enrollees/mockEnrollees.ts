@@ -5,6 +5,7 @@ export type Enrollee = {
   status: string;
   hmoId?: string;
   plan?: string;
+  address?: string;
   enrollmentDate?: string;
   expiryDate?: string;
   dependants?: number;

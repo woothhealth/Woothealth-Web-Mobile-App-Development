@@ -5,14 +5,15 @@ import { LuUpload } from 'react-icons/lu';
 import Link from 'next/link';
 import { FaEllipsisV, FaEye, FaTimes, FaTrash } from 'react-icons/fa';
 import { toast } from 'sonner';
-import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
+// fetch directly from API instead of context for consistent behaviour with UserTableClient
 
 interface AdminEnrollee {
-  id?: string;
-  name?: string;
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   status?: string;
-  enrollmentDate?: string;
+  $$createdAt?: string;
   [key: string]: any;
 }
 
@@ -29,19 +30,50 @@ export default function EnrolleesClient() {
   const [deleteTarget, setDeleteTarget] = useState<AdminEnrollee | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newEnrollee, setNewEnrollee] = useState<Partial<AdminEnrollee>>({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     status: 'active',
-    hmoId: '',
+    userId: '',
     plan: '',
-    enrollmentDate: '',
+    $createdAt: '',
     expiryDate: '',
     dependants: 0,
     benefitBalance: ''
   });
 
-  // Dynamic data fetch logic commented out while working on UI
-  const { enrollees, loading, error, refetch } = useAdminEnrollees();
+  const [totalEnrollees, setTotalEnrollees] = useState(0);
+
+  const fetchEnrollees = async () => {
+    setIsLoading(true);
+    setApiError(null);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    try {
+      const res = await fetch('/api/admin/enrollees', { credentials: 'include', signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error('Failed to fetch enrollees');
+      const data = await res.json().catch(() => null);
+      if (data && Array.isArray(data.data)) {
+        setEnrolleesData(data.data);
+        setTotalEnrollees(data.total || data.data.length);
+      } else if (Array.isArray(data)) {
+        setEnrolleesData(data);
+        setTotalEnrollees(data.length);
+      } else {
+        throw new Error(data?.message || 'Invalid response structure - missing data array');
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        setApiError('Request timed out. Please try again.');
+      } else {
+        setApiError(err instanceof Error ? err.message : 'An error occurred');
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      setIsLoading(false);
+    }
+  };
 
   const headers = ['Name', 'HMO ID', 'Enrollment Date', 'Expiry Date', 'Dependants', 'Benefit Balance', 'Status', 'Action'];
 
@@ -50,22 +82,28 @@ export default function EnrolleesClient() {
     'inactive': 'bg-[#FEE2E2] text-[#EF4444]'
   };
 
+  const name = (enrollee: AdminEnrollee) => [enrollee.firstName, enrollee.lastName].filter(Boolean).join(' ') || '—';
+
   useEffect(() => {
-    if (enrollees?.data) {
-      setEnrolleesData(enrollees.data);
-    }
-  }, [enrollees]);
+    void fetchEnrollees();
+  }, []);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
   };
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  };
+
   const filteredEnrollees = useMemo(() => {
     const term = search.toLowerCase().trim();
     if (!term) return enrolleesData;
     return enrolleesData.filter((enrollee) =>
-      [enrollee.name, enrollee.email, enrollee.hmoId, enrollee.status]
+      [enrollee.firstName, enrollee.lastName, enrollee.email, enrollee.userId, enrollee.status]
         .filter(Boolean)
         .some((field) => field?.toString().toLowerCase().includes(term))
     );
@@ -127,11 +165,12 @@ export default function EnrolleesClient() {
       const created = await response.json().catch(() => null);
       const newItem: AdminEnrollee = {
         id: created?.id || `enrollee-${Date.now()}`,
-        name: newEnrollee.userName || '',
+        firstName: newEnrollee.firstName || '',
+        lastName: newEnrollee.lastName || '',
         email: newEnrollee.email || '',
         status: newEnrollee.status || 'active',
-        hmoId: newEnrollee.hmoId || '',
-        enrollmentDate: newEnrollee.enrollmentDate || '',
+        userId: newEnrollee.userId || '',
+        $createdAt: newEnrollee.$createdAt || '',
         plan: newEnrollee.plan || '',
         expiryDate: newEnrollee.expiryDate || '',
         dependants: newEnrollee.dependants ?? 0,
@@ -141,11 +180,12 @@ export default function EnrolleesClient() {
       setEnrolleesData((current) => [newItem, ...current]);
       setShowAddModal(false);
       setNewEnrollee({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         status: 'active',
-        hmoId: '',
-        enrollmentDate: '',
+        userId: '',
+        $createdAt: '',
         plan: '',
         expiryDate: '',
         dependants: 0,
@@ -178,7 +218,7 @@ export default function EnrolleesClient() {
             Add Enrollee
           </button>
         </div>
-        {loading && enrolleesData.length === 0 ? (
+        {isLoading && enrolleesData.length === 0 ? (
           <div className="overflow-x-auto custom-scrollbar pb-4 h-120 bg-[#ffffff] rounded-[10px]">
             <table className="min-w-full border border-gray-200 rounded-[10px] overflow-hidden">
               <tbody className='overflow-y-auto h-96'>
@@ -193,17 +233,10 @@ export default function EnrolleesClient() {
                     <td className="px-6 py-3 border-b border-[#E5E7EB]">
                       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                     </td>
-                    <td className="px-6 py-3 border-b border-[#E5E7EB]">
-                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-        ) : error ? (
-          <div className='flex justify-center h-64 mt-4'>
-            <p className="text-red-500">{error}</p>
           </div>
         ) : apiError ? (
           <div className='flex justify-center h-64 mt-4'>
@@ -236,53 +269,58 @@ export default function EnrolleesClient() {
                       </td>
                     </tr>
                   ) : (
-                    paginatedEnrollees.map((enrollee) => (
-                      <tr key={enrollee.id} className="hover:bg-gray-50 text-[14px] text-[#000000] divide-y divide-[#D9D9D9]">
-                        <td className="px-6 py-3">{enrollee.name}</td>
-                        <td className="px-6 py-3">{enrollee.hmoId || '—'}</td>
-                        <td className="px-6 py-3">{enrollee.enrollmentDate || '—'}</td>
-                        <td className="px-6 py-3">{enrollee.expiryDate || '—'}</td>
-                        <td className="px-6 py-3 text-center">{enrollee.dependants || 0}</td>
-                        <td className="px-6 py-3">{enrollee.benefitBalance || '—'}</td>
-                        <td className="px-6 py-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[enrollee.status || 'active'] || ''}`}>
+                    paginatedEnrollees.map((enrollee, idx) => {
+                      const rowKey = enrollee.id ?? enrollee.userId ?? enrollee.email ?? `enrollee-${(page - 1) * ITEMS_PER_PAGE + idx}`;
+                      return (
+                        <tr key={rowKey} className="hover:bg-gray-50 text-[14px] text-[#000000] divide-y divide-[#D9D9D9] capitalize">
+                          <td className="px-6 py-3">{name(enrollee) || '—'}</td>
+                          <td className="px-6 py-3">{enrollee.userId || '—'}</td>
+                          <td className="px-6 py-3">{formatDate(enrollee.$createdAt) || '—'}</td>
+                          <td className="px-6 py-3">{enrollee.expiryDate || '—'}</td>
+                          <td className="px-6 py-3 text-center">{enrollee.dependants || 0}</td>
+                          <td className="px-6 py-3">{enrollee.benefitBalance || '0'}</td>
+                          <td className="px-6 py-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[enrollee.status || 'active'] || ''}`}>
                             {enrollee.status || 'active'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 border-b border-[#D9D9D9]">
-                          <div className="relative">
-                            <button
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 border-b border-[#D9D9D9]">
+                            <div className="relative">
+                              <button
                               type="button"
-                              onClick={() => setOpenActionMenu(openActionMenu === enrollee.id ? enrollee.id : null)}
+                              onClick={() => {
+                                const actionKey = enrollee.id ?? enrollee.userId ?? enrollee.email ?? `enrollee-${(page - 1) * ITEMS_PER_PAGE + idx}`;
+                                setOpenActionMenu(openActionMenu === actionKey ? null : actionKey);
+                              }}
                               className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
-                            >
-                              <FaEllipsisV size={16} />
-                            </button>
-                            {openActionMenu === enrollee.id && (
-                              <div className="absolute right-0 top-full z-10 mt-2 w-32 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-lg">
-                                <Link
-                                  href={`/dashboard/superadmin/enrollees/view?id=${enrollee.id}`}
+                              >
+                                <FaEllipsisV size={16} />
+                              </button>
+                              {openActionMenu === (enrollee.id ?? enrollee.userId ?? enrollee.email ?? `enrollee-${(page - 1) * ITEMS_PER_PAGE + idx}`) && (
+                                <div className="absolute right-0 top-full z-10 mt-2 w-32 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-lg">
+                                  <Link
+                                  href={`/dashboard/superadmin/enrollees/view?id=${enrollee.id ?? enrollee.userId ?? enrollee.email}`}
                                   className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
                                   onClick={() => setOpenActionMenu(null)}
-                                >
-                                  <FaEye size={14} />
-                                  View
-                                </Link>
-                                <button
+                                  >
+                                    <FaEye size={14} />
+                                    View
+                                  </Link>
+                                  <button
                                   type="button"
                                   onClick={() => handleDelete(enrollee)}
                                   className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-slate-50"
-                                >
-                                  <FaTrash size={14} />
-                                  Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                                  >
+                                    <FaTrash size={14} />
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                         </td>
                       </tr>
-                    ))
-                  )}
+                    )}
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -398,8 +436,8 @@ export default function EnrolleesClient() {
                 <span className="text-sm font-medium text-slate-700">Enrollment Date</span>
                 <input
                   type="date"
-                  value={newEnrollee.enrollmentDate || ''}
-                  onChange={(e) => setNewEnrollee((prev) => ({ ...prev, enrollmentDate: e.target.value }))}
+                  value={newEnrollee.$createdAt || ''}
+                  onChange={(e) => setNewEnrollee((prev) => ({ ...prev, $createdAt: e.target.value }))}
                   className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
                 />
               </label>

@@ -3,14 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { CiUser } from 'react-icons/ci';
-import { useBenefitsStatsContext } from '../BenefitsStatsContext';
+import { useEmployeeStats } from '../../enrollees/(home)/EnrolleesStatsContext';
 
 interface TotalEnrolleesClientProps {
   initialData?: number;
 }
 
 const TotalEnrolleesClient: React.FC<TotalEnrolleesClientProps> = ({ initialData = 0 }) => {
-  const { stats, loading } = useBenefitsStatsContext();
+  const { stats, loading } = useEmployeeStats();
   const totalEnrolleesCount = stats?.totalEnrollees || initialData;
 
   return (

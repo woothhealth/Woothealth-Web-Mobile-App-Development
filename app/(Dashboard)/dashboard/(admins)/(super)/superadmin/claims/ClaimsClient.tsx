@@ -27,6 +27,7 @@ export default function ClaimsClient() {
   const [deleteTarget, setDeleteTarget] = useState<Claim | null>(null);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'patient'| 'userID' | 'provider' | 'status'>('patient');
+  const [statusFilter, setStatusFilter] = useState<'all'|'pending'|'approved'|'rejected'|'paid'>('all');
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const tableRef = useRef<HTMLDivElement | null>(null);
@@ -37,17 +38,26 @@ export default function ClaimsClient() {
     { label: 'Status', value: 'status' },
   ];
 
+  const statuses = [
+    { label: 'All Status', value: 'all' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Rejected', value: 'rejected' },
+    { label: 'Paid', value: 'paid' },
+  ];
+
   const headers = ['Date of Service', 'Patient', 'HMO ID', 'Provider', 'Amount', 'Status', 'Action'];
 
   const filteredClaims = useMemo(() => {
     const q = search.toLowerCase();
     return localClaims.filter((claim: Claim) => {
+      if (statusFilter !== 'all' && (claim.status || '').toLowerCase() !== statusFilter) return false;
       if (selectedCategory === 'patient') return (claim.userName || '').toLowerCase().includes(q);
       if (selectedCategory === 'provider') return claim.hospitalProvider.toLowerCase().includes(q);
       if (selectedCategory === 'status') return claim.status.toLowerCase().includes(q);
       return true;
     });
-  }, [localClaims, search, selectedCategory]);
+  }, [localClaims, search, selectedCategory, statusFilter]);
 
   const paginatedClaims = useMemo(() => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
@@ -126,7 +136,7 @@ export default function ClaimsClient() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value as any)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF]"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
           >
             {categories.map((category) => (
               <option key={category.value} value={category.value}>
@@ -139,8 +149,17 @@ export default function ClaimsClient() {
             placeholder={`Search by ${selectedCategory}...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#49A5EF] w-full"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#49A5EF] w-full"
           />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+          >
+            {statuses.map(s => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -161,7 +180,7 @@ export default function ClaimsClient() {
             <thead className="border-b border-[#D9D9D9]">
               <tr>
                 {headers.map((h) => (
-                  <th key={h} className="text-left text-[18px] px-6 py-6">
+                  <th key={h} className="text-left text-[18px] px-6 py-4">
                     {h}
                   </th>
                 ))}
@@ -208,41 +227,14 @@ export default function ClaimsClient() {
                         </span>
                       </td>
                       <td className="px-4 py-3 border-b border-[#E5E7EB] relative">
-                        <button
-                          onClick={() => setOpenMenuId(openMenuId === claim.id ? null : claim.id)}
-                          className="text-slate-500 hover:text-slate-700"
+                        <Link
+                          href={`/dashboard/superadmin/claims/${claim.id}`}
+                          rel="noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                          onClick={() => setOpenMenuId(null)}
                         >
-                          <FaEllipsisV />
-                        </button>
-                        {openMenuId === claim.id && (
-                          <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
-                            <Link
-                              href={`/dashboard/superadmin/claims/${claim.id}`}
-                              rel="noreferrer"
-                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                              onClick={() => setOpenMenuId(null)}
-                            >
-                              <FaEye /> View
-                            </Link>
-                            <Link
-                              href={`/dashboard/superadmin/claims/${claim.id}/edit`}
-                              rel="noreferrer"
-                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                              onClick={() => setOpenMenuId(null)}
-                            >
-                              <FaEdit /> Edit
-                            </Link>
-                            <button
-                              onClick={() => {
-                                setDeleteTarget(claim);
-                                setOpenMenuId(null);
-                              }}
-                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-                            >
-                              <FaTrash /> Delete
-                            </button>
-                          </div>
-                        )}
+                          <FaEye /> View
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -288,42 +280,14 @@ export default function ClaimsClient() {
                         </span>
                       </td>
                       <td className="px-6 py-2 border-b border-[#E5E7EB] relative text-center">
-                        <button
-                          onClick={() => setOpenMenuId(openMenuId === claim.id ? null : claim.id)}
-                          className="text-slate-500 hover:text-slate-700"
+                        <Link
+                          href={`/dashboard/superadmin/claims/${claim.id}`}
+                          rel="noreferrer"
+                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-[#ffffff] w-fit bg-primary/80 rounded-[5px] hover:bg-slate-100"
+                          onClick={() => setOpenMenuId(null)}
                         >
-                          <FaEllipsisV />
-                        </button>
-                        {openMenuId === claim.id && (
-                          <div className="absolute right-0 mt-2 w-32 rounded-lg border border-slate-200 bg-white shadow-lg z-10">
-                            <Link
-                              href={`/dashboard/superadmin/claims/${claim.id}`}
-                              rel="noreferrer"
-                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                              onClick={() => setOpenMenuId(null)}
-                            >
-                              <FaEye /> View
-                            </Link>
-                            <Link
-                              href={`/dashboard/superadmin/claims/${claim.id}/edit`}
-                              rel="noreferrer"
-                              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                              onClick={() => setOpenMenuId(null)}
-                            >
-                              <FaEdit /> Edit
-                            </Link>
-                            <button
-                              onClick={() => {
-                                setDeleteTarget(claim);
-                                setOpenMenuId(null);
-                              }}
-                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-                            >
-                              <FaTrash /> Delete
-                            </button>
-                          </div>
-                        )}
-                      </td>
+                          <FaEye /> View
+                        </Link>                      </td>
                     </tr>
                   ))}
                 </tbody>

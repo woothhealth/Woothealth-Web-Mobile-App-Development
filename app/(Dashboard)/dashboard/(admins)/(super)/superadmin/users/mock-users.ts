@@ -7,8 +7,8 @@ export type UserProfile = {
   dependants: number;
   hmoId: string;
   plan: string;
-  homeAddress: string;
-  dob: string;
+  address: string;
+  dateOfBirth: string;
   gender: 'Male' | 'Female' | 'Other';
   coverStartDate: string;
   coverEndDate: string;
@@ -26,8 +26,8 @@ export const usersMock: UserProfile[] = [
     dependants: 2,
     hmoId: 'HMO-8901',
     plan: 'Premium Health Plan',
-    homeAddress: '14B Ijaye Street, Lagos, Nigeria',
-    dob: '1988-05-21',
+    address: '14B Ijaye Street, Lagos, Nigeria',
+    dateOfBirth: '1988-05-21',
     gender: 'Female',
     coverStartDate: '2025-01-01',
     coverEndDate: '2026-01-01',
@@ -43,8 +43,8 @@ export const usersMock: UserProfile[] = [
     dependants: 1,
     hmoId: 'HMO-4320',
     plan: 'Family Care Plan',
-    homeAddress: '88 Ahmadu Bello way, Abuja, Nigeria',
-    dob: '1990-09-12',
+    address: '88 Ahmadu Bello way, Abuja, Nigeria',
+    dateOfBirth: '1990-09-12',
     gender: 'Male',
     coverStartDate: '2025-04-10',
     coverEndDate: '2026-04-09',
@@ -60,8 +60,8 @@ export const usersMock: UserProfile[] = [
     dependants: 0,
     hmoId: 'HMO-1237',
     plan: 'Silver Care Plan',
-    homeAddress: '2A Alhaji Musa Road, Kano, Nigeria',
-    dob: '1995-11-03',
+    address: '2A Alhaji Musa Road, Kano, Nigeria',
+    dateOfBirth: '1995-11-03',
     gender: 'Female',
     coverStartDate: '2024-08-01',
     coverEndDate: '2025-07-31',
@@ -77,8 +77,8 @@ export const usersMock: UserProfile[] = [
     dependants: 3,
     hmoId: 'HMO-7765',
     plan: 'Executive Health Plan',
-    homeAddress: '1 Victoria Island, Lagos, Nigeria',
-    dob: '1982-03-16',
+    address: '1 Victoria Island, Lagos, Nigeria',
+    dateOfBirth: '1982-03-16',
     gender: 'Male',
     coverStartDate: '2025-02-14',
     coverEndDate: '2026-02-13',

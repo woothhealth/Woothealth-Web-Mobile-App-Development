@@ -43,40 +43,39 @@ export function DeactivateAccountModal({ clientId, clientName, onClose }: Deacti
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+      <div className="absolute inset-0 cursor-pointer" onClick={onClose} />
+      <div className="w-full max-w-md rounded-[15px] bg-white p-6 shadow-xl z-20">
         <div className="flex items-center gap-3">
           <div className="rounded-full bg-red-100 p-2">
             <span className="text-xl">⛔</span>
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Deactivate Account</h2>
+            <h2 className="text-lg font-semibold">Deactivate <span className="uppercase">{clientName}</span> Account</h2>
             <p className="text-xs text-red-600">This action is permanent</p>
           </div>
         </div>
 
-        <p className="mt-4 text-sm text-slate-600">{clientName}</p>
-
         <div className="mt-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-[15px] font-medium">
               Confirm by typing company name
             </label>
             <input
               type="text"
               value={confirmation}
               onChange={(e) => setConfirmation(e.target.value)}
-              className="mt-1 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className="mt-1 w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
               placeholder={clientName}
             />
             {errors.confirmation && <p className="mt-1 text-xs text-red-500">{errors.confirmation}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Reason for Deactivation</label>
+            <label className="block text-[15px] font-medium text-slate-700">Reason for Deactivation</label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
+              className="mt-2 w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
               rows={3}
               placeholder="Provide detailed reason..."
             />
@@ -87,13 +86,13 @@ export function DeactivateAccountModal({ clientId, clientName, onClose }: Deacti
         <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="flex-1 rounded-[10px] border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Cancel
           </button>
           <button
             onClick={handleDeactivate}
-            className="flex-1 rounded-2xl bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:bg-red-300"
+            className="flex-1 rounded-[10px] bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:bg-red-300"
             disabled={confirmation !== clientName || reason.trim().length < 10}
           >
             Deactivate

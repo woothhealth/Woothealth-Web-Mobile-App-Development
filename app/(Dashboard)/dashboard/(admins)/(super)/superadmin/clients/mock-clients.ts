@@ -1,9 +1,12 @@
 export type Client = {
-  id: string;
+  userId: string;
+  firstName?: string;
+  lastName?: string;
   companyName: string;
   status: 'Active' | 'Suspended' | 'Inactive';
   planType: 'Business' | 'Retail';
-  totalEnrollees: number;
+  role?: string;
+  enrolleeCount: number;
   activePlan: number;
   monthlyPremium: number;
   outstanding: number;
@@ -13,28 +16,33 @@ export type Client = {
   phone: string;
   registrationDate: string;
   clientType?: string;
+  $createdAt?: string;
 };
 
 export type Enrollee = {
-  id: string;
+  userId: string;
   dateAdded: string;
-  name: string;
+  $createdAt?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
-  planType: string;
+  plan: string;
   dependents: number;
 };
 
 export type InvoiceItem = {
-  id: string;
+  userId: string;
   itemName: string;
   price: number;
   quantity: number;
 };
 
 export type Invoice = {
-  id: string;
+  userId: string;
   invoiceNumber: string;
   companyName: string;
+  firstName?: string;
+  lastName?: string;
   amount: number;
   amountPaid: number;
   paymentStatus: 'Partial' | 'Full' | 'Overdue';
@@ -48,11 +56,11 @@ export type Invoice = {
 
 export const mockClients: Client[] = [
   {
-    id: '1',
+    userId: '1',
     companyName: 'Acme Corporation',
     status: 'Active',
     planType: 'Business',
-    totalEnrollees: 250,
+    enrolleeCount: 250,
     activePlan: 240,
     monthlyPremium: 500000,
     outstanding: 100000,
@@ -62,13 +70,14 @@ export const mockClients: Client[] = [
     phone: '+234 801 234 5678',
     registrationDate: '2024-01-15',
     clientType: 'Business Client',
+    role: 'Business',
   },
   {
-    id: '2',
+    userId: '2',
     companyName: 'TechStart Ltd',
     status: 'Active',
     planType: 'Retail',
-    totalEnrollees: 120,
+    enrolleeCount: 120,
     activePlan: 115,
     monthlyPremium: 250000,
     outstanding: 50000,
@@ -78,13 +87,14 @@ export const mockClients: Client[] = [
     phone: '+234 802 345 6789',
     registrationDate: '2024-02-20',
     clientType: 'Woothealth Retail',
+    role: 'Retail',
   },
   {
-    id: '3',
+    userId: '3',
     companyName: 'Global Solutions Inc',
     status: 'Suspended',
     planType: 'Business',
-    totalEnrollees: 500,
+    enrolleeCount: 500,
     activePlan: 450,
     monthlyPremium: 1000000,
     outstanding: 300000,
@@ -94,39 +104,43 @@ export const mockClients: Client[] = [
     phone: '+234 803 456 7890',
     registrationDate: '2023-06-10',
     clientType: 'Business Client',
+    role: 'Business',
   },
 ];
 
 export const mockEnrollees: Enrollee[] = [
   {
-    id: '1',
+    userId: '1',
     dateAdded: '2024-01-20',
-    name: 'Amaka Okafor',
+    firstName: 'Amaka',
+    lastName: 'Okafor',
     email: 'amaka.okafor@example.com',
-    planType: 'Premium',
+    plan: 'Premium',
     dependents: 2,
   },
   {
-    id: '2',
+    userId: '2',
     dateAdded: '2024-01-22',
-    name: 'Chisom Nwankwo',
+    firstName: 'Chisom',
+    lastName: 'Nwankwo',
     email: 'chisom.nwankwo@example.com',
-    planType: 'Basic',
+    plan: 'Basic',
     dependents: 1,
   },
   {
-    id: '3',
+    userId: '3',
     dateAdded: '2024-01-25',
-    name: 'Oluwatoyin Adeyemi',
+    firstName: 'Oluwatoyin',
+    lastName: 'Adeyemi',
     email: 'oluwatoyin.adeyemi@example.com',
-    planType: 'Premium',
+    plan: 'Premium',
     dependents: 3,
   },
 ];
 
 export const mockInvoices: Invoice[] = [
   {
-    id: '1',
+    userId: '1',
     invoiceNumber: 'INV-2024-001',
     companyName: 'Acme Corporation',
     amount: 500000,
@@ -138,8 +152,8 @@ export const mockInvoices: Invoice[] = [
     invoiceStatus: 'Pending',
     paymentLink: 'https://payment.example.com/inv-001',
     items: [
-      { id: '1', itemName: 'Premium Plan', price: 250000, quantity: 2 },
-      { id: '2', itemName: 'Basic Plan', price: 100000, quantity: 1 },
+      { userId: '1', itemName: 'Premium Plan', price: 250000, quantity: 2 },
+      { userId: '2', itemName: 'Basic Plan', price: 100000, quantity: 1 },
     ],
   },
 ];

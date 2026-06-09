@@ -21,40 +21,40 @@ export async function GET(req: Request) {
     if (BACKEND_URL) {
       try {
         if (paCodeId) {
-          const backendRes = await fetch(
-            BACKEND_URL + "/admin/pa-codes/" + paCodeId,
-            {
-              headers: {
-                ...getAdminHeaders(cookieHeader),
-              },
-              credentials: "include",
-              next: { revalidate: 300 },
-            }
-          );
+          const backendUrl = BACKEND_URL + "/admin/pa-codes/" + paCodeId;
+          console.log('[route] forwarding GET to backend', { backendUrl });
+          const backendRes = await fetch(backendUrl, {
+            headers: {
+              ...getAdminHeaders(cookieHeader),
+            },
+            credentials: "include",
+            next: { revalidate: 300 },
+          });
 
           if (backendRes.ok) {
             const data = await backendRes.json();
+            console.log('[route] backend response for paCodeId', paCodeId, data);
             return NextResponse.json(data);
           }
         } else {
-          const backendRes = await fetch(
-            BACKEND_URL + `/admin/pa-codes/?page=${page}&limit=${limit}`,
-            {
-              headers: {
-                ...getAdminHeaders(cookieHeader),
-              },
-              credentials: "include",
-              next: { revalidate: 300 },
-            }
-          );
+          const backendUrl = BACKEND_URL + `/admin/pa-codes/?page=${page}&limit=${limit}`;
+          console.log('[route] forwarding GET to backend', { backendUrl });
+          const backendRes = await fetch(backendUrl, {
+            headers: {
+              ...getAdminHeaders(cookieHeader),
+            },
+            credentials: "include",
+            next: { revalidate: 300 },
+          });
 
           if (backendRes.ok) {
             const data = await backendRes.json();
+            console.log('[route] backend response for list', { page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined });
             return NextResponse.json(data);
           }
         }
       } catch (backendError) {
-        // Backend request failed, will fall back to mock
+        console.error('[route] backend request failed, falling back to mock', backendError);
       }
     }
 
@@ -62,8 +62,10 @@ export async function GET(req: Request) {
     if (paCodeId) {
       const paCode = mockPaCodes.find(p => p.$id === paCodeId);
       if (!paCode) {
+        console.log('[route] mock PA code not found for id', paCodeId);
         return NextResponse.json({ error: "PA Code not found" }, { status: 404 });
       }
+      console.log('[route] returning mock PA code for id', paCodeId, paCode);
       return NextResponse.json({
         success: true,
         data: paCode,
@@ -163,6 +165,9 @@ export async function PUT(req: Request) {
 
     if (BACKEND_URL) {
       try {
+        // Some backends expect the internal document id in the body as `documentId`.
+        const forwardBody = { ...updateData, documentId: (updateData as any).documentId || id };
+
         const backendRes = await fetch(
           BACKEND_URL + "/admin/pa-codes/" + id,
           {
@@ -171,31 +176,22 @@ export async function PUT(req: Request) {
               "Content-Type": "application/json",
               ...getAdminHeaders(cookieHeader),
             },
-            body: JSON.stringify(updateData),
+            body: JSON.stringify(forwardBody),
             credentials: "include",
           }
         );
 
-        if (backendRes.ok) {
-          const data = await backendRes.json();
-          return NextResponse.json(data);
-        }
+        // Forward backend response (including non-OK statuses) to the client
+        const respText = await backendRes.text().catch(() => null);
+        let parsed: any = respText;
+        try { parsed = respText ? JSON.parse(respText) : null; } catch (e) { /* keep text */ }
+        return NextResponse.json(parsed, { status: backendRes.status });
       } catch (backendError) {
-        // Backend request failed, will fall back to mock
+        return NextResponse.json({ error: 'Backend PUT request failed' }, { status: 502 });
       }
     }
-
-    // Fallback to mock
-    const index = mockPaCodes.findIndex(paCode => paCode.$id === id);
-    if (index === -1) {
-      return NextResponse.json({ error: "PA Code not found" }, { status: 404 });
-    }
-    mockPaCodes[index] = { ...mockPaCodes[index], ...updateData, $updatedAt: new Date().toISOString() };
-    return NextResponse.json({
-      success: true,
-      data: mockPaCodes[index],
-      message: "PA Code updated successfully (mock)"
-    }, { status: 200 });
+    // No BACKEND_URL configured — cannot proceed
+    return NextResponse.json({ error: 'Backend not configured for PUT /admin/pa-codes' }, { status: 500 });
   } catch (error) {
     console.error("Error updating pa-code:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

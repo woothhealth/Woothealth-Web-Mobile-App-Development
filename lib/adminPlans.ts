@@ -30,8 +30,27 @@ export async function createAdminPlan(payload: any) {
     body: JSON.stringify(payload),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to create plan');
-  return res.json();
+
+  const text = await res.text();
+  let data: any = text;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    // leave as text
+  }
+
+  // Some backends return 201 but include a failure payload (e.g. { success: false }).
+  if (res.status === 201 && data && typeof data === 'object' && data.success === false) {
+    const err = data.message || data.error || JSON.stringify(data);
+    throw new Error(`Failed to create plan (201): ${err}`);
+  }
+
+  if (!res.ok) {
+    const errMsg = (data && typeof data === 'object') ? (data.message || data.error || JSON.stringify(data)) : text || res.statusText;
+    throw new Error(`Failed to create plan: ${errMsg}`);
+  }
+
+  return data;
 }
 
 export async function updateAdminPlan(planId: string, payload: any) {
@@ -41,8 +60,27 @@ export async function updateAdminPlan(planId: string, payload: any) {
     body: JSON.stringify(payload),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to update plan');
-  return res.json();
+
+  const text = await res.text();
+  let data: any = text;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    // leave as text
+  }
+
+  // Handle success:false payloads even on 200
+  if (res.status === 200 && data && typeof data === 'object' && data.success === false) {
+    const err = data.message || data.error || JSON.stringify(data);
+    throw new Error(`Failed to update plan (200): ${err}`);
+  }
+
+  if (!res.ok) {
+    const errMsg = (data && typeof data === 'object') ? (data.message || data.error || JSON.stringify(data)) : text || res.statusText;
+    throw new Error(`Failed to update plan: ${errMsg}`);
+  }
+
+  return data;
 }
 
 export async function deleteAdminPlan(planId: string) {

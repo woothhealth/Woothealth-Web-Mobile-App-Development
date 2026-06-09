@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface ViewEnrolleesModalProps {
   clientId: string;
@@ -11,11 +12,32 @@ interface ViewEnrolleesModalProps {
 
 export function ViewEnrolleesModal({ clientId, clientName, enrolleeCount, onClose }: ViewEnrolleesModalProps) {
   const router = useRouter();
+  const [data, setData] = useState<any | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/admin/clients?clientId=${encodeURIComponent(clientId)}`, { credentials: 'include' });
+        const json = await res.json().catch(() => null);
+        if (!mounted) return;
+        setData(json?.data || json);
+        // eslint-disable-next-line no-console
+        console.debug('ViewEnrolleesModal backend data:', json);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching enrollees data', err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [clientId]);
 
   const handleView = () => {
-    router.push(`dashboard/superadmin/clients/enrollees`);
+    router.push(`/dashboard/superadmin/clients/enrollees?clientId=${clientId}`);
     onClose();
   };
+
+  const total = data?.enrolleeCount ?? enrolleeCount;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -24,7 +46,7 @@ export function ViewEnrolleesModal({ clientId, clientName, enrolleeCount, onClos
         <p className="mt-2 text-sm text-slate-600">{clientName}</p>
         <div className="mt-4 rounded-2xl bg-slate-50 p-4">
           <p className="text-sm text-slate-600">Total Enrollees</p>
-          <p className="text-2xl font-bold text-blue-600">{enrolleeCount}</p>
+          <p className="text-2xl font-bold text-blue-600">{total}</p>
         </div>
         <div className="mt-6 flex gap-3">
           <button

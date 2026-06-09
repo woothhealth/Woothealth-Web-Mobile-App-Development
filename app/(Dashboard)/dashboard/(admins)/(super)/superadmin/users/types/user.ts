@@ -11,7 +11,7 @@ export interface User {
   plan: string | null;
   latitude: string;
   longitude: string;
-  profile_pic: string;
+  profile_pic?: string;
   businessId: string | null;
   status: string | null;
   department: string | null;
@@ -25,6 +25,7 @@ export interface User {
   providerName: string | null;
   providerState: string | null;
   preExistingCond: string | null;
+  address?: string;
   passportUrl: string | null;
   nakasoft_id: string | null;
   source: string | null;

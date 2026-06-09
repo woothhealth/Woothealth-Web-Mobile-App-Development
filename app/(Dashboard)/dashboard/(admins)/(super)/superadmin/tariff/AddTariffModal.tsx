@@ -1,19 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
 
 const expectedHeaders = [
   's/n',
-  'service',
-  'price'
+  'tariffCode',
+  'serviceName',
+  'providerType',
+  'tierA',
+  'tierAPlus',
+  'tierB',
+  'tierC',
+  'tierD',
+  'description'
 ];
 
 interface AddTariffModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTariffAdded: () => void;
+  providerName?: string;
+  providerType?: string;
 }
 
 function splitCSVLine(line: string) {
@@ -89,13 +98,24 @@ async function parseCsvFile(file: File) {
   return parsed;
 }
 
-export default function AddTariffModal({ isOpen, onClose, onTariffAdded }: AddTariffModalProps) {
-  const [providerName, setProviderName] = useState('');
-  const [providerType, setProviderType] = useState('');
+export default function AddTariffModal({ isOpen, onClose, onTariffAdded, providerName: initialProviderName = '', providerType: initialProviderType = '' }: AddTariffModalProps) {
+  const [providerName, setProviderName] = useState(initialProviderName);
+  const [providerType, setProviderType] = useState(initialProviderType);
   const [agentName, setAgentName] = useState('');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setProviderName(initialProviderName);
+      setProviderType(initialProviderType);
+      setAgentName('');
+      setCsvFile(null);
+      setErrors({});
+    }
+    // only when modal opens or initial values change
+  }, [isOpen, initialProviderName, initialProviderType]);
 
   if (!isOpen) return null;
 
@@ -170,7 +190,7 @@ export default function AddTariffModal({ isOpen, onClose, onTariffAdded }: AddTa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full md:w-3xl h-full overflow-auto rounded-[15px] bg-white shadow-xl">
+      <div className="w-full md:w-3xl h-fit overflow-auto rounded-[15px] bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">Add New Tariff</h2>
@@ -245,7 +265,18 @@ export default function AddTariffModal({ isOpen, onClose, onTariffAdded }: AddTa
           </div>
           </div>
 
-          <div className="rounded-3xl bg-slate-50 p-4 text-xs text-slate-700">
+          <div className="mt-2 flex items-start gap-3 flex-col">
+            <a
+              href="/sample-tariffs.csv"
+              download
+              className="rounded-xl border border-slate-300 bg-primary px-4 py-2 text-sm text-white hover:bg-primary/90 transition"
+            >
+              Download sample CSV
+            </a>
+            <p className="text-xs text-slate-500">Download a ready-made CSV with the exact header order required.</p>
+          </div>
+
+          <div className="rounded-3xl bg-slate-50 px-4 text-xs text-slate-700">
             <p className="font-semibold text-slate-900">CSV validation rules</p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
               <li>File must be a CSV file.</li>
@@ -257,14 +288,14 @@ export default function AddTariffModal({ isOpen, onClose, onTariffAdded }: AddTa
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 hover:bg-slate-50 transition"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-2 font-medium text-slate-700 hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-primary px-5 py-3 font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-primary px-6 py-2 font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? 'Uploading...' : 'Upload Tariff'}
             </button>

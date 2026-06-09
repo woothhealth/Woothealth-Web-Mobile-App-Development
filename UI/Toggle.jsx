@@ -98,7 +98,7 @@ const Toggle = ({ isOpen, onClose }) => {
             </div>
         </div>
     </div>
-    <div className='absolute top-18 h-screen w-full bg-[#FFFFFF] opacity-25'></div>
+    <div className='absolute top-18 h-screen w-full bg-[#FFFFFF] opacity-25' onClick={() => onClose?.()}></div>
     </>
   )
 }

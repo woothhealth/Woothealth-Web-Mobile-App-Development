@@ -7,7 +7,11 @@ export const parseRoleFromCookie = (cookieHeader: string): string | null => {
 };
 
 export const requireBusinessRole = (cookieHeader: string) => {
-  if (!cookieHeader || !cookieHeader.includes("session=")) {
+  // Accept any non-empty cookie header rather than relying on a specific
+  // cookie name like `session=`. Session cookie names vary between
+  // environments and may be HttpOnly, so the presence of a cookie header
+  // is a better indicator that the user has a session.
+  if (!cookieHeader || !cookieHeader.trim()) {
     return NextResponse.json({ error: "Unauthorized: missing session" }, { status: 401 });
   }
 

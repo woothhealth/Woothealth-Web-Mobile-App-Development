@@ -27,7 +27,7 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
     expiryDate: '',
     autoBilling: 'Yes',
     nationality: '',
-    photo: '',
+    profile_pic: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -65,27 +65,239 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
     toast('Submitting...');
     setUploading(true);
     try {
-      // If a bulk file is present, upload to bulk endpoint
+      // Always create the client first (file upload is optional)
+      const planType = (formData.planType || formData.clientType || '').toString().toLowerCase();
+      const role = planType === 'business' ? 'business' : 'retail';
+
+      // derive firstName/lastName from companyName if necessary
+      let derivedFirst = (formData as any).firstName || '';
+      let derivedLast = (formData as any).lastName || '';
+      if (!derivedFirst && !derivedLast && formData.companyName && formData.companyName.includes(' ')) {
+        const parts = formData.companyName.trim().split(/\s+/);
+        derivedFirst = parts.shift() || '';
+        derivedLast = parts.join(' ');
+      }
+
+      const payload: any = {
+        companyName: formData.companyName,
+        email: formData.email,
+        password: (formData as any).password || generatePassword(),
+        firstName: derivedFirst || formData.companyName || '',
+        lastName: derivedLast || '',
+        role,
+        meta: {
+          companyName: formData.companyName,
+          phone: formData.phone,
+          registrationDate: formData.registrationDate,
+          clientAddress: formData.clientAddress,
+          employees: formData.employees,
+          plan: formData.plan,
+          enrollmentDate: formData.enrollmentDate,
+          expiryDate: formData.expiryDate,
+          autoBilling: formData.autoBilling,
+          nationality: formData.nationality,
+        },
+      };
+
+      // create client
+      // eslint-disable-next-line no-console
+      console.log('Creating client payload', payload);
+      const createRes = await fetch('/api/admin/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include',
+      });
+
+      const createText = await createRes.text();
+      let createData: any = createText;
+      try { createData = JSON.parse(createText); } catch (e) { /* not json */ }
+
+      if (!createRes.ok || (createData && createData.success === false)) {
+        console.error('Create client failed', createRes.status, createData || createText);
+
+        // If 409 conflict (user exists), try to locate existing client by email and continue
+        if (createRes.status === 409) {
+          toast.error((createData && (createData.message || createData.error)) || 'User already exists. Attempting to locate existing client...');
+          try {
+            const listRes = await fetch('/api/admin/clients');
+            const listText = await listRes.text();
+            let listData: any = listText;
+            try { listData = JSON.parse(listText); } catch (e) { /* not json */ }
+
+            const items = (listData && listData.data) ? listData.data : (Array.isArray(listData) ? listData : []);
+            const match = Array.isArray(items) ? items.find((it: any) => String(it.email || '').toLowerCase() === String(formData.email || '').toLowerCase()) : null;
+            if (match) {
+              // derive id like before and continue
+              const existingId = String(match.id || match._id || match['$id'] || match.clientId || match.businessId || '');
+              if (existingId) {
+                // set businessId and continue to CSV upload path
+                // eslint-disable-next-line no-console
+                console.log('Found existing client id for email, will attach as businessId:', existingId);
+                // attach businessId to bulk rows below by setting createdClient variable
+                // reuse createdClient variable to hold match object
+                // @ts-ignore
+                createData = { data: match };
+              } else {
+                toast.error('Existing client found but could not derive id; please check backend.');
+                setUploading(false);
+                return;
+              }
+            } else {
+              toast.error('User already exists but could not locate the client by email.');
+              setUploading(false);
+              return;
+            }
+          } catch (e) {
+            console.error('Failed to locate existing client after 409:', e);
+            toast.error('User exists and locating existing client failed');
+            setUploading(false);
+            return;
+          }
+        } else {
+          toast.error((createData && (createData.message || createData.error)) || 'Failed to create client');
+          setUploading(false);
+          return;
+        }
+      }
+
+      // client created successfully
+      const createdClient = (createData && createData.data) ? createData.data : createData;
+      toast.success(`Client "${formData.companyName}" created successfully`);
+
+      // derive businessId from created client (support several possible id fields)
+      let businessId = '';
+      if (createdClient !== null && createdClient !== undefined) {
+        if (typeof createdClient === 'string' || typeof createdClient === 'number') {
+          businessId = String(createdClient);
+        } else if (typeof createdClient === 'object') {
+          businessId = String(
+            createdClient.id || createdClient._id || createdClient['$id'] || createdClient.clientId || createdClient.businessId ||
+            (createdClient.data && (createdClient.data.id || createdClient.data._id || createdClient.data['$id'])) || ''
+          );
+        }
+      }
+
+      // If CSV was provided, attempt to upload parsed rows as additional clients/users
       if (bulkFile) {
-        // Ensure CSV was parsed into users
         if (!bulkUsers || bulkUsers.length === 0) {
-          toast.error('No users parsed from CSV. Check file format and headers');
+          toast.error('No users parsed from CSV. Client created without CSV rows.');
+          // inform parent to refresh
+          if (onCreate) {
+            try { await onCreate(createdClient); } catch (e) { console.error('onCreate callback failed', e); }
+          }
+          // reset bulk file state and close
+          setBulkFile(null);
+          setBulkFileName('');
+          setBulkPreview('');
+          setBulkUsers(null);
+          onClose();
+          return;
+        }
+
+        // Map parsed CSV rows into the precise API `clients` array shape expected by backend
+        const clients = bulkUsers.map((u: Record<string, string>) => {
+          const lc: Record<string, string> = {};
+          Object.keys(u).forEach(k => { lc[k.trim().toLowerCase()] = u[k]; });
+
+          const planType = (lc.plan || lc.plantype || lc.clienttype || lc.type || '').toString().toLowerCase();
+          const csvRole = (lc.role || lc.userrole || lc.accounttype || lc.role_type || '').toString().toLowerCase();
+          const rowRole = csvRole ? csvRole : (planType === 'business' ? 'business' : 'retail');
+
+          let enrollees: any[] | undefined = undefined;
+          if (lc.enrollees) {
+            try {
+              const parsed = JSON.parse(lc.enrollees);
+              if (Array.isArray(parsed)) {
+                enrollees = parsed.map((e: any) => ({
+                  email: e.email,
+                  password: e.password || generatePassword(lc.companyname || lc.company || lc.name || ''),
+                  firstName: e.firstName || e.firstname || '',
+                  lastName: e.lastName || e.lastname || '',
+                }));
+              }
+            } catch (e) { /* ignore */ }
+          }
+
+          const clientObj: any = {
+            email: lc.email || '',
+            password: lc.password || generatePassword(lc.companyname || lc.company || lc.name || ''),
+            firstName: lc.firstname || lc.firstname || lc.name || '',
+            lastName: lc.lastname || lc.lastname || lc.name || '',
+            role: rowRole,
+          };
+
+          const companyField = (lc.companyname || lc.company || lc.name || '').toString().trim();
+          if (!clientObj.firstName && !clientObj.lastName && companyField.includes(' ')) {
+            const parts = companyField.split(/\s+/);
+            clientObj.firstName = parts.shift() || '';
+            clientObj.lastName = parts.join(' ');
+          }
+
+          if (enrollees && enrollees.length > 0) clientObj.enrollees = enrollees;
+          return clientObj;
+        });
+
+        // Attach businessId to each CSV row if available so backend knows these belong to the created business
+        if (businessId) {
+          clients.forEach(c => { c.businessId = businessId; });
+        }
+
+        // send bulk clients payload
+        // eslint-disable-next-line no-console
+        console.log('Sending CSV rows as clients payload', { clients });
+        const bulkRes = await fetch('/api/admin/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clients }),
+          credentials: 'include',
+        });
+
+        const bulkText = await bulkRes.text();
+        let bulkData: any = bulkText;
+        try { bulkData = JSON.parse(bulkText); } catch (e) { /* not json */ }
+
+        if (bulkData && bulkData.success === false) {
+          toast.error(bulkData.message || 'CSV upload failed');
+          console.error('Bulk upload failed data:', bulkData);
+          setUploading(false);
+          return; // keep modal open for fixes
+        }
+
+        if (bulkData && bulkData.results && typeof bulkData.results === 'object') {
+          const succ = Number(bulkData.results.success || 0);
+          const fail = Number(bulkData.results.failure || 0);
+          if (fail > 0) {
+            toast.error(`CSV upload: ${succ} succeeded, ${fail} failed`);
+            console.error('Bulk upload row errors:', bulkData.results.errors || bulkData);
+            setUploading(false);
+            return; // keep modal open
+          }
+          // all good
+          toast.success(bulkData.message || 'CSV rows uploaded');
+          // inform parent to refresh
+          if (onCreate) {
+            try { await onCreate(createdClient); } catch (e) { console.error('onCreate callback failed', e); }
+          }
+          setBulkFile(null);
+          setBulkFileName('');
+          setBulkPreview('');
+          setBulkUsers(null);
+          onClose();
+          return;
+        }
+
+        if (!bulkRes.ok) {
+          console.error('Bulk upload HTTP error', bulkRes.status, bulkText);
+          toast.error('CSV upload failed');
           setUploading(false);
           return;
         }
 
-        const res = await fetch('/api/admin/bulk-users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ users: bulkUsers }),
-          credentials: 'include',
-        });
-        if (!res.ok) {
-          const text = await res.text();
-          console.error('bulk-users failed:', res.status, text);
-          throw new Error(text || 'Bulk upload failed');
+        toast.success('CSV rows uploaded');
+        if (onCreate) {
+          try { await onCreate(createdClient); } catch (e) { console.error('onCreate callback failed', e); }
         }
-        toast.success('Bulk upload successful');
         setBulkFile(null);
         setBulkFileName('');
         setBulkPreview('');
@@ -94,16 +306,10 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
         return;
       }
 
-      // Regular single-client create
-      const payload = { ...formData };
-      const res = await fetch('/api/admin/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        credentials: 'include',
-      });
-      if (!res.ok) throw new Error('Failed to create client');
-      toast.success(`Client "${formData.companyName}" created successfully`);
+      // no CSV provided, close modal after successful client create
+      if (onCreate) {
+        try { await onCreate(createdClient); } catch (e) { console.error('onCreate callback failed', e); }
+      }
       onClose();
     } catch (err: any) {
       console.error(err);
@@ -111,6 +317,59 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
     } finally {
       setUploading(false);
     }
+  };
+
+  // generate a password tailored to `companyName` with at least 1 uppercase, 1 lowercase and 1 digit
+  // max length capped at 10 characters. If `companyName` is provided, incorporate its characters.
+  const generatePassword = (companyName = '', len = 10) => {
+    const maxLen = Math.min(10, Math.max(4, len));
+    const clean = String(companyName || '').replace(/[^a-zA-Z0-9]/g, '');
+
+    const randLower = () => String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    const randUpper = () => String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    const randDigit = () => String.fromCharCode(48 + Math.floor(Math.random() * 10));
+    const randAny = () => {
+      const pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      return pool.charAt(Math.floor(Math.random() * pool.length));
+    };
+
+    // determine target length: prefer companyName length + 2, but at least 6 and at most maxLen
+    const targetLen = Math.min(maxLen, Math.max(6, Math.min(10, (clean.length > 0 ? Math.min(10, clean.length + 2) : 8))));
+
+    const parts: string[] = [];
+
+    if (clean.length > 0) {
+      // start with first char of companyName uppercased
+      parts.push(clean.charAt(0).toUpperCase());
+      if (clean.length > 1) parts.push(clean.charAt(1).toLowerCase());
+    } else {
+      // fallback seeds
+      parts.push(randUpper());
+      parts.push(randLower());
+    }
+
+    // ensure we have at least one digit
+    parts.push(randDigit());
+
+    // fill remaining with random allowed chars
+    while (parts.join('').length < targetLen) {
+      parts.push(randAny());
+    }
+
+    // shuffle to avoid predictable order while keeping required characters
+    const arr = parts.join('').slice(0, targetLen).split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+
+    // final safety checks: ensure at least one upper, one lower, one digit
+    let pwd = arr.join('');
+    if (!/[A-Z]/.test(pwd)) pwd = randUpper() + pwd.slice(1);
+    if (!/[a-z]/.test(pwd)) pwd = pwd.slice(0, 1) + randLower() + pwd.slice(2);
+    if (!/\d/.test(pwd)) pwd = pwd.slice(0, 2) + randDigit() + pwd.slice(3);
+
+    return pwd.slice(0, targetLen);
   };
 
   const handleChange = (field: keyof typeof formData, value: any) => {
@@ -146,21 +405,21 @@ export function CreateClientModal({ onClose, onCreate }: CreateClientModalProps)
                 if (file) {
                   const reader = new FileReader();
                   reader.onload = () => {
-                    setFormData(prev => ({ ...prev, photo: reader.result as string }));
+                    setFormData(prev => ({ ...prev, profile_pic: reader.result as string }));
                   };
                   reader.readAsDataURL(file);
                 }
               }}
             />
             <label htmlFor="client-logo-upload" className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-border bg-slate-50 text-sm hover:bg-slate-100 overflow-hidden">
-              {formData.photo ? (
+              {formData.profile_pic ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={formData.photo} alt="client" className="h-full w-full object-cover" />
+                <img src={formData.profile_pic} alt="client" className="h-full w-full object-cover" />
               ) : (
                 <FaUser size={24} />
               )}
             </label>
-            <p className="mt-1">Upload photo</p>
+            <p className="mt-1">Upload profile_pic</p>
           </div>
         <div className="mt-6 space-y-4">
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

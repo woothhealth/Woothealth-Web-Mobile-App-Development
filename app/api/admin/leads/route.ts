@@ -34,6 +34,7 @@ export async function GET(req: Request) {
     });
 
     const data = await parseJson(backendRes);
+    console.debug('Admin leads GET backend response:', backendRes.status, data);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin leads GET error:', error?.message || error);
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
     });
 
     const data = await parseJson(backendRes);
+    console.debug('Admin leads POST backend response:', backendRes.status, data);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin leads POST error:', error?.message || error);
@@ -102,6 +104,7 @@ export async function PUT(req: Request) {
     });
 
     const data = await parseJson(backendRes);
+    console.debug('Admin leads PUT backend response:', backendRes.status, data);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin leads PUT error:', error?.message || error);
@@ -136,6 +139,7 @@ export async function DELETE(req: Request) {
     });
 
     const data = await parseJson(backendRes);
+    console.debug('Admin leads DELETE backend response:', backendRes.status, data);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin leads DELETE error:', error?.message || error);

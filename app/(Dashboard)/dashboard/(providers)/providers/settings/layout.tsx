@@ -1,4 +1,4 @@
-import ProviderHeader from "@/app/(providers)/Components/ProviderHeader";
+import ProviderHeader from "../../Components/ProviderHeader";
 import { SettingsProvider } from "./SettingsContext";
 
 export default function SettingsLayout({

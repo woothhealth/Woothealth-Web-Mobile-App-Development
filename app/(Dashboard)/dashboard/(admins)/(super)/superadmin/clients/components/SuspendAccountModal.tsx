@@ -41,23 +41,23 @@ export function SuspendAccountModal({ clientId, clientName, onClose }: SuspendAc
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+      <div className="absolute inset-0 cursor-pointer" onClick={onClose} />
+      <div className="w-full max-w-md rounded-[15px] bg-white p-6 shadow-xl z-20">
         <div className="flex items-center gap-3">
           <div className="rounded-full bg-yellow-100 p-2">
             <span className="text-xl">⚠️</span>
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Suspend Account</h2>
-            <p className="text-sm text-slate-600">{clientName}</p>
+            <h2 className="text-lg font-semibold">Suspend <span className="uppercase">{clientName}</span> Account</h2>
           </div>
         </div>
 
         <div className="mt-4">
-          <label className="block text-sm font-medium text-slate-700">Reason for Suspension</label>
+          <label className="block text-[15px] font-medium">Reason for Suspension</label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
+            className="mt-2 w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-blue-500 focus:outline-none resize-none"
             rows={3}
             placeholder="Please provide a reason for suspension..."
           />
@@ -67,13 +67,13 @@ export function SuspendAccountModal({ clientId, clientName, onClose }: SuspendAc
         <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="flex-1 rounded-[10px] border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSuspend}
-            className="flex-1 rounded-2xl bg-yellow-500 px-4 py-3 text-sm font-medium text-white hover:bg-yellow-600 disabled:bg-slate-300"
+            className="flex-1 rounded-[10px] bg-yellow-500 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-600 disabled:bg-slate-300"
             disabled={Object.keys(errors).length > 0}
           >
             Suspend

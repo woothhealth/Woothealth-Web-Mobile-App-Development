@@ -1,16 +1,18 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import Link from 'next/link';
-import { FaArrowLeft, FaCheckCircle, FaTimesCircle, FaCommentDots, FaRegEye, FaEyeSlash, FaRegEdit } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { IoIosArrowBack } from 'react-icons/io';
 import { mockPaCodeDetails, type PaCodeDetail } from '../../mockPaCodeDetails';
 import { getAdminUserById, type AdminUser } from '@/lib/adminUser';
-import Title from '../../../UIs/Title';
 
 type PaCode = PaCodeDetail & {
   userId?: string;
   hmoId?: string;
+  status?: 'approved' | 'declined' | 'under review' | 'pending';
 };
 
 interface PaCodeViewClientProps {
@@ -25,7 +27,15 @@ async function getPaCode(paCodeId: string): Promise<PaCode | null> {
   }
 
   try {
-    const res = await fetch(`/api/admin/pa-codes?paCodeId=${encodeURIComponent(paCodeId)}`, { cache: 'no-store' });
+        const res = await fetch(`/api/admin/pa-codes?paCodeId=${encodeURIComponent(paCodeId)}`, { cache: 'no-store' });
+
+        // Log raw response for debugging
+        try {
+          const peek = await res.clone().json().catch(() => null);
+          console.debug('GET /api/admin/pa-codes response:', peek);
+        } catch (e) {
+          console.debug('GET /api/admin/pa-codes response: (could not parse)');
+        }
 
     if (res.ok) {
       const data = await res.json();
@@ -45,6 +55,7 @@ async function getPaCode(paCodeId: string): Promise<PaCode | null> {
       }
 
       if (paCode) {
+        console.debug('Resolved PA code object:', paCode);
         return paCode;
       }
     }
@@ -66,7 +77,7 @@ async function getPaCode(paCodeId: string): Promise<PaCode | null> {
 export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
   const [paCode, setPaCode] = useState<PaCode | null>(null);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState<'approved' | 'under review' | 'declined'>('under review');
+  const [status, setStatus] = useState<'approved' | 'under review' | 'declined' | 'pending'>('under review');
   const [user, setUser] = useState<AdminUser | null>(null);
   const [comment, setComment] = useState('');
   const [submittedComment, setSubmittedComment] = useState('');
@@ -74,6 +85,9 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
   const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
   const [showCommentConfirm, setShowCommentConfirm] = useState(false);
   const [isShowPaCode, setIsShowPaCode] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const router = useRouter();
+  const [treatmentNeeded, setTreatmentNeeded] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (!paCodeId) {
@@ -106,6 +120,13 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
       return;
     }
 
+    // initialize treatmentNeeded map when paCode loads
+    const initMap: Record<number, boolean> = {};
+    (paCode.treatment || []).forEach((_: any, idx: number) => {
+      initMap[idx] = true;
+    });
+    setTreatmentNeeded(initMap);
+
     const linkedUserId = paCode.patientId || paCode.userId || paCode.hmoId;
     if (!linkedUserId) {
       setUser(null);
@@ -125,14 +146,60 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
     loadUser();
   }, [paCode]);
 
+  const toggleTreatmentNeeded = (index: number) => {
+    setTreatmentNeeded(prev => ({ ...prev, [index]: !prev[index] }));
+  };
+
   const handleApprove = () => {
-    setStatus('approved');
-    setShowApproveConfirm(false);
+    // optimistic UI + backend update
+    updateStatus('approved');
   };
 
   const handleDecline = () => {
-    setStatus('declined');
-    setShowDeclineConfirm(false);
+    updateStatus('declined');
+  };
+
+  const updateStatus = async (newStatus: 'approved' | 'declined' | 'under review' | 'pending') => {
+    if (!paCode) return;
+
+    const id = (paCode as any).$id || (paCode as any).id || (paCode as any).paCodeId;
+    if (!id) {
+      console.error('PA Code id not found, cannot update status');
+      toast.error('PA Code id not found');
+      setShowApproveConfirm(false);
+      setShowDeclineConfirm(false);
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      console.debug('Updating PA code status', { id, newStatus });
+      const res = await fetch('/api/admin/pa-codes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (res.ok) {
+        setPaCode(prev => prev ? { ...prev, status: newStatus } : prev);
+        setStatus(newStatus as any);
+        toast.success('Status updated');
+        try { router.refresh(); } catch (e) { /* ignore if not available */ }
+      } else {
+        console.error('Failed to update status', { status: res.status, data });
+        const message = data?.message || data?.error || `Server returned ${res.status}`;
+        toast.error(`Failed to update status: ${message}`);
+      }
+    } catch (err) {
+      console.error('Network error updating PA code status:', err);
+      toast.error('Network error updating status');
+    } finally {
+      setShowApproveConfirm(false);
+      setShowDeclineConfirm(false);
+      setIsUpdating(false);
+    }
   };
 
   const handleAddComment = () => {
@@ -158,7 +225,7 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
       case 'under review':
         return 'bg-[#F59E0B1A] text-[#F59E0B]';
       case 'pending':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[#49A5EF1A] text-[#49A5EF]';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -175,19 +242,10 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
     setIsShowPaCode(!isShowPaCode);
   };
 
-  const totalAmount = paCode?.treatment?.reduce((sum, item) => sum + (item.Amount || 0), 0) || 0;
-
-  const statusColors = {
-    approved: 'bg-green-50 text-green-800',
-    'under review': 'bg-yellow-50 text-yellow-800',
-    declined: 'bg-red-50 text-red-800'
-  };
-
-  const initials = useMemo(() => {
-    if (!paCode || !paCode.patientName) return '';
-    const names = paCode.patientName.split(' ');
-    return names.map(name => name[0]).join('').toUpperCase();
-  }, [paCode]);
+  const totalAmount = (paCode?.treatment || []).reduce((sum, item: any, idx: number) => {
+    const include = treatmentNeeded[idx] !== false; // default true
+    return sum + (include ? (item.Amount || 0) : 0);
+  }, 0) || 0;
 
   const displayName = user
     ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || paCode?.patientName || 'No Name'
@@ -195,6 +253,13 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
 
   const visibleEmail = user?.email || paCode?.patientEmail || 'N/A';
   const visibleHmoId = user?.userId || user?.$id || paCode?.patientId || 'N/A';
+  const visiblePlan = user?.patientPlan || user?.plan || paCode?.patientPlan || 'N/A';
+
+  const initials = useMemo(() => {
+    if (!displayName) return '';
+    const names = displayName.split(' ');
+    return names.map(name => name[0]).join('').toUpperCase();
+  }, [displayName]);
 
   if (loading) {
     return (
@@ -232,12 +297,12 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
         </div>
         <div>
           <div>
-            {paCode.status === 'under review' && (
+            {paCode.status === 'under review' || paCode.status === 'pending' ? (
               <div className='flex gap-2 text-[15px]'>
-                <button onClick={() => setShowApproveConfirm(true)} className='px-6 py-2 rounded-[5px] bg-[#10B981] text-white font-medium hover:bg-green-700 transition'>Approve</button>
-                <button onClick={() => setShowDeclineConfirm(true)} className='px-6 py-2 rounded-[5px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject</button>
+                <button disabled={isUpdating} onClick={() => setShowApproveConfirm(true)} className={`px-6 py-2 rounded-[5px] bg-[#10B981] text-white font-medium hover:bg-green-700 transition ${isUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}>Approve</button>
+                <button disabled={isUpdating} onClick={() => setShowDeclineConfirm(true)} className={`px-6 py-2 rounded-[5px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition ${isUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}>Reject</button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -248,13 +313,13 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
           <div className="space-y-4 py-2 shadow-sm border border-border rounded-[10px]">
             <div className="flex justify-between items-center border-b border-border px-6 pb-4">
               <h2 className='text-lg font-semibold'>Enrollee Information</h2>
-              <div className={`px-6 py-2 rounded-full text-sm capitalize ${statusColors[paCode.status] || 'bg-gray-100 text-gray-800'}`}>
+              <div className={`px-6 py-2 rounded-full text-sm capitalize ${getStatusColor(paCode.status) || 'bg-gray-100 text-gray-800'}`}>
                 {paCode.status}
               </div>
             </div>
             <div className="flex items-start space-x-4 px-6 py-4">
               {/* Avatar */}
-              <div className="shrink-0 w-20 h-20 rounded-[10px] bg-linear-to-br from-blue-400 to-primary flex items-center justify-center text-white text-2xl font-bold">
+              <div className="shrink-0 w-20 h-20 rounded-[10px] bg-linear-to-br from-blue-400 to-primary flex items-center justify-center text-white text-3xl font-bold">
                 {initials}
               </div>
 
@@ -267,14 +332,48 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
                   </div>
                   <div className='flex flex-col col-span-2'>
                     <span className="font-medium">Email</span>
-                    <span className="w-20 font-semibold">{visibleEmail}</span>
+                    <span className="w-full font-semibold wrap-break-word">
+                      {visibleEmail}
+                    </span>
                   </div>
                   <div className='flex flex-col'>
                     <span className="font-medium">Plan</span>
-                    <span className="font-semibold bg-primary text-white px-3 py-1 text-sm rounded-[5px] w-fit">{paCode.patientPlan || 'N/A'}</span>
+                    <span className="font-semibold bg-primary text-white px-3 py-1 text-xs rounded-[5px] w-fit">{visiblePlan}</span>
                   </div>
                 </div>
-              </div>
+                  {/* Confirm Modals */}
+                  {showApproveConfirm && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-lg font-semibold mb-4">Confirm Approval</h3>
+                        <p className="text-sm text-gray-600 mb-6">Are you sure you want to approve this PA code?</p>
+                        <div className="flex justify-end gap-3">
+                          <button onClick={() => setShowApproveConfirm(false)} className="px-4 py-2 rounded border">Cancel</button>
+                          <button disabled={isUpdating} onClick={() => updateStatus('approved')} className="px-4 py-2 rounded bg-[#10B981] text-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            {isUpdating ? <div className="inline-block animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full" /> : null}
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {showDeclineConfirm && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-lg font-semibold mb-4">Confirm Rejection</h3>
+                        <p className="text-sm text-gray-600 mb-6">Are you sure you want to reject this PA code?</p>
+                        <div className="flex justify-end gap-3">
+                          <button onClick={() => setShowDeclineConfirm(false)} className="px-4 py-2 rounded border">Cancel</button>
+                          <button disabled={isUpdating} onClick={() => updateStatus('declined')} className="px-4 py-2 rounded bg-[#EF4444] text-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            {isUpdating ? <div className="inline-block animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full" /> : null}
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  </div>
             </div>
           </div>
 
@@ -314,6 +413,9 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
                       <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Quantity</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Unit Price</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Amount</th>
+                      {paCode.status === 'pending' && (
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Action</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -324,6 +426,16 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
                         <td className="px-4 py-3 text-sm text-center">{item.quantity || 'N/A'}</td>
                         <td className="px-4 py-3 text-sm">₦{item.unitPrice ? item.unitPrice.toFixed(2) : 'N/A'}</td>
                         <td className="px-4 py-3 text-sm font-semibold">₦{item.Amount ? item.Amount.toFixed(2) : 'N/A'}</td>
+                        {paCode.status === 'pending' && (
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={treatmentNeeded[index] !== false}
+                              onChange={() => toggleTreatmentNeeded(index)}
+                              aria-label={`Include item ${item.itemCode || index}`}
+                            />
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>

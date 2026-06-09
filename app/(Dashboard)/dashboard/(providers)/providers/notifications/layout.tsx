@@ -1,4 +1,4 @@
-import ProviderHeader from "@/app/(providers)/Components/ProviderHeader";
+import ProviderHeader from "../../Components/ProviderHeader";
 
 export default function NotificationsLayout({
   children,

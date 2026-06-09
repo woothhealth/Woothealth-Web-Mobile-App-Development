@@ -15,6 +15,7 @@ import PendingComponent from '../PendingComponent';
 import TrackingComponent from '../TrackingComponent';
 import { TiClipboard } from 'react-icons/ti';
 import { LuClipboardList } from "react-icons/lu";
+import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
 
 const formatNumber = (value?: number, loading?: boolean) => {
   if (loading) return '...';
@@ -23,6 +24,10 @@ const formatNumber = (value?: number, loading?: boolean) => {
 
 export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
+  const { enrollees, loading: enrolleesLoading } = useAdminEnrollees();
+
+  const totalEnrolleesValue = enrollees?.total ?? overview?.totalEnrollees;
+  const totalEnrolleesLoading = loading || enrolleesLoading;
 
   return (
     <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
@@ -30,7 +35,7 @@ export const Widget1 = () => {
         <MetricCard label='Total users' icon={<LuUsers />} value={formatNumber(overview?.totalUsers, loading)} description='Registered Accounts' iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
       </div>
       <div>
-        <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(overview?.totalEnrollees, loading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+        <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(totalEnrolleesValue, totalEnrolleesLoading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
       </div>
       <div>
         <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.activeClients, loading)} description='Last 30 Days' iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />

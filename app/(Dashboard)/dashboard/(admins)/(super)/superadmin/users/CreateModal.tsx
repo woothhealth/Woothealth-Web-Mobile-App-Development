@@ -10,6 +10,7 @@ type CreateUserFormData = {
   lastName: string;
   email: string;
   phone: string;
+  address: string;
   role: string;
   password: string;
   status: 'active' | 'suspended';
@@ -59,6 +60,7 @@ const CreateUserModal = ({
     status: 'active',
     gender: 'male',
     dateOfBirth: '',
+    address: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,6 +139,7 @@ const CreateUserModal = ({
         status: 'active',
         gender: 'male',
         dateOfBirth: '',
+        address: '',
       });
     } catch (err: any) {
       console.error('Error creating user:', err);

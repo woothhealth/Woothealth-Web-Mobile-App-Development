@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaEllipsisV } from 'react-icons/fa';
 import {
-  useAdminEmployees,
+  // useAdminEmployees,
   createAdminEmployee,
   updateAdminEmployee,
   deleteAdminEmployee,
@@ -13,13 +13,61 @@ import {
   employeeRoles as roles,
   employeeStatuses,
 } from '@/lib/adminEmployees';
+import { DASHBOARD_ADMIN_ROLES } from '@/lib/roles';
+import { useEffect } from 'react';
 
 const ROWS_PER_PAGE = 10;
 const statuses = ['All status', ...employeeStatuses];
 
 export default function EmployeesClient() {
-  const { data, isLoading, error, refetch } = useAdminEmployees();
-  const employees = data?.data || [];
+  // NOTE: the employee endpoint is currently empty in the backend.
+  // keep the original hook here commented out for future revisit:
+  // const { data, isLoading, error, refetch } = useAdminEmployees();
+  // const employees = data?.data || [];
+
+  // We'll fetch admin users and show only those whose role is in `DASHBOARD_ADMIN_ROLES`.
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setUsersLoading(true);
+      setUsersError(null);
+      try {
+        const res = await fetch('/api/admin/user', { credentials: 'include' });
+        const json = await res.json().catch(() => null);
+        const raw = json?.data || json || [];
+        if (!mounted) return;
+
+        const list: any[] = Array.isArray(raw) ? raw : (Array.isArray(raw.users) ? raw.users : []);
+
+        // Filter to only roles listed in roles.ts
+        const filtered = list.filter((u) => u && typeof u.role === 'string' && DASHBOARD_ADMIN_ROLES.includes(u.role));
+
+        // Map to the Employee shape used by the table (id, name, department, role, email, phone, status)
+        const mapped = filtered.map((u) => ({
+          id: u.$id || u.userId || u.id || String(u?.email || '') + String(u?.role || ''),
+          name: [u.firstName, u.lastName].filter(Boolean).join(' ') || u.username || u.name || u.email,
+          department: u.department || '—',
+          role: u.role || '—',
+          email: u.email || u.username || '—',
+          phone: u.phone || '—',
+          status: u.status || 'Active',
+        }));
+
+        setUsers(mapped);
+      } catch (err: any) {
+        console.error('Failed to fetch admin users for employees view', err);
+        setUsersError(err?.message || 'Failed to fetch users');
+        setUsers([]);
+      } finally {
+        if (mounted) setUsersLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
   
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('All roles');
@@ -32,14 +80,17 @@ export default function EmployeesClient() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Employee | null>(null);
 
+  const sourceData = users; // use `users` fetched from /api/admin/user
+
   const filteredEmployees = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return employees.filter((employee : Employee) => {
-      const matchesSearch =
-        employee.name.toLowerCase().includes(query) ||
-        employee.email.toLowerCase().includes(query) ||
-        employee.phone.toLowerCase().includes(query);
+    return sourceData.filter((employee: any) => {
+      const name = (employee.name || '').toString().toLowerCase();
+      const email = (employee.email || '').toString().toLowerCase();
+      const phone = (employee.phone || '').toString().toLowerCase();
+
+      const matchesSearch = name.includes(query) || email.includes(query) || phone.includes(query);
 
       const matchesRole = filterRole === 'All roles' || employee.role === filterRole;
       const matchesDepartment = filterDepartment === 'All departments' || employee.department === filterDepartment;
@@ -47,7 +98,7 @@ export default function EmployeesClient() {
 
       return matchesSearch && matchesRole && matchesDepartment && matchesStatus;
     });
-  }, [employees, search, filterRole, filterDepartment, filterStatus]);
+  }, [sourceData, search, filterRole, filterDepartment, filterStatus]);
 
   const paginatedEmployees = useMemo(() => {
     const start = (page - 1) * ROWS_PER_PAGE;
@@ -79,7 +130,7 @@ export default function EmployeesClient() {
   };
 
   const handleDeleteEmployee = (id: string) => {
-    const employee = employees.find((emp: Employee) => emp.id === id);
+    const employee = filteredEmployees.find((emp: Employee) => emp.id === id);
     if (employee) {
       setDeleteTarget(employee);
     }
@@ -90,7 +141,7 @@ export default function EmployeesClient() {
       try {
         await deleteAdminEmployee(deleteTarget.id);
         toast.success(`Employee "${deleteTarget.name}" has been deleted successfully.`);
-        refetch();
+        // refetch();
       } catch (err: any) {
         toast.error(err.message || 'Failed to delete employee');
       }
@@ -109,7 +160,7 @@ export default function EmployeesClient() {
       }
       setIsModalOpen(false);
       setEditingEmployee(null);
-      refetch();
+      // refetch();
     } catch (err: any) {
       showToast(err.message || 'Failed to save employee', 'error');
     }
@@ -124,7 +175,7 @@ export default function EmployeesClient() {
   const startRange = Math.min((page - 1) * ROWS_PER_PAGE + 1, filteredEmployees.length);
   const endRange = Math.min(page * ROWS_PER_PAGE, filteredEmployees.length);
 
-  if (isLoading) {
+  if (usersLoading) {
     return (
       <div className="p-4 mb-8 w-full mx-auto">
         <div className="text-center py-12 text-slate-500">Loading employees...</div>
@@ -132,10 +183,10 @@ export default function EmployeesClient() {
     );
   }
 
-  if (error) {
+  if (usersError) {
     return (
       <div className="p-4 mb-8 w-full mx-auto">
-        <div className="text-center py-12 text-red-500">Error loading employees: {(error as any).message}</div>
+        <div className="text-center py-12 text-red-500">Error loading employees: {usersError}</div>
       </div>
     );
   }
@@ -150,7 +201,7 @@ export default function EmployeesClient() {
               placeholder="Search name, email or phone"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="min-w-[280px] flex-1 rounded-lg border border-border bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
+              className="min-w-70 flex-1 rounded-lg border border-border bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
             />
           </div>
 
@@ -264,7 +315,6 @@ export default function EmployeesClient() {
           <thead className="font-semibold text-lg">
             <tr>
               <th className="px-4 py-4 text-left">Name</th>
-              <th className="px-4 py-4 text-left">Department</th>
               <th className="px-4 py-4 text-left">Role</th>
               <th className="px-4 py-4 text-left">Email</th>
               <th className="px-4 py-4 text-left">Phone</th>
@@ -283,7 +333,6 @@ export default function EmployeesClient() {
               paginatedEmployees.map((employee : Employee) => (
                 <tr key={employee.id} className="hover:bg-slate-50">
                   <td className="px-4 py-4 text-slate-900 whitespace-nowrap w-fit">{employee.name}</td>
-                  <td className="px-4 py-4 text-slate-600">{employee.department}</td>
                   <td className="px-4 py-4 text-slate-600">{employee.role}</td>
                   <td className="px-4 py-4 text-slate-600">{employee.email}</td>
                   <td className="px-4 py-4 text-slate-600 whitespace-nowrap w-fit">{employee.phone}</td>

@@ -9,7 +9,6 @@ import { MdArrowBack } from 'react-icons/md';
 export interface TreatmentItem {
   id: string;
   itemCode: string;
-  description: string;
   quantity: number;
   unitPrice: number;
   amount: number;
@@ -72,7 +71,7 @@ const PaCodeCreationPage = () => {
 
       // Check if all treatment items are valid
       const invalidItems = formData.treatmentItems.filter(
-        item => !item.itemCode.trim() || !item.description.trim() || item.quantity <= 0 || item.unitPrice <= 0
+        item => !item.itemCode.trim() || item.quantity <= 0 || item.unitPrice <= 0
       );
 
       if (invalidItems.length > 0) {

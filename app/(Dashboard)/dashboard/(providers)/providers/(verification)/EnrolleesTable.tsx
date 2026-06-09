@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { MdSearch, MdMoreVert } from 'react-icons/md';
-import { MOCK_ENROLLEES } from '@/data/mockEnrollees';
 import { FaEye } from 'react-icons/fa';
 import { Enrollee } from './page';
 
@@ -23,17 +22,8 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  // Load enrollees on mount from mock data
-  useEffect(() => {
-    setIsLoading(true);
-    try {
-      onLoadEnrollees(MOCK_ENROLLEES as Enrollee[]);
-    } catch (error) {
-      console.error('Failed to load enrollees:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onLoadEnrollees]);
+  // Data is provided by parent via `enrollees` / `onLoadEnrollees`.
+  // Parent component should handle fetching from the API.
 
   // Filter enrollees based on search and status
   useEffect(() => {
@@ -46,7 +36,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
         (enrollee) =>
           enrollee.firstName.toLowerCase().includes(term) ||
           enrollee.lastName.toLowerCase().includes(term) ||
-          enrollee.hmoid.toLowerCase().includes(term) ||
+          enrollee.userId.toLowerCase().includes(term) ||
           enrollee.plan.toLowerCase().includes(term)
       );
     }
@@ -78,14 +68,14 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
       <div className="">
         <div className="flex justify-between items-center gap-4 w-[90%] mx-auto">
           {/* Search Input */}
-          <div className="flex-1 relative">
-            <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+          <div className="flex-1 relative my-1">
+            <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
             <input
               type="text"
               placeholder="Search by name, HMOID, or plan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] focus:border-transparent transition-all"
             />
           </div>
 
@@ -94,7 +84,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] focus:border-transparent transition-all"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] focus:border-transparent transition-all"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -131,7 +121,13 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+            {!searchTerm ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-6 text-center text-slate-500">
+                  Enter a search term to view enrollees
+                </td>
+              </tr>
+            ) : isLoading ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center">
                   <div className="flex justify-center items-center gap-2">
@@ -149,16 +145,18 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
                 </td>
               </tr>
             ) : (
-              filteredEnrollees.map((enrollee, index) => (
+              filteredEnrollees.map((enrollee, index) => {
+                const rowId = (enrollee as any).userId || (enrollee as any).id || (enrollee as any).hmoid || String(index);
+                return (
                 <tr
-                  key={enrollee.id}
+                  key={rowId}
                   className="divide-y divide-[#D9D9D9] hover:bg-gray-50 transition-colors text-[15px]"
                 >
                   <td className="px-6 py-4  text-gray-900">{index + 1}</td>
                   <td className="px-6 py-4  font-mono text-gray-900">
-                    {enrollee.hmoid}
+                    {(enrollee as any).userId || (enrollee as any).hmoid || (enrollee as any).id}
                   </td>
-                  <td className="px-6 py-4  text-gray-900">
+                  <td className="px-6 py-4  text-gray-900 capitalize">
                     {enrollee.firstName} {enrollee.lastName}
                   </td>
                   <td className="px-6 py-4  text-gray-900">
@@ -179,7 +177,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
                       <button
                         onClick={() =>
                           setOpenMenuId(
-                            openMenuId === enrollee.id ? null : enrollee.id
+                            openMenuId === rowId ? null : rowId
                           )
                         }
                         className="p-2 text-gray-600 hover:bg-gray-200 rounded-full transition-colors"
@@ -188,7 +186,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
                       </button>
 
                       {/* Dropdown Menu */}
-                      {openMenuId === enrollee.id && (
+                      {openMenuId === rowId && (
                         <div className="absolute right-0 mt-2 w-36 py-2 bg-white rounded-lg shadow-lg z-10">
                           <button
                             onClick={() => {
@@ -205,7 +203,8 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
                     </div>
                   </td>
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>

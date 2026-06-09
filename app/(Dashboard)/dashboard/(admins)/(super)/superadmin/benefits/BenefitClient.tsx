@@ -18,7 +18,7 @@ import {
   deleteAdminBenefit,
   type AdminBenefit,
 } from '@/lib/adminBenefits';
-import { FaTimes } from 'react-icons/fa';
+import { FaPencilAlt, FaTimes } from 'react-icons/fa';
 
 type PlanWithBenefit = AdminPlan & {
   benefit?: AdminBenefit;
@@ -51,10 +51,12 @@ const BenefitClient = () => {
   const [selectedPlan, setSelectedPlan] = useState<PlanWithBenefit | null>(null);
   const [editedPlan, setEditedPlan] = useState<Partial<PlanWithBenefit>>({});
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deletingPlan, setDeletingPlan] = useState<PlanWithBenefit | null>(null);
   const [createData, setCreateData] = useState({
     name: '',
+    planId: '',
     description: '',
     amount: '',
     planType: 'retail',
@@ -64,6 +66,10 @@ const BenefitClient = () => {
     coverage: [''],
     coverage_limit: [''],
   });
+
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+  const [isSubmittingDelete, setIsSubmittingDelete] = useState(false);
+  const [isSubmittingCreate, setIsSubmittingCreate] = useState(false);
 
   const statusColors: { [key: string]: string } = {
     active: 'bg-[#D1FAE5] text-[#10B981]',
@@ -88,15 +94,23 @@ const BenefitClient = () => {
     }
   }, [selectedPlan]);
 
+  const openView = (plan: PlanWithBenefit) => {
+    setSelectedPlan(plan);
+    setIsEditOpen(false);
+    setIsViewOpen(true);
+  };
+
   const openEdit = (plan: PlanWithBenefit) => {
     setSelectedPlan(plan);
     setIsEditOpen(true);
+    setIsViewOpen(false);
   };
 
   const closeEdit = () => {
     setSelectedPlan(null);
     setEditedPlan({});
     setIsEditOpen(false);
+    setIsViewOpen(false);
   };
 
   const handleEditedChange = (field: keyof Partial<PlanWithBenefit>, value: any) => {
@@ -126,6 +140,7 @@ const BenefitClient = () => {
       return;
     }
 
+    setIsSubmittingEdit(true);
     const planPayload = {
       name: editedPlan.name || selectedPlan.name,
       description: editedPlan.description || selectedPlan.description,
@@ -157,6 +172,8 @@ const BenefitClient = () => {
     } catch (error) {
       console.error('Save edit failed:', error);
       toast.error('Failed to update plan');
+    } finally {
+      setIsSubmittingEdit(false);
     }
   };
 
@@ -166,6 +183,7 @@ const BenefitClient = () => {
       return;
     }
 
+    setIsSubmittingDelete(true);
     try {
       await deleteAdminPlan(plan.$id);
       if (plan.benefit?.$id) {
@@ -176,10 +194,13 @@ const BenefitClient = () => {
     } catch (error) {
       console.error('Delete failed:', error);
       toast.error('Failed to delete plan');
+    } finally {
+      setIsSubmittingDelete(false);
     }
   };
 
   const handleCreatePlan = async () => {
+    setIsSubmittingCreate(true);
     try {
       const planPayload = {
         name: createData.name,
@@ -208,6 +229,8 @@ const BenefitClient = () => {
     } catch (error) {
       console.error('Create plan failed:', error);
       toast.error('Failed to create plan');
+    } finally {
+      setIsSubmittingCreate(false);
     }
   };
 
@@ -217,7 +240,10 @@ const BenefitClient = () => {
       <div key={plan.$id} className='bg-[#FFFFFF] rounded-[10px] text-[#000000] shadow-lg h-150 pb-8'>
         <div className='w-76 md:w-full flex flex-col gap-4'>
           <div className='bg-[#49A5EFB2] rounded-t-[10px] text-[#FFFFFF] py-4 px-4 h-40 flex flex-col justify-between'>
-            <h3 className='text-[24px] font-semibold mb-3'>{plan.name}</h3>
+            <div className="flex justify-between w-full">
+              <h3 className='text-[24px] font-semibold mb-3'>{plan.name}</h3>
+              <FaPencilAlt size={20} onClick={() => openEdit(plan)} className='cursor-pointer' />
+            </div>
             <p className=' text-[#FFFFFF] text-start w-fit flex flex-col'>
               <span>For as low as</span>
               <span className='font-bold text-[20px]'>₦{Number(plan.amount).toLocaleString()}</span>
@@ -250,8 +276,8 @@ const BenefitClient = () => {
               )}
             </ul>
             <div className='flex flex-col gap-2 w-full'>
-              <button onClick={() => openEdit(plan)} className='bg-[#49A5EF] text-white flex justify-center py-3 rounded-[5px] w-full font-semibold'>
-                Edit Benefits
+              <button onClick={() => openView(plan)} className='bg-[#49A5EF] text-white flex justify-center py-3 rounded-[5px] w-full font-semibold'>
+                View Benefits/Plan
               </button>
               <button onClick={() => setDeletingPlan(plan)} className='bg-[#EF4444] text-white flex justify-center py-3 rounded-[5px] w-full font-semibold'>
                 Delete Plan
@@ -283,114 +309,218 @@ const BenefitClient = () => {
         {planCards}
       </div>
 
-      {isEditOpen && selectedPlan && (
+      {isViewOpen && selectedPlan && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6'>
-          <div className='w-full md:w-3xl h-[90svh] overflow-y-auto custom-scrollbar rounded-[15px] bg-white p-6 shadow-xl'>
+          <div className='absolute inset-0 cursor-pointer' onClick={closeEdit}/>
+          <div className='w-full md:w-3xl h-fit rounded-[15px] bg-white p-6 shadow-xl z-20'>
             <div className='mb-4 flex items-center justify-between'>
-              <div>
-                <h3 className='text-2xl font-semibold'>Edit Plan & Benefits</h3>
-                <p className='text-sm text-slate-600'>Update plan data and remove benefits as needed.</p>
-              </div>
+              <h3 className='text-2xl font-semibold'>View Plan & Benefits</h3>
               <button onClick={closeEdit} className='text-slate-600 hover:text-slate-900'>
                 <FaTimes size={22} />
               </button>
             </div>
 
-            <div className='grid gap-6 md:grid-cols-2'>
-              <div className='space-y-4'>
-                <label className='block text-sm font-medium text-slate-700'>Plan Name</label>
-                <input
-                  value={editedPlan.name || ''}
-                  onChange={(e) => handleEditedChange('name', e.target.value)}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                />
+            <div className='grid gap-4 md:grid-cols-2'>
+                <div>
+                  <label className='block text-[15px] font-medium'>Plan Name</label>
+                  <p className='mt-1 text-[17px] font-semibold'>{selectedPlan.name}</p>
+                </div>
 
-                <label className='block text-sm font-medium text-slate-700'>Description</label>
-                <input
-                  value={editedPlan.description || ''}
-                  onChange={(e) => handleEditedChange('description', e.target.value)}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                />
+                <div>
+                  <label className='block text-[15px] font-medium'>Description</label>
+                  <p className='mt-1 text-[17px] font-semibold'>{selectedPlan.description || '—'}</p>
+                </div>
 
-                <label className='block text-sm font-medium text-slate-700'>Amount</label>
-                <input
-                  type='number'
-                  value={editedPlan.amount || ''}
-                  onChange={(e) => handleEditedChange('amount', Number(e.target.value))}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                />
+                <div>
+                  <label className='block text-[15px] font-medium'>Amount</label>
+                  <p className='mt-1 text-[17px] font-semibold'>₦{Number(selectedPlan.amount ?? 0).toLocaleString()}</p>
+                </div>
 
-                <label className='block text-sm font-medium text-slate-700'>Plan Type</label>
-                <select
-                  value={editedPlan.planType || ''}
-                  onChange={(e) => handleEditedChange('planType', e.target.value)}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                >
-                  <option value='retail'>Retail</option>
-                  <option value='business'>Business</option>
-                </select>
-              </div>
+                <div>
+                  <label className='block text-[15px] font-medium'>Plan Type</label>
+                  <p className='mt-1 text-[17px] font-semibold capitalize'>
+                    {selectedPlan.planType}
+                  </p>
+                </div>
 
-              <div className='space-y-4'>
-                <label className='block text-sm font-medium text-slate-700'>Category</label>
-                <input
-                  value={editedPlan.category || ''}
-                  onChange={(e) => handleEditedChange('category', e.target.value)}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                />
+                <div>
+                  <label className='block text-[15px] font-medium'>Category</label>
+                  <p className='mt-1 text-[17px] font-semibold'>{selectedPlan.benefit?.category || '—'}</p>
+                </div>
 
-                <label className='block text-sm font-medium text-slate-700'>Plan Limit</label>
-                <input
-                  value={editedPlan.plan_limit || ''}
-                  onChange={(e) => handleEditedChange('plan_limit', e.target.value)}
-                  className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
-                />
-
-                <label className='block text-sm font-medium text-slate-700'>Source</label>
-                <input
-                  value={editedPlan.benefit?.source || 'Appwrite'}
-                  disabled
-                  className='w-full rounded-[10px] border border-border bg-slate-100 px-4 py-3 text-sm text-slate-500'
-                />
-              </div>
+                <div>
+                  <label className='block text-[15px] font-medium'>Plan Limit</label>
+                  <p className='mt-1 text-[17px] font-semibold'>{selectedPlan.benefit?.plan_limit || '—'}</p>
+                </div>
             </div>
 
             <div className='mt-6'>
               <h4 className='text-lg font-semibold'>Benefits</h4>
-              {editedBenefitFields.map((benefit, index) => (
-                <div key={index} className='mt-3 flex items-center gap-3'>
+              <div className='overflow-auto max-h-50 custom-scrollbar'>
+              <ul className="mt-2 text-sm text-slate-700 space-y-2">
+                {selectedPlan.benefit?.benefits?.filter(Boolean).length ? (
+                  selectedPlan.benefit.benefits.filter(Boolean).map((b, i) => (
+                    <li key={i} className="list-none bg-[#F8F9FA] px-3 py-1 rounded-[5px] flex items-center">
+                      <span className='bg-green-100 text-green-800 p-1 rounded-full mr-2'>
+                        <IoMdCheckmarkCircleOutline className="inline-flex" />
+                      </span>
+                      {b}
+                    </li>
+                  ))
+                ) : (
+                  <li className='text-sm text-slate-500'>No benefit details available</li>
+                )}
+              </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isEditOpen && selectedPlan && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6'>
+          <div className='absolute inset-0 cursor-pointer' onClick={closeEdit}/>
+          <div className='w-full md:w-3xl h-fit rounded-[15px] bg-white p-6 shadow-xl z-20 overflow-auto'>
+            <div className='mb-4 flex items-center justify-between'>
+              <h3 className='text-2xl font-semibold'>Edit Plan</h3>
+              <button onClick={closeEdit} className='text-slate-600 hover:text-slate-900'>
+                <FaTimes size={22} />
+              </button>
+            </div>
+
+            <div className='grid gap-4 md:grid-cols-2'>
+              <div className='space-y-2'>
+                <div>
+                  <label className='block font-medium text-slate-700'>Plan Name</label>
+                  <select
+                    value={(editedPlan.$id as string) || editedPlan.name || ''}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      if (!selectedId) {
+                        handleEditedChange('name', '');
+                        handleEditedChange('$id', undefined as any);
+                        return;
+                      }
+                      const plan = mergedPlans.find((p) => p.$id === selectedId) || mergedPlans.find((p) => p.name === selectedId);
+                      if (plan) {
+                        setEditedPlan((prev) => ({
+                          ...prev,
+                          $id: plan.$id,
+                          name: plan.name,
+                          description: plan.description,
+                          amount: plan.amount,
+                          planType: plan.planType,
+                          benefit: plan.benefit,
+                          benefits: plan.benefit?.benefits?.length ? plan.benefit.benefits.slice() : [''],
+                          category: plan.benefit?.category || '',
+                          plan_limit: plan.benefit?.plan_limit || '',
+                          coverage: plan.benefit?.coverage?.length ? plan.benefit.coverage.slice() : [''],
+                          coverage_limit: plan.benefit?.coverage_limit?.length ? plan.benefit.coverage_limit.slice() : [''],
+                        } as Partial<PlanWithBenefit>));
+                      } else {
+                        handleEditedChange('name', selectedId);
+                      }
+                    }}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  >
+                    <option value=''>Select plan</option>
+                    {mergedPlans.map((p) => (
+                      <option key={p.$id} value={p.$id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className='block font-medium text-slate-700'>Description</label>
+                  <input
+                    value={String(editedPlan.description || '')}
+                    onChange={(e) => handleEditedChange('description', e.target.value)}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  />
+                </div>
+
+                <div>
+                  <label className='block font-medium text-slate-700'>Amount</label>
+                  <input
+                    type='number'
+                    value={String(editedPlan.amount ?? '')}
+                    onChange={(e) => handleEditedChange('amount', Number(e.target.value))}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  />
+                </div>
+              </div>
+
+              <div className='space-y-4'>
+                <div>
+                  <label className='block font-medium text-slate-700'>Plan Type</label>
+                  <select
+                    value={String(editedPlan.planType || '')}
+                    onChange={(e) => handleEditedChange('planType', e.target.value)}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  >
+                    <option value='retail'>Retail</option>
+                    <option value='business'>Business</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className='block font-medium text-slate-700'>Category</label>
+                  <input
+                    value={String(editedPlan.category || '')}
+                    onChange={(e) => handleEditedChange('category', e.target.value)}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  />
+                </div>
+
+                <div>
+                  <label className='block font-medium text-slate-700'>Plan Limit</label>
+                  <input
+                    value={String(editedPlan.plan_limit || '')}
+                    onChange={(e) => handleEditedChange('plan_limit', e.target.value)}
+                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className='mt-2'>
+              <h4 className='text-lg font-semibold'>Benefit items</h4>
+              <div className='max-h-40 overflow-y-auto custom-scrollbar flex flex-col space-y-2 mt-2'>
+              {(editedBenefitFields.length ? editedBenefitFields : ['']).map((benefit, index) => (
+                <div key={index} className='flex items-center justify-between gap-2'>
                   <input
                     type='text'
-                    value={benefit}
+                    value={benefit || ''}
                     onChange={(e) => handleBenefitChange(index, e.target.value)}
-                    className='w-full rounded-[10px] border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none'
+                    className='w-full rounded-[5px] border border-border px-2 py-1 text-xs focus:border-primary focus:outline-none'
                   />
                   <button
                     onClick={() => handleRemoveBenefit(index)}
-                    className='rounded-[10px] bg-red-100 px-4 py-3 text-sm text-red-600'
+                    className='rounded-full bg-red-100 px-2 py-1 text-sm text-red-600'
                   >
                     <IoMdRemove />
                   </button>
                 </div>
               ))}
+              </div>
               <button
                 onClick={addBenefitField}
-                className='mt-4 inline-flex items-center gap-2 rounded-[10px] border border-slate-300 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100'
+                className='mt-4 inline-flex items-center gap-2 rounded-[10px] border border-slate-300 px-4 py-2 text-xs text-slate-700 hover:bg-slate-100'
               >
-                <IoMdAdd /> Add benefit field
+                <IoMdAdd /> Add benefit item
               </button>
             </div>
 
             <div className='mt-8 flex flex-col gap-3 md:flex-row'>
               <button
                 onClick={handleSaveEdit}
-                className='w-full rounded-[10px] bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90'
-              >
-                Save Changes
+                disabled={isSubmittingEdit}
+                className={`w-full rounded-[10px] bg-primary px-4 py-3 font-semibold text-white ${isSubmittingEdit ? 'opacity-70 cursor-not-allowed' : 'hover:bg-primary/90'}`}>
+                {isSubmittingEdit ? 'Saving...' : 'Save Changes'}
               </button>
               <button
                 onClick={closeEdit}
-                className='w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50'
+                className='w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50'
               >
                 Cancel
               </button>
@@ -401,8 +531,8 @@ const BenefitClient = () => {
 
       {isCreateOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6'>
-            <div className='absolute inset-0 cursor-pointer' onClick={() => setIsCreateOpen(false)} />
-          <div className='w-full md:w-3xl h-full z-20 overflow-y-auto rounded-[15px] bg-white p-6 shadow-xl custom-scrollbar'>
+          <div className='absolute inset-0 cursor-pointer' onClick={() => setIsCreateOpen(false)} />
+          <div className='w-full md:w-3xl h-fit z-20 overflow-y-auto rounded-[15px] bg-white p-6 shadow-xl custom-scrollbar'>
             <div className='mb-4 flex items-center justify-between'>
               <h3 className='text-2xl font-semibold'>Create New Plan</h3>
               <button onClick={() => setIsCreateOpen(false)} className='text-slate-600 hover:text-slate-900'>
@@ -410,15 +540,55 @@ const BenefitClient = () => {
               </button>
             </div>
 
-            <div className='grid gap-6 md:grid-cols-2'>
-              <div className='space-y-4'>
+            <div className='grid gap-4 md:grid-cols-2'>
+              <div className='space-y-2'>
                 <div>
                 <label className='block font-medium text-slate-700'>Plan Name</label>
-                <input
-                  value={createData.name}
-                  onChange={(e) => setCreateData((prev) => ({ ...prev, name: e.target.value }))}
+                <select
+                  value={createData.planId || ''}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    if (!selectedId) {
+                      setCreateData((prev) => ({ ...prev, planId: '', name: '', description: '', amount: '', planType: 'retail', category: '', plan_limit: '', benefits: [''], coverage: [''], coverage_limit: [''] }));
+                      return;
+                    }
+                    const plan = mergedPlans.find((p) => p.$id === selectedId) || mergedPlans.find((p) => p.name === selectedId);
+                    if (plan) {
+                      setCreateData((prev) => ({
+                        ...prev,
+                        planId: plan.$id,
+                        name: plan.name || '',
+                        description: plan.description || '',
+                        amount: String(plan.amount ?? ''),
+                        planType: plan.planType || 'retail',
+                        category: plan.benefit?.category || '',
+                        plan_limit: plan.benefit?.plan_limit || '',
+                        benefits: plan.benefit?.benefits?.length ? plan.benefit.benefits.slice() : [''],
+                        coverage: plan.benefit?.coverage?.length ? plan.benefit.coverage.slice() : [''],
+                        coverage_limit: plan.benefit?.coverage_limit?.length ? plan.benefit.coverage_limit.slice() : [''],
+                      }));
+                    } else {
+                      setCreateData((prev) => ({ ...prev, planId: '', name: selectedId }));
+                    }
+                  }}
                   className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
-                />
+                >
+                  <option value=''>Select plan (or choose to enter custom)</option>
+                  {mergedPlans.map((p) => (
+                    <option key={p.$id} value={p.$id}>{p.name}</option>
+                  ))}
+                </select>
+
+                {(!createData.planId) && (
+                  <div className='mt-2'>
+                    <input
+                      placeholder='Enter plan name'
+                      value={createData.name}
+                      onChange={(e) => setCreateData((prev) => ({ ...prev, name: e.target.value }))}
+                      className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                    />
+                  </div>
+                )}
                 </div>
 
                 <div>
@@ -441,7 +611,7 @@ const BenefitClient = () => {
                 </div>
               </div>
 
-              <div className='space-y-4'>
+              <div className='space-y-2'>
                 <div>
                 <label className='block font-medium text-slate-700'>Plan Type</label>
                 <select
@@ -476,8 +646,9 @@ const BenefitClient = () => {
 
             <div className='mt-6'>
               <h4 className='text-lg font-semibold'>Benefit items</h4>
+              <div className='max-h-40 overflow-y-auto custom-scrollbar flex flex-col space-y-2 mt-2 pl-2'>
               {createData.benefits.map((benefit, index) => (
-                <div key={index} className='mt-3 flex items-center gap-3'>
+                <div key={index} className='flex items-center justify-between gap-3'>
                   <input
                     type='text'
                     value={benefit}
@@ -486,7 +657,7 @@ const BenefitClient = () => {
                       items[index] = e.target.value;
                       setCreateData((prev) => ({ ...prev, benefits: items }));
                     }}
-                    className='w-full rounded-[10px] border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none'
+                    className='w-full rounded-[5px] border border-border px-2 py-1 text-xs focus:border-primary focus:outline-none'
                   />
                   <button
                     onClick={() => {
@@ -495,12 +666,13 @@ const BenefitClient = () => {
                         benefits: prev.benefits.filter((_, i) => i !== index),
                       }));
                     }}
-                    className='rounded-[10px] bg-red-100 px-4 py-3 text-sm text-red-600'
+                    className='rounded-full bg-red-100 px-2 py-1 text-xs text-red-600'
                   >
                     <IoMdRemove />
                   </button>
                 </div>
               ))}
+              </div>
               <button
                 onClick={() => setCreateData((prev) => ({ ...prev, benefits: [...prev.benefits, ''] }))}
                 className='mt-4 inline-flex items-center gap-2 rounded-[10px] border border-slate-300 px-4 py-2 text-xs text-slate-700 hover:bg-slate-100'
@@ -512,9 +684,9 @@ const BenefitClient = () => {
             <div className='mt-8 flex flex-col gap-3 md:flex-row'>
               <button
                 onClick={handleCreatePlan}
-                className='w-full rounded-[10px] bg-primary px-4 py-3 font-semibold text-white hover:bg-primary/90'
-              >
-                Create Plan
+                disabled={isSubmittingCreate}
+                className={`w-full rounded-[10px] bg-primary px-4 py-3 font-semibold text-white ${isSubmittingCreate ? 'opacity-70 cursor-not-allowed' : 'hover:bg-primary/90'}`}>
+                {isSubmittingCreate ? 'Creating...' : 'Create Plan'}
               </button>
               <button
                 onClick={() => setIsCreateOpen(false)}
@@ -529,7 +701,7 @@ const BenefitClient = () => {
 
       {deletingPlan && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6'>
-          <div className='w-full max-w-md rounded-[10px] bg-white p-6 shadow-xl'>
+          <div className='w-full max-w-md rounded-[10px] bg-white h-fit p-6 shadow-xl'>
             <h3 className='text-lg font-semibold'>Confirm Delete</h3>
             <p className='mt-2 text-sm text-slate-600'>
               Are you sure you want to delete the plan "{deletingPlan.name}"? This will also remove any associated benefit record and cannot be undone.
@@ -538,19 +710,22 @@ const BenefitClient = () => {
               <button
                 onClick={async () => {
                   const planToDelete = deletingPlan;
-                  setDeletingPlan(null);
-                  if (planToDelete) {
+                  if (!planToDelete) return;
+                  try {
                     await handleDelete(planToDelete);
+                    setDeletingPlan(null);
+                  } catch (e) {
+                    // handled in handleDelete
                   }
                 }}
-                className='w-full rounded-[10px] bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-700'
-              >
-                Yes, delete
+                disabled={isSubmittingDelete}
+                className={`w-full rounded-[10px] bg-red-500 px-4 py-3 text-sm font-semibold text-white ${isSubmittingDelete ? 'opacity-70 cursor-not-allowed' : 'hover:bg-red-700'}`}>
+                {isSubmittingDelete ? 'Deleting...' : 'Delete'}
               </button>
               <button
                 onClick={() => setDeletingPlan(null)}
-                className='w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50'
-              >
+                disabled={isSubmittingDelete}
+                className={`w-full rounded-[10px] border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 ${isSubmittingDelete ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}`}>
                 Cancel
               </button>
             </div>

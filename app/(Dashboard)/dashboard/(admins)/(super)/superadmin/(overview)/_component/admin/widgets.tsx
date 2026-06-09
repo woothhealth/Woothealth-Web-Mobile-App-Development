@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAdminOverview } from '@/Components/AdminOverviewContext';
+import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
 import { MetricCard, QuickLinkCard, SectionBlock, OverviewCustomSelect } from '../../roleViews/OverviewWidgets';
 import { LuUsers } from 'react-icons/lu';
 import { FaRegFileAlt, FaRegUser } from 'react-icons/fa';
@@ -22,6 +23,10 @@ const formatNumber = (value?: number, loading?: boolean) => {
 
 export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
+  const { enrollees, loading: enrolleesLoading } = useAdminEnrollees();
+
+  const totalEnrolleesValue = enrollees?.total ?? overview?.totalEnrollees;
+  const totalEnrolleesLoading = loading || enrolleesLoading;
 
   return (
     <div className="block gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
@@ -29,7 +34,7 @@ export const Widget1 = () => {
         <MetricCard label='Total users' icon={<LuUsers />} value={formatNumber(overview?.totalUsers, loading)} description='Registered Accounts' iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
       </div>
       <div>
-        <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(overview?.totalEnrollees, loading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+        <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(totalEnrolleesValue, totalEnrolleesLoading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
       </div>
       <div>
         <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.activeClients, loading)} description='Last 30 Days' iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />

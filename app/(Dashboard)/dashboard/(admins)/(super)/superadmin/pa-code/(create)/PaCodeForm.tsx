@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import diagnosisData from '@/data/diagnosis-data.json';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import type { PaCodeFormData, TreatmentItem } from './create/page';
@@ -21,7 +21,6 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
       {
         id: '1',
         itemCode: '',
-        description: '',
         quantity: 1,
         unitPrice: 0,
         amount: 0,
@@ -32,6 +31,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
 
   const [formData, setFormData] = useState<PaCodeFormData>(initialFormData);
   const [diagnosisSearch, setDiagnosisSearch] = useState('');
+  const diagnosisTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [textareaValue, setTextareaValue] = useState((initialFormData.diagnosis || []).join('\n'));
+  const [caretPos, setCaretPos] = useState(0);
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -67,6 +70,11 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
       setSuggestions([]);
     }
   }, [diagnosisSearch]);
+
+  // keep textareaValue in sync when diagnosis array changes externally
+  useEffect(() => {
+    setTextareaValue((formData.diagnosis || []).join('\n'));
+  }, [formData.diagnosis]);
 
   const validateField = (name: string, value: any) => {
     const newErrors = { ...errors };
@@ -127,6 +135,96 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
     validateField(name, value);
   };
 
+  const handleDiagnosisTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    const sel = e.target.selectionStart || 0;
+    setTextareaValue(val);
+    setCaretPos(sel);
+    const lines = val.split(/\r?\n/);
+    const before = val.slice(0, sel);
+    const lineIndex = before.split(/\r?\n/).length - 1;
+    setCurrentLineIndex(lineIndex);
+    const currentLine = (lines[lineIndex] || '').trim();
+    setDiagnosisSearch(currentLine);
+    let normalized = lines.map((s) => s.trim()).filter(Boolean);
+    // enforce max 5 diagnoses
+    if (normalized.length > 5) {
+      setErrors((err) => ({ ...err, diagnosis: 'You can select up to 5 diagnoses' }));
+      normalized = normalized.slice(0, 5);
+      const trimmedVal = normalized.join('\n');
+      setTextareaValue(trimmedVal);
+      // update caret position to end of trimmed content
+      setCaretPos(trimmedVal.length);
+      setTimeout(() => {
+        const el = diagnosisTextareaRef.current;
+        if (el) {
+          el.selectionStart = el.selectionEnd = trimmedVal.length;
+        }
+      }, 0);
+    } else {
+      setErrors((err) => {
+        const next = { ...err };
+        delete next.diagnosis;
+        return next;
+      });
+    }
+    setFormData((prev) => ({ ...prev, diagnosis: normalized }));
+    validateField('diagnosis', normalized);
+    setShowSuggestions(true);
+  };
+
+  const handleTextareaSelect = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const el = e.target as HTMLTextAreaElement;
+    const sel = el.selectionStart || 0;
+    setCaretPos(sel);
+    const before = el.value.slice(0, sel);
+    const lineIndex = before.split(/\r?\n/).length - 1;
+    setCurrentLineIndex(lineIndex);
+    const lines = el.value.split(/\r?\n/);
+    setDiagnosisSearch((lines[lineIndex] || '').trim());
+  };
+
+  const insertSuggestion = (value: string) => {
+    const lines = textareaValue.split(/\r?\n/);
+    const idx = Math.max(0, Math.min(currentLineIndex, lines.length - 1));
+    lines[idx] = value;
+    // normalize and dedupe while preserving order
+    let normalized = lines.map((s) => s.trim()).filter(Boolean);
+    const seen = new Set<string>();
+    normalized = normalized.filter((s) => {
+      if (seen.has(s)) return false;
+      seen.add(s);
+      return true;
+    });
+    // enforce max 5
+    if (normalized.length > 5) {
+      setErrors((err) => ({ ...err, diagnosis: 'You can select up to 5 diagnoses' }));
+      normalized = normalized.slice(0, 5);
+    } else {
+      setErrors((err) => {
+        const next = { ...err };
+        delete next.diagnosis;
+        return next;
+      });
+    }
+    const newVal = normalized.join('\n');
+    setTextareaValue(newVal);
+    setFormData((prev) => ({ ...prev, diagnosis: normalized }));
+    setDiagnosisSearch('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+    // focus and move caret to after inserted text (end of inserted line)
+    setTimeout(() => {
+      const el = diagnosisTextareaRef.current;
+      if (el) {
+        el.focus();
+        const pos = newVal.length; 
+        el.selectionStart = el.selectionEnd = pos;
+        setCaretPos(pos);
+      }
+    }, 0);
+  };
+
   const addDiagnosis = (value: string) => {
     if (!value) return;
     setFormData(prev => {
@@ -173,7 +271,6 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
     const newItem: TreatmentItem = {
       id: Date.now().toString(),
       itemCode: '',
-      description: '',
       quantity: 1,
       unitPrice: 0,
       amount: 0,
@@ -210,7 +307,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
 
     // Check treatment items
     const invalidItems = formData.treatmentItems.filter(
-      item => !item.itemCode.trim() || !item.description.trim() || item.quantity <= 0 || item.unitPrice <= 0
+      item => !item.itemCode.trim() || item.quantity <= 0 || item.unitPrice <= 0
     );
 
     if (invalidItems.length > 0) {
@@ -311,30 +408,51 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
             {errors.careType && <p className="mt-1 text-sm text-red-600">{errors.careType}</p>}
           </div>
 
-          {/* Diagnosis */}
+          {/* Diagnosis (textarea with suggestions) */}
         <div className="relative">
-          <label htmlFor="diagnosisSearch" className="block mb-2">
+          <label htmlFor="diagnosis" className="block mb-2">
             Diagnosis
           </label>
-          <input
-            id="diagnosisSearch"
-            name="diagnosisSearch"
-            value={diagnosisSearch}
-            onChange={handleInputChange}
-            disabled={isSubmitting}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none capitalize focus:ring-1 focus:ring-[#49A5EF] text-sm ${
+          <div
+            className={`w-full min-h-21 px-3 py-2 border rounded-lg focus-within:ring-1 focus-within:ring-[#49A5EF] text-sm ${
               errors.diagnosis ? 'border-red-500' : 'border-gray-300'
-            } disabled:bg-gray-100 disabled:cursor-not-allowed`}
-            placeholder="Search diagnosis"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                if (diagnosisSearch.trim()) addDiagnosis(diagnosisSearch.trim());
-              }
+            } bg-white`}
+            onClick={() => {
+              const el = document.getElementById('diagnosis-input') as HTMLInputElement | null;
+              el?.focus();
             }}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
-            onFocus={() => { if ((diagnosisSearch || '').length >= 1) setShowSuggestions(true); }}
-          />
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              {(formData.diagnosis || []).map((d) => (
+                <span key={d} className="inline-flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-full text-sm">
+                  <span title={d} className="capitalize max-w-45 truncate block">{d}</span>
+                  <button type="button" onClick={() => removeDiagnosis(d)} className="text-red-500">×</button>
+                </span>
+              ))}
+
+              <input
+                id="diagnosis-input"
+                name="diagnosisSearch"
+                value={diagnosisSearch}
+                onChange={(e) => {
+                  setDiagnosisSearch(e.target.value);
+                  validateField('diagnosis', formData.diagnosis);
+                  setShowSuggestions(true);
+                }}
+                onKeyDown={(e) => {
+                  // Prevent Enter from accepting freeform diagnosis entries or submitting the form.
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
+                disabled={isSubmitting}
+                className="flex-1 min-w-30 px-1 py-2 outline-none text-sm"
+                placeholder="Type to search diagnosis"
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
+                onFocus={() => { if ((diagnosisSearch || '').length >= 1) setShowSuggestions(true); }}
+              />
+            </div>
+          </div>
           {showSuggestions && suggestions.length > 0 && (
             <div className="absolute mt-2 max-h-44 w-full overflow-auto border border-gray-200 rounded bg-white shadow z-50">
               {suggestions.map((s) => (
@@ -351,16 +469,6 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
               ))}
             </div>
           )}
-          <div className="mt-2">
-            <div className="flex flex-wrap gap-2">
-              {(formData.diagnosis || []).map((d) => (
-                <div key={d} className="px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2 text-sm">
-                  <span className="capitalize">{d}</span>
-                  <button type="button" onClick={() => removeDiagnosis(d)} className="text-red-500">×</button>
-                </div>
-              ))}
-            </div>
-          </div>
           {errors.diagnosis && <p className="mt-1 text-sm text-red-600">{errors.diagnosis}</p>}
         </div>
         </div>

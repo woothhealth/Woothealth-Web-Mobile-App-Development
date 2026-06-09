@@ -1,9 +1,11 @@
-'use client';
+ 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FaEdit, FaEllipsisV, FaChevronDown, FaTrash, FaTimes } from 'react-icons/fa';
-import { mockEnrollees } from '../mock-clients';
+import { useSearchParams, useParams } from 'next/navigation';
 import type { Enrollee } from '../mock-clients';
+import Link from 'next/link';
+import { MdArrowBack } from 'react-icons/md';
 
 interface DeleteConfirmModalProps {
   enrollee: Enrollee | null;
@@ -20,7 +22,7 @@ function DeleteConfirmModal({ enrollee, onConfirm, onCancel }: DeleteConfirmModa
         <h2 className="text-lg font-semibold">Delete Enrollee</h2>
 
         <p className="mt-4 text-sm text-slate-600">
-          Are you sure you want to delete <strong>{enrollee.name}</strong>? This action cannot be undone.
+          Are you sure you want to delete <strong>{enrollee.firstName}</strong>? This action cannot be undone.
         </p>
 
         <div className="mt-6 flex gap-3">
@@ -50,16 +52,68 @@ export function EnrolleesClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<Enrollee | null>(null);
   const [editingEnrollee, setEditingEnrollee] = useState<Enrollee | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', planType: '', dependents: 0 });
-  const [enrollees, setEnrollees] = useState(mockEnrollees);
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', plan: '', dependents: 0 });
+  const [enrollees, setEnrollees] = useState<Enrollee[]>([]);
+  const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const routeClientId = (params as any)?.clientId;
+  const clientId = searchParams.get('clientId') || routeClientId || null;
+
+  useEffect(() => {
+    if (!clientId) return;
+    let mounted = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/admin/enrollees?businessId=${encodeURIComponent(clientId)}`, { credentials: 'include' });
+        const json = await res.json().catch(() => null);
+        const raw = json?.data || json;
+        if (!mounted) return;
+
+        // Normalize to array
+        let list: any[] = [];
+        if (Array.isArray(raw)) list = raw;
+        else if (raw && Array.isArray(raw.enrollees)) list = raw.enrollees;
+        else if (raw && Array.isArray(raw.data)) list = raw.data;
+
+        // Filter explicitly by businessId to ensure only matching enrollees are shown.
+        const filtered = list.filter((e) => String(e?.businessId) === String(clientId));
+
+        // If no explicit businessId fields matched, also try common alternatives (clientId/client_id/ownerId)
+        let finalList = filtered;
+        if (finalList.length === 0 && list.length > 0) {
+          finalList = list.filter((e) =>
+            String(e?.clientId) === String(clientId) ||
+            String(e?.client_id) === String(clientId) ||
+            String(e?.ownerId) === String(clientId) ||
+            String(e?.business) === String(clientId)
+          );
+        }
+
+        setEnrollees(finalList as Enrollee[]);
+        // eslint-disable-next-line no-console
+        console.debug('EnrolleesClient fetched enrollees (filtered):', { clientId, fetched: list.length, shown: finalList.length });
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch enrollees for client', clientId, err);
+        setEnrollees([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [clientId]);
   const itemsPerPage = 10;
+
+  const name = enrollees.find((e) => e.userId === clientId)?.firstName + ' ' + enrollees.find((e) => e.userId === clientId)?.lastName || 'Client';
 
   const filtered = useMemo(() => {
     return enrollees.filter((enrollee) => {
       const matchesSearch =
-        enrollee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         enrollee.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesPlan = planFilter ? enrollee.planType === planFilter : true;
+      const matchesPlan = planFilter ? enrollee.plan === planFilter : true;
       return matchesSearch && matchesPlan;
     });
   }, [searchTerm, planFilter, enrollees]);
@@ -77,7 +131,7 @@ export function EnrolleesClient() {
 
   const confirmDelete = () => {
     if (deleteConfirm) {
-      setEnrollees(enrollees.filter((e) => e.id !== deleteConfirm.id));
+      setEnrollees(enrollees.filter((e) => e.userId !== deleteConfirm.userId));
       setDeleteConfirm(null);
     }
   };
@@ -85,11 +139,17 @@ export function EnrolleesClient() {
   const openEditModal = (enrollee: Enrollee) => {
     setEditingEnrollee(enrollee);
     setEditForm({
-      name: enrollee.name,
+      lastName: enrollee.lastName || '',
+      firstName: enrollee.firstName || '',
       email: enrollee.email,
-      planType: enrollee.planType,
+      plan: enrollee.plan,
       dependents: enrollee.dependents,
     });
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const handleEditSave = () => {
@@ -97,7 +157,7 @@ export function EnrolleesClient() {
 
     setEnrollees((prev) =>
       prev.map((enrollee) =>
-        enrollee.id === editingEnrollee.id
+        enrollee.userId === editingEnrollee.userId
           ? { ...enrollee, ...editForm, dependents: Number(editForm.dependents) }
           : enrollee
       )
@@ -105,14 +165,21 @@ export function EnrolleesClient() {
     setEditingEnrollee(null);
   };
 
+  if (!clientId) {
+    return null;
+  }
+
   return (
     <div className="space-y-6 p-6">
+      <Link href="/dashboard/superadmin/clients" className="border border-border rounded-full p-2 hover:bg-slate-50 flex w-fit">
+        <MdArrowBack size={22} />
+      </Link>
       {/* Search + Plan Filter */}
       <div className="flex flex-col gap-3 md:flex-row sm:items-center md:justify-between">
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search by firstName or email..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -122,7 +189,7 @@ export function EnrolleesClient() {
           />
         </div>
 
-        <div className="relative min-w-[210px]">
+        <div className="relative min-w-52">
           <button
             onClick={() => setPlanDropdownOpen((open) => !open)}
             className="flex w-full items-center justify-between rounded-2xl border border-slate-300 bg-white px-6 py-2 font-medium text-slate-700 shadow-sm hover:border-slate-400"
@@ -164,36 +231,59 @@ export function EnrolleesClient() {
       {/* Table */}
       <div className="overflow-x-auto rounded-[15px] bg-white">
         <table className="w-full">
+          <colgroup>
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '25%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '10%' }} />
+          </colgroup>
           <thead>
             <tr className="border-b border-border text-[17px]">
               <th className="px-4 py-3 text-left font-semibold">Date Added</th>
               <th className="px-4 py-3 text-left font-semibold">Name</th>
               <th className="px-4 py-3 text-left font-semibold">Email</th>
-              <th className="px-4 py-3 text-left font-semibold">Plan Type</th>
+              <th className="px-4 py-3 text-left font-semibold">Plan</th>
               <th className="px-4 py-3 text-center font-semibold">Number of Dependents</th>
               <th className="px-4 py-3 text-left font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedEnrollees.map((enrollee) => (
-              <tr key={enrollee.id} className="divide-y divide-border text-[15px]">
-                <td className="px-4 py-3">{enrollee.dateAdded}</td>
-                <td className="px-4 py-3">{enrollee.name}</td>
-                <td className="px-4 py-3">{enrollee.email}</td>
-                <td className="px-4 py-3">{enrollee.planType}</td>
-                <td className="px-4 py-3 text-center">{enrollee.dependents}</td>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+                    <span className="ml-2">Loading enrollees...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : paginatedEnrollees.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center text-sm text-slate-500">
+                  No enrollees found.
+                </td>
+              </tr>
+            ) : (paginatedEnrollees.map((enrollee) => (
+              <tr key={enrollee.userId} className="divide-y divide-border text-[15px]">
+                <td className="px-4 py-3">{formatDate(enrollee.$createdAt! || 'N/A')}</td>
+                <td className="px-4 py-3">{enrollee.firstName} {enrollee.lastName}</td>
+                <td className="px-4 py-3">{enrollee.email || 'N/A'}</td>
+                <td className="px-4 py-3">{enrollee.plan || 'N/A'}</td>
+                <td className="px-4 py-3 text-center">{enrollee.dependents || '0'}</td>
                 <td className="px-4 py-3 border-b border-border">
                   <div className="relative">
                   <button
-                    onClick={() => setOpenActionMenu(openActionMenu === enrollee.id ? null : enrollee.id)}
+                    onClick={() => setOpenActionMenu(openActionMenu === enrollee.userId ? null : enrollee.userId)}
                     className="p-2"
                     title="Actions"
                   >
                     <FaEllipsisV size={16} />
                   </button>
 
-                  {openActionMenu === enrollee.id && (
-                    <div className="absolute right-0 top-10 z-20 min-w-[150px] overflow-hidden rounded-[15px] border border-border bg-white shadow-xl">
+                  {openActionMenu === enrollee.userId && (
+                    <div style={{ minWidth: 150 }} className="absolute right-0 top-10 z-20 overflow-hidden rounded-[15px] border border-border bg-white shadow-xl">
                       <button
                         onClick={() => {
                           openEditModal(enrollee);
@@ -219,7 +309,7 @@ export function EnrolleesClient() {
                 </div>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
@@ -271,11 +361,20 @@ export function EnrolleesClient() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="space-y-2">
-                Name
+                First Name
                 <input
                   type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
+                  value={editForm.firstName}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, firstName: e.target.value }))}
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                />
+              </label>
+              <label className="space-y-2">
+                Last Name
+                <input
+                  type="text"
+                  value={editForm.lastName}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, lastName: e.target.value }))}
                   className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
                 />
               </label>
@@ -291,7 +390,7 @@ export function EnrolleesClient() {
               <label className="space-y-2">
                 Plan Type
                 <select
-                  value={editForm.planType}
+                  value={editForm.plan}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, planType: e.target.value }))}
                   className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:outline-none"
                 >

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import PaCodeForm from './PaCodeForm';
 import { createProviderPA } from '@/lib/providerPA';
@@ -8,7 +9,6 @@ import { createProviderPA } from '@/lib/providerPA';
 export interface TreatmentItem {
   id: string;
   itemCode: string;
-  description: string;
   quantity: number;
   unitPrice: number;
   amount: number;
@@ -25,6 +25,7 @@ export interface PaCodeFormData {
 
 const PaCodeCreationPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleSubmitPaCode = async (formData: PaCodeFormData) => {
     if (isSubmitting) return;
@@ -70,7 +71,7 @@ const PaCodeCreationPage = () => {
 
       // Check if all treatment items are valid
       const invalidItems = formData.treatmentItems.filter(
-        item => !item.itemCode.trim() || !item.description.trim() || item.quantity <= 0 || item.unitPrice <= 0
+        item => !item.itemCode.trim() || item.quantity <= 0 || item.unitPrice <= 0
       );
 
       if (invalidItems.length > 0) {
@@ -93,6 +94,9 @@ const PaCodeCreationPage = () => {
       try {
         await createProviderPA(payload);
         toast.success('PA Code request submitted successfully!');
+        // Navigate to tracking page after success
+        router.push('/dashboard/providers/pa-code/tracking');
+        return;
       } catch (err: any) {
         toast.error(err?.message || 'Failed to submit PA Code request');
         console.error('PA submit error', err);

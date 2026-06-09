@@ -51,7 +51,7 @@ export const ROLE_PERMISSIONS: Record<RoleName, readonly Permission[]> = {
     'telemedicine',
     'prescription',
     'feedback',
-    'notification', 'clients', 'validations', 'providers',
+    'notification', 'clients', 'validations', 'providers', 'enrollees'
   ],
   sales: ['overview', 'profile', 'leads', 'clients', 'enrollees', 'tickets', 'preEmployment', 'providers', 'plans', 'benefits', 'finance', 'reimbursement'],
   finance: ['overview', 'profile', 'finance', 'reimbursement', 'tickets', 'providers'],

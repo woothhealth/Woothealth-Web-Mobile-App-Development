@@ -1,3 +1,2 @@
-s/n,service,price
-1,"Basic vision test",10000
-2,Dental Checkup,20000
+s/n,tariffCode,serviceName,providerType,tierA,tierAPlus,tierB,tierC,tierD,description
+1,WHT001,Sample Test Name (STN),optical,19920,21600,17040,15360,13440,Sample description for Confrontation Visual Field Test (CVF)

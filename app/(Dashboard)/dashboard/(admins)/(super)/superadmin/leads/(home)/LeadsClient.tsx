@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { FaPlus, FaEdit, FaEye, FaTrash, FaTimes, FaEllipsisV } from 'react-icons/fa';
 import {
   Lead,
@@ -18,6 +19,7 @@ import DeleteConfirmModal from '../../DeleteConfirmModal';
 
 export default function LeadsClient() {
   const { data, isLoading, error, refetch } = useAdminLeads();
+  const queryClient = useQueryClient();
   const leads = data?.data ?? [];
   const [search, setSearch] = useState('');
   const [filterRep, setFilterRep] = useState('All sales reps');
@@ -27,6 +29,8 @@ export default function LeadsClient() {
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [isSubmittingSave, setIsSubmittingSave] = useState(false);
+  const [isSubmittingDelete, setIsSubmittingDelete] = useState(false);
 
   const filteredLeads = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -68,6 +72,7 @@ export default function LeadsClient() {
 
   const confirmDeleteLead = async () => {
     if (!deleteTarget) return;
+    setIsSubmittingDelete(true);
     try {
       await deleteAdminLead(deleteTarget.id);
       toast.success(`Lead for ${deleteTarget.clientName} deleted successfully.`);
@@ -76,16 +81,32 @@ export default function LeadsClient() {
       refetch();
     } catch (err: any) {
       toast.error(err?.message || 'Failed to delete lead.');
+    } finally {
+      setIsSubmittingDelete(false);
     }
   };
 
   const handleSaveLead = async (leadData: Omit<Lead, 'id' | 'dateAdded'>) => {
+    setIsSubmittingSave(true);
     try {
       if (editingLead) {
-        await updateAdminLead(editingLead.id, leadData);
+        const res = await updateAdminLead(editingLead.id, leadData);
+        // update cache so UI reflects changes even in mock mode
+        const updated = res?.data ?? res;
+        queryClient.setQueryData(['admin-leads'], (old: any) => {
+          const existing = old?.data ?? [];
+          const list = existing.map((l: Lead) => (l.id === editingLead.id ? { ...l, ...updated } : l));
+          return { ...(old ?? {}), data: list };
+        });
         toast.success(`Lead “${editingLead.clientName}” updated successfully.`);
       } else {
-        await createAdminLead(leadData);
+        const res = await createAdminLead(leadData);
+        // add to cache so it appears immediately in list when backend is not configured
+        const created = res?.data ?? res;
+        queryClient.setQueryData(['admin-leads'], (old: any) => {
+          const existing = old?.data ?? [];
+          return { ...(old ?? {}), data: [created, ...existing] };
+        });
         toast.success(`Lead “${leadData.clientName}” added successfully.`);
       }
       setIsModalOpen(false);
@@ -93,6 +114,8 @@ export default function LeadsClient() {
       refetch();
     } catch (err: any) {
       toast.error(err?.message || 'Failed to save lead.');
+    } finally {
+      setIsSubmittingSave(false);
     }
   };
 
@@ -112,10 +135,10 @@ export default function LeadsClient() {
             placeholder="Search client name or email"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-full min-w-[260px] rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
+            className="w-full min-w-65 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition"
           />
 
-          <div className="relative min-w-[180px]">
+          <div className="relative min-w-45">
             <button
               type="button"
               onClick={() => handleOpenFilter('rep')}
@@ -264,6 +287,7 @@ export default function LeadsClient() {
       {isModalOpen && (
         <LeadModal
           lead={editingLead}
+          isSubmitting={isSubmittingSave}
           onClose={() => {
             setIsModalOpen(false);
             setEditingLead(null);
@@ -282,6 +306,8 @@ export default function LeadsClient() {
           }
           onCancel={() => setDeleteTarget(null)}
           onConfirm={confirmDeleteLead}
+          isProcessing={isSubmittingDelete}
+          processingLabel="Deleting..."
         />
       )}
 
@@ -309,9 +335,9 @@ interface LeadModalProps {
   lead: Lead | null;
   onClose: () => void;
   onSave: (leadData: Omit<Lead, 'id' | 'dateAdded'>) => void;
+  isSubmitting?: boolean;
 }
-
-function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
+function LeadModal({ lead, onClose, onSave, isSubmitting }: LeadModalProps) {
   const [formData, setFormData] = useState({
     clientName: lead?.clientName || '',
     clientType: lead?.clientType || '',
@@ -365,7 +391,7 @@ function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-      <div className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-2xl overflow-hidden rounded-[15px] h-fit bg-white p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">{lead ? 'Edit Lead' : 'Add New Lead'}</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-900">
@@ -445,7 +471,7 @@ function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
                 min="0"
                 value={formData.potentialEmployees}
                 onChange={(e) => setFormData({ ...formData, potentialEmployees: e.target.value })}
-                className="w-full rounded-[10px] border border-slate-300 px-4 py-3 outline-none focus:border-[#49A5EF]"
+                className="w-full rounded-[10px] border border-slate-300 px-4 py-2 outline-none focus:border-[#49A5EF]"
               />
             </Field>
           </div>
@@ -513,15 +539,17 @@ function LeadModal({ lead, onClose, onSave }: LeadModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+              disabled={isSubmitting}
+              className={`rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-700 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-2xl bg-[#49A5EF] px-4 py-3 text-sm font-semibold text-white hover:bg-[#49A5EF]/90"
+              disabled={isSubmitting}
+              className={`rounded-2xl bg-[#49A5EF] px-4 py-3 text-sm font-semibold text-white ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#49A5EF]/90'}`}
             >
-              {lead ? 'Save changes' : 'Add lead'}
+              {isSubmitting ? (lead ? 'Saving...' : 'Adding...') : (lead ? 'Save changes' : 'Add lead')}
             </button>
           </div>
         </form>

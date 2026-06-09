@@ -48,7 +48,7 @@ async function getPaCodes(page: number = 1, limit: number = ITEMS_PER_PAGE): Pro
       createdDate: doc.createdDate || '',
       providerName: doc.providerName || '',
       patientId: doc.patientId || '',
-      status: (doc.status || 'under review') as 'approved' | 'under review' | 'declined',
+      status: (doc.status || 'under review') as 'approved' | 'under review' | 'declined' | 'pending',
     }));
 
     return { data: mapped };
@@ -66,7 +66,7 @@ export default function PaCodesClient() {
   const [error, setError] = useState('');
   const [usedMockData, setUsedMockData] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<'approved' | 'under review' | 'declined' | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<'approved' | 'under review' | 'declined' | 'pending' | 'all'>('all');
   const [page, setPage] = useState(1);
 
   const statusOptions = [
@@ -74,6 +74,7 @@ export default function PaCodesClient() {
     { label: 'Approved', value: 'approved' },
     { label: 'Under Review', value: 'under review' },
     { label: 'Declined', value: 'declined' },
+    { label: 'Pending', value: 'pending' },
   ];
 
   const headers = ['Date of Service', 'HMO ID', 'PA Code', 'Provider', 'Status', 'Action'];
@@ -148,10 +149,16 @@ export default function PaCodesClient() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'text-green-600 bg-green-100';
-      case 'under review': return 'text-yellow-600 bg-yellow-100';
-      case 'declined': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'approved':
+        return 'bg-[#10B9811A] text-[#10B981]';
+      case 'declined':
+        return 'bg-[#EF44441A] text-[#EF4444]';
+      case 'under review':
+        return 'bg-[#F59E0B1A] text-[#F59E0B]';
+      case 'pending':
+        return 'bg-[#49A5EF1A] text-[#49A5EF]';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -186,7 +193,6 @@ export default function PaCodesClient() {
             type="text"
             value={searchQuery}
             onChange={(e) => {
-              setSearchQuery(e.target.value);
               setPage(1);
             }}
             placeholder="Search HMO ID, PA codes, Provider, or Patient Name"
@@ -245,10 +251,6 @@ export default function PaCodesClient() {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-[#49A5EF]"></div>
                   <span className="ml-2">Loading pa-codes...</span>
                 </div>
-              </div>
-            ) : !searchQuery && selectedStatus === 'all' ? (
-              <div className="p-4 text-center text-slate-500">
-                Enter a search term to view PA codes.
               </div>
             ) : paginatedPaCodes.length === 0 ? (
               <div className="p-4 text-center text-gray-500">
@@ -316,13 +318,7 @@ export default function PaCodesClient() {
                   <col style={{width: '10%'}} />
                 </colgroup>
                 <tbody>
-                  {!searchQuery ? (
-                    <tr>
-                      <td colSpan={headers.length} className="px-4 py-6 text-center text-slate-500">
-                        Enter a search term to view PA codes
-                      </td>
-                    </tr>
-                  ) : paginatedPaCodes.length === 0 ? (
+                  {searchQuery && paginatedPaCodes.length === 0 ? (
                     <tr>
                       <td colSpan={headers.length} className="px-4 py-6 text-center text-slate-500">
                         No PA codes match your search

@@ -49,7 +49,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
     {
       group: 1,
       label: 'HMOID',
-      value: enrollee.hmoid,
+      value: enrollee.userId,
     },
     {
       group: 2,
@@ -89,7 +89,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
           </div>
 
           {/* Name */}
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-900 uppercase">
             {enrollee.firstName} {enrollee.lastName}
           </h2>
         </div>
@@ -101,7 +101,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
             return (
               <div key={item.label} className={`flex items-center justify-between px-4 py-2 rounded-[10px] ${groupClass}`}>
                 <p className="font-semibold">{item.label}</p>
-                <p className={`font-medium px-2 rounded-[10px] ${getStatusColor(item.label === 'Status' ? enrollee.status : '')}`}>
+                <p className={`font-medium px-2 rounded-[10px] uppercase ${getStatusColor(item.label === 'Status' ? enrollee.status : '')}`}>
                   {item.value}
                 </p>
               </div>

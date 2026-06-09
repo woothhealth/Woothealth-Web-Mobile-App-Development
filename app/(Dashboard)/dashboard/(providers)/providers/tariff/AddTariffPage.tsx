@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const expectedHeaders = [
   'tariffCode',
@@ -188,6 +189,11 @@ export default function AddTariffPage() {
 
   return (
     <div className="px-4">
+      <div className="mb-6 flex justify-end w-full">
+        <Link href="/dashboard/providers/tariff/view" className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-100">
+          View Tariffs
+        </Link>
+      </div>
       <div className="rounded-[15px] bg-white shadow-md">
         <form onSubmit={handleSubmit} className="space-y-6 px-6 py-5">
           <div className="grid gap-4 md:grid-cols-2">
@@ -276,18 +282,11 @@ export default function AddTariffPage() {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-3 md:flex-row justify-end">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 hover:bg-slate-50 transition"
-            >
-              Cancel
-            </button>
+          <div className="flex w-full">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-primary px-5 py-3 font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-primary px-5 w-full py-2 font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? 'Uploading...' : 'Upload Tariff'}
             </button>

@@ -7,7 +7,11 @@ export const parseRoleFromCookie = (cookieHeader: string): string | null => {
 };
 
 export const requireAdminRole = (cookieHeader: string) => {
-  if (!cookieHeader || !cookieHeader.includes("session=")) {
+  // Accept any non-empty cookie header rather than relying on a specific
+  // cookie name like `session=`. Session cookie names vary between
+  // environments (PHPSESSID, sid, connect.sid, etc.) and may be HttpOnly
+  // so the presence of a cookie header is a better indicator.
+  if (!cookieHeader || !cookieHeader.trim()) {
     return NextResponse.json({ error: "Unauthorized: missing session" }, { status: 401 });
   }
 

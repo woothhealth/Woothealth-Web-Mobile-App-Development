@@ -26,7 +26,7 @@ export type PaCodeDetail = {
     name: string;
     covered: boolean;
   }>;
-  status: 'approved' | 'under review' | 'declined';
+  status: 'approved' | 'under review' | 'declined' | 'pending';
   bookingId: string;
   $id: string;
 };

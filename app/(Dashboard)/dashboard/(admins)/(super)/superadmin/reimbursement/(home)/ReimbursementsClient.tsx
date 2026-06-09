@@ -217,13 +217,13 @@ export default function ReimbursementsClient() {
               setPage(1);
             }}
             placeholder={`Search ${selectedCategory}...`}
-            className="min-w-[280px] rounded-lg border border-[#E5E7EB] px-4 py-2 text-sm w-full focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+            className="min-w-70 rounded-lg border border-[#E5E7EB] px-4 py-2 text-sm w-full focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
           />
 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value as any)}
-            className="min-w-[180px] rounded-lg border border-[#E5E7EB] bg-white px-4 py-2 text-sm text-slate-700 focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+            className="min-w-45 rounded-lg border border-[#E5E7EB] bg-white px-4 py-2 text-sm text-slate-700 focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
           >
             {categories.map((category) => (
               <option key={category.value} value={category.value}>
@@ -299,41 +299,13 @@ export default function ReimbursementsClient() {
                     </span>
                   </td>
                   <td className="px-5 py-4 relative text-[14px] md:text-[15px] text-center">
-                    <button
-                      type="button"
-                      onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border-0 outline-0 text-slate-600 hover:bg-[#F8F9FA]"
+                    <Link
+                      href={`/dashboard/superadmin/reimbursement/${item.reimbursementId}`}
+                      className="flex w-full px-3 rounded-lg py-2 text-sm text-left text-slate-700 hover:bg-[#F8F9FA]"
+                      onClick={() => setOpenMenuId(null)}
                     >
-                      <FaEllipsisV />
-                    </button>
-                    {openMenuId === item.id && (
-                      <div className="absolute right-0 top-10 z-20 w-40 rounded-2xl border border-[#E5E7EB] bg-white p-2 shadow-lg">
-                        <Link
-                          href={`/dashboard/superadmin/reimbursement/${item.reimbursementId}`}
-                          className="flex w-full px-3 rounded-lg py-2 text-sm text-left text-slate-700 hover:bg-[#F8F9FA]"
-                          onClick={() => setOpenMenuId(null)}
-                        >
-                          <FaEye className="mr-2 inline" /> View
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(item)}
-                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-[#F8F9FA]"
-                        >
-                          <FaEdit className="mr-2" /> Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeleteTarget(item);
-                            setOpenMenuId(null);
-                          }}
-                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                        >
-                          <FaTrash className="mr-2" /> Delete
-                        </button>
-                      </div>
-                    )}
+                      <FaEye className="mr-2 inline" /> View
+                    </Link>
                   </td>
                 </tr>
               ))

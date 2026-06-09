@@ -1,6 +1,7 @@
 // 'use client';
 
 import { AdminOverviewProvider } from "@/Components/AdminOverviewContext";
+import { AdminEnrolleesProvider } from "@/Components/AdminEnrolleesContext";
 
 export default function OverviewAdminDashboardLayout({
   children,
@@ -9,9 +10,11 @@ export default function OverviewAdminDashboardLayout({
 }>) {
   return (
     <AdminOverviewProvider>
-      <div className="relative w-full bg-[#FAFAFA] pb-4 mt-4 md:mt-0 space-y-2">
-        {children}
-      </div>
+      <AdminEnrolleesProvider>
+        <div className="relative w-full bg-[#FAFAFA] pb-4 mt-4 md:mt-0 space-y-2">
+          {children}
+        </div>
+      </AdminEnrolleesProvider>
     </AdminOverviewProvider>
   );
 }

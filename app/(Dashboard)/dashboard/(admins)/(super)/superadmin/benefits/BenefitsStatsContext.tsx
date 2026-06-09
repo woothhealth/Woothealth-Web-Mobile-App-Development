@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
-import { useAdminBenefits } from '@/lib/adminBenefits';
+import { useAdminPlans } from '@/lib/adminPlans';
 
 interface BenefitsStats {
   total: number;
@@ -19,19 +19,19 @@ interface BenefitsStatsContextType {
 const BenefitsStatsContext = createContext<BenefitsStatsContextType | undefined>(undefined);
 
 export const BenefitsStatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data, isLoading, error } = useAdminBenefits();
+  const { data, isLoading, error } = useAdminPlans();
 
-  const benefits = Array.isArray(data?.data)
+  const plans = Array.isArray(data?.data)
     ? data.data
     : Array.isArray(data)
     ? data
     : [];
 
   const stats: BenefitsStats = {
-    total: benefits.length,
-    active: benefits.filter((benefit: any) => benefit.status === 'active').length,
-    draft: benefits.filter((benefit: any) => benefit.status === 'draft').length,
-    totalEnrollees: benefits.filter((benefit: any) => benefit.enrollees > 0).length,
+    total: plans.length,
+    active: plans.filter((plan: any) => plan.status === 'active').length,
+    draft: plans.filter((plan: any) => plan.status === 'draft').length,
+    totalEnrollees: plans.filter((plan: any) => plan.enrollees > 0).length,
   };
 
   return (

@@ -4,7 +4,7 @@ export type PaCode = {
   createdDate: string;
   providerName: string;
   patientId: string;
-  status: 'approved' | 'under review' | 'declined';
+  status: 'approved' | 'under review' | 'declined' | 'pending';
 };
 
 export const mockPaCodes: PaCode[] = [

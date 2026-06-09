@@ -2,26 +2,25 @@
 
 import React, { useState } from "react";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
-import { IoCloseOutline, IoSearchSharp } from "react-icons/io5";
+import { IoCloseOutline } from "react-icons/io5";
 import NotificationCenter from "./NotificationCenter";
 import UserDropdown from "./UserDropdown";
 import ProvidersToggle from "../ProvidersToggle";
 
 interface WelcomeWrapperProps {
-  firstName: string;
-  displayLastName: string;
+  name: string;
+  displayName?: string;
   initials: string;
-  role: string;
+  role?: string;
   id: string;
   email?: string;
   title: string;
 }
 
 export default function WelcomeWrapper({
-  firstName,
-  displayLastName,
+  name,
+  displayName,
   initials,
-  role,
   id,
   email,
   title,
@@ -66,7 +65,7 @@ export default function WelcomeWrapper({
 
             <div className="leading-4 hidden md:block">
               <h3 className="font-bold">
-                {firstName} {displayLastName}
+                {displayName}
               </h3>
               <p className="text-[14px]">
                 ID: <span className="font-semibold text-[15px]">{id}</span>
@@ -75,7 +74,7 @@ export default function WelcomeWrapper({
 
             {/* User Dropdown */}
             <UserDropdown
-              firstName={firstName}
+              name={name}
               email={email}
             />
           </div>

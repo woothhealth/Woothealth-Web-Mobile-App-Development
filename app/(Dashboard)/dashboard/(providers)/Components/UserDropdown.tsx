@@ -8,12 +8,12 @@ import Link from "next/link";
 import LogoutButton from "@/UI/LogOut";
 
 interface UserDropdownProps {
-  firstName: string;
+  name: string;
   email?: string;
 }
 
 export default function UserDropdown({
-  firstName,
+  name,
   email,
 }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,10 +53,10 @@ export default function UserDropdown({
         <div className="absolute right-0 mt-8 w-50 bg-white border border-gray-200 rounded-lg shadow-lg z-40">
           {/* User Info Header */}
           <div className="px-4 py-3 border-b border-gray-100">
-            <p className="font-semibold text-[#333333]">
-              {firstName}
+            <p className="font-semibold text-[#333333] wrap-break-word">
+              {name}
             </p>
-            <p className="text-sm text-[#333333]">{email}</p>
+            <p className="text-sm text-[#333333] wrap-break-word">{email}</p>
           </div>
 
           <div className="py-2">

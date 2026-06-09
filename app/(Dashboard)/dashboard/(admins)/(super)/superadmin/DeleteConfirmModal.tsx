@@ -8,6 +8,8 @@ interface DeleteConfirmModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   confirmLabel?: string;
+  isProcessing?: boolean;
+  processingLabel?: string;
 }
 
 export default function DeleteConfirmModal({
@@ -16,6 +18,8 @@ export default function DeleteConfirmModal({
   onCancel,
   onConfirm,
   confirmLabel = 'Delete',
+  isProcessing = false,
+  processingLabel,
 }: DeleteConfirmModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
@@ -33,9 +37,10 @@ export default function DeleteConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+            disabled={isProcessing}
+            className={`rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white ${isProcessing ? 'opacity-70 cursor-not-allowed' : 'hover:bg-red-700'}`}
           >
-            {confirmLabel}
+            {isProcessing ? (processingLabel || confirmLabel) : confirmLabel}
           </button>
         </div>
       </div>

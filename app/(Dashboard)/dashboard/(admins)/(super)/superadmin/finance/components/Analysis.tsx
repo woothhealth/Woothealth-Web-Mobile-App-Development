@@ -3,7 +3,7 @@ import React from 'react'
 
 const Analysis = () => {
     const current = 0
-    const target = 0
+    const target = 50
     // const percentage = (((current / target) * 100).toFixed(2) || '0') as string
     const percentage = 0
 

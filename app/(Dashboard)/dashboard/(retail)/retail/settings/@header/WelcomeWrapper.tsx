@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { IoCloseOutline } from "react-icons/io5";
-import Toggle from "@/app/(Dashboard)/dashboard/(business)/BusinessToggle";
+import Toggle from "@/UI/Toggle";
 import UserDropdown from "../../UIs/UserDropdown";
 import NotificationCenter from "../../UIs/NotificationCenter";
 
@@ -46,7 +46,7 @@ export default function WelcomeWrapper({
               />
             )}
           </div>
-          <h2 className="font-bold">SETTINGS</h2>
+          <h2 className="font-bold">REIMBURSEMENT</h2>
         </div>
 
         {/* Right side: notifications and user info */}

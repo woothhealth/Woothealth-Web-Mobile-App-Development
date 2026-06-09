@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { FaUser } from 'react-icons/fa';
 import { FaX } from 'react-icons/fa6';
 import { toast } from 'sonner';
+import AddTariffModal from '../tariff/AddTariffModal';
 
 interface Provider {
   $id: string;
@@ -18,6 +20,7 @@ interface Provider {
   specialization?: string;
   providerCode?: string;
   providerTariff?: string[];
+  profile_pic?: string;
   customTariff?: boolean;
   contactPerson?: string;
   licenseNumber?: string;
@@ -53,6 +56,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
     email: Array.isArray(provider.email) ? provider.email.join(', ') : provider.email || '',
     phone: Array.isArray(provider.phone) ? provider.phone.join(', ') : provider.phone || '',
     state: provider.state || '',
+    profile_pic: provider.profile_pic || '',
     local_govt: provider.local_govt || '',
     type: provider.type || '',
     tier: provider.tier || '',
@@ -65,13 +69,19 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
     adminOfficer: provider.adminOfficer || '',
   });
 
-  const [tariffDraft, setTariffDraft] = useState({
-    label: '',
-    rate: '',
-    note: '',
-  });
-
   const [suspendReason, setSuspendReason] = useState('');
+
+  const [tariffs, setTariffs] = useState<any[]>([]);
+  const [tariffsLoading, setTariffsLoading] = useState(false);
+  const [tariffsError, setTariffsError] = useState('');
+
+  const formatAmount = (amt: any) => {
+    if (amt == null) return 'N/A';
+    if (typeof amt === 'number') return `₦${amt.toLocaleString()}`;
+    const num = Number(amt);
+    if (isNaN(num)) return amt;
+    return `₦${num.toLocaleString()}`;
+  };
 
   useEffect(() => {
     setEditProfileDraft({
@@ -83,6 +93,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       local_govt: provider.local_govt || '',
       type: provider.type || '',
       tier: provider.tier || '',
+      profile_pic: provider.profile_pic || '',
       remark: provider.remark || '',
       providerCode: provider.providerCode || '',
       contactPerson: provider.contactPerson || '',
@@ -92,6 +103,87 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       adminOfficer: provider.adminOfficer || '',
     });
   }, [provider]);
+
+  useEffect(() => {
+    if (activePopup !== 'viewTariff') return;
+    let mounted = true;
+    const fetchTariffs = async () => {
+      setTariffsLoading(true);
+      setTariffsError('');
+      try {
+        const res = await fetch(`/api/admin/tariff?providerId=${encodeURIComponent(provider.$id)}`, { credentials: 'include' });
+        const payload = await res.json().catch(() => null);
+        const data = payload?.data || payload;
+        if (!res.ok) throw new Error(payload?.error || 'Failed to fetch tariffs');
+        if (!mounted) return;
+
+        // Normalize provider info for matching
+        const providerTypeNormalized = (provider.type || '').toString().trim().toLowerCase();
+        const providerTierRaw = (provider.tier || '').toString().trim();
+        const providerTier = providerTierRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '');
+
+        const tierCandidates = [
+          `tier${providerTier}`,
+          `tier${providerTier.toLowerCase()}`,
+          `tier${providerTier.toUpperCase()}`,
+          `price${providerTier}`,
+          `price${providerTier.toLowerCase()}`,
+          `price${providerTier.toUpperCase()}`,
+          providerTier,
+          providerTier.toLowerCase(),
+          providerTier.toUpperCase(),
+        ].filter(Boolean);
+
+        const extractAmount = (t: any) => {
+          if (!t) return null;
+          for (const k of tierCandidates) {
+            if (t[k] != null) return t[k];
+          }
+          const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
+          for (const nk of nestedKeys) {
+            const obj = t[nk];
+            if (obj && typeof obj === 'object') {
+              for (const k of tierCandidates) {
+                if (obj[k] != null) return obj[k];
+              }
+              // if object contains numeric values only, try first numeric
+              const vals = Object.values(obj).filter((v) => v != null && (typeof v === 'number' || !Number.isNaN(Number(v))));
+              if (vals.length > 0) return vals[0];
+            }
+          }
+          if (t.amount != null) return t.amount;
+          if (t.price != null) return t.price;
+          return null;
+        };
+
+        let rawList: any[] = [];
+        if (Array.isArray(data)) rawList = data;
+        else if (Array.isArray((data as any).items)) rawList = (data as any).items;
+        else if (Array.isArray((data as any).data)) rawList = (data as any).data;
+        else rawList = [];
+
+        // Filter tariffs by providerType match and presence of a tier-specific amount
+        const filtered = rawList.filter((t) => {
+          const tProviderType = ((t.providerType || t.provider_type || t.type) || '').toString().trim().toLowerCase();
+          if (!tProviderType || !providerTypeNormalized) return false;
+          if (tProviderType !== providerTypeNormalized) return false;
+          const amt = extractAmount(t);
+          return amt != null;
+        });
+
+        setTariffs(filtered);
+      } catch (err: any) {
+        if (!mounted) return;
+        setTariffsError(err?.message || 'Failed to load tariffs');
+      } finally {
+        if (mounted) setTariffsLoading(false);
+      }
+    };
+    fetchTariffs();
+    return () => {
+      mounted = false;
+    };
+  }, [activePopup, provider.$id]);
 
   const isActive = provider.status?.toLowerCase() === 'active';
   const isSuspended = provider.status?.toLowerCase() === 'suspended';
@@ -128,9 +220,6 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
     if (!editProfileDraft.email.trim()) {
       errors.email = 'Email is required.';
     }
-    if (!editProfileDraft.phone.trim()) {
-      errors.phone = 'Phone is required.';
-    }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -144,6 +233,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
         address: editProfileDraft.address.trim(),
         email: editProfileDraft.email.split(',').map((item) => item.trim()),
         phone: editProfileDraft.phone.split(',').map((item) => item.trim()),
+        profile_pic: editProfileDraft.profile_pic,
         state: editProfileDraft.state.trim(),
         local_govt: editProfileDraft.local_govt.trim(),
         type: editProfileDraft.type.trim(),
@@ -166,40 +256,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
     }
   };
 
-  const handleUploadTariff = async () => {
-    resetErrors();
-    const errors: Record<string, string> = {};
-
-    if (!tariffDraft.label.trim()) {
-      errors.label = 'Tariff label is required.';
-    }
-    if (!tariffDraft.rate.trim()) {
-      errors.rate = 'Tariff rate is required.';
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const updated = await updateProvider({
-        providerTariff: [
-          `${tariffDraft.label.trim()} - ${tariffDraft.rate.trim()}${tariffDraft.note ? ` (${tariffDraft.note.trim()})` : ''}`,
-        ],
-        customTariff: true,
-      });
-      onProviderUpdate(updated as Provider);
-      toast.success('Tariff uploaded successfully.');
-      setTariffDraft({ label: '', rate: '', note: '' });
-      setActivePopup(null);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to upload tariff.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Upload tariff handled via AddTariffModal
 
   const handleSuspendProvider = async () => {
     resetErrors();
@@ -253,7 +310,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       case 'editProfile':
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-3xl h-full rounded-[15px] bg-white p-6 shadow-xl overflow-y-auto custom-scrollbar">
+            <div className="w-full max-w-3xl h-fit rounded-[15px] bg-white p-6 shadow-xl overflow-y-auto custom-scrollbar">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold text-slate-900">Edit Provider Profile</h2>
@@ -261,6 +318,31 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
                 </div>
                 <FaX onClick={() => setActivePopup(null)} className="cursor-pointer" size={22} />
               </div>
+              <div className='flex flex-col items-center space-y-1 text-[#959595]'>
+            <input 
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="client-logo-upload"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = () => {(e : any) => setEditProfileDraft((prev) => ({ ...prev, name: e.target.value }))};
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+            <label htmlFor="client-logo-upload" className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-border bg-slate-50 text-sm hover:bg-slate-100 overflow-hidden">
+              {editProfileDraft.profile_pic ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={editProfileDraft.profile_pic} alt="client" className="h-full w-full object-cover" />
+              ) : (
+                <FaUser size={24} />
+              )}
+            </label>
+            <p className="mt-1">Upload Picture</p>
+          </div>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <label className="space-y-2">
                   <span className="font-medium text-slate-700">Provider Name</span>
@@ -396,103 +478,126 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
 
       case 'uploadTariff':
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-2xl rounded-[15px] bg-white p-6 shadow-xl">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-semibold text-slate-900">Upload Tariff</h2>
-                  <p className="text-sm text-slate-600">Submit the tariff information for this provider.</p>
-                </div>
-                <FaX onClick={() => setActivePopup(null)} className="cursor-pointer" size={22} />
-              </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="space-y-2 md:col-span-2">
-                  <span className="font-medium text-slate-700">Tariff Label</span>
-                  <input
-                    value={tariffDraft.label}
-                    onChange={(e) => setTariffDraft((prev) => ({ ...prev, label: e.target.value }))}
-                    className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
-                  />
-                  {formErrors.label && <p className="text-xs text-red-600">{formErrors.label}</p>}
-                </label>
-                <label className="space-y-2">
-                  <span className="font-medium text-slate-700">Tariff Rate</span>
-                  <input
-                    value={tariffDraft.rate}
-                    onChange={(e) => setTariffDraft((prev) => ({ ...prev, rate: e.target.value }))}
-                    className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
-                  />
-                  {formErrors.rate && <p className="text-xs text-red-600">{formErrors.rate}</p>}
-                </label>
-                <label className="space-y-2 md:col-span-2">
-                  <span className="font-medium text-slate-700">Notes</span>
-                  <textarea
-                    value={tariffDraft.note}
-                    onChange={(e) => setTariffDraft((prev) => ({ ...prev, note: e.target.value }))}
-                    rows={4}
-                    className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF] resize-none"
-                  />
-                </label>
-              </div>
-              {generalError && <p className="mt-4 text-sm text-red-600">{generalError}</p>}
-              <div className="mt-6 flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setActivePopup(null)}
-                  className="rounded-2xl border border-[#E5E7EB] px-5 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleUploadTariff}
-                  disabled={isLoading}
-                  className="rounded-2xl bg-[#49A5EF] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3d8ed8] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Uploading...' : 'Upload Tariff'}
-                </button>
-              </div>
-            </div>
-          </div>
+          <AddTariffModal
+            isOpen={true}
+            onClose={() => setActivePopup(null)}
+            providerName={provider.name}
+            providerType={provider.type}
+            onTariffAdded={async () => {
+              setActivePopup(null);
+              // Refresh provider from server and update parent
+              try {
+                const res = await fetch(`/api/admin/providers?providerId=${encodeURIComponent(provider.$id)}`, { credentials: 'include' });
+                if (res.ok) {
+                  const payload = await res.json().catch(() => null);
+                  const updated = payload?.data || payload;
+                  if (updated) onProviderUpdate(updated as Provider);
+                }
+              } catch (e) {
+                // ignore refresh errors
+              }
+            }}
+          />
         );
 
       case 'viewTariff':
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-lg rounded-[15px] bg-white p-6 shadow-xl">
+            <div className="w-full max-w-xl rounded-[15px] bg-white p-6 shadow-xl h-fit">
               <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-semibold text-slate-900">View Tariff</h2>
-                  <p className="text-sm text-slate-600">Review the provider's tariff details.</p>
-                </div>
+                <h2 className="text-2xl font-semibold text-slate-900">View Tariff</h2>
                 <FaX onClick={() => setActivePopup(null)} className="cursor-pointer" size={22} />
               </div>
-              <div className="mt-6 space-y-4">
-                {provider.providerTariff && provider.providerTariff.length > 0 ? (
-                  provider.providerTariff.map((tariff, index) => (
-                    <div key={index} className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
-                      <p className="text-sm text-slate-500">Tariff {index + 1}</p>
-                      <p className="mt-2 text-base font-semibold text-slate-900">{tariff}</p>
-                    </div>
-                  ))
+              <div className="mt-6 max-h-100 overflow-auto custom-scrollbar">
+                {tariffsLoading ? (
+                  <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
+                    <p className="text-sm text-slate-500">Loading tariffs...</p>
+                  </div>
+                ) : tariffsError ? (
+                  <div className="rounded-3xl border border-[#E5E7EB] bg-[#FFF0F0] p-4">
+                    <p className="text-sm text-red-600">{tariffsError}</p>
+                  </div>
+                ) : tariffs && tariffs.length > 0 ? (
+                  <div className="overflow-x-auto rounded-[15px] border border-[#E5E7EB] bg-white">
+                    <table className="w-full table-auto text-left">
+                      <thead className="bg-[#F8FAFC] border-b border-border text-[17px]">
+                        <tr>
+                          <th className="px-4 py-3">Tariff Code</th>
+                          <th className="px-4 py-3">Service Name</th>
+                          <th className="px-4 py-3">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tariffs.map((tariff: any, index: number) => {
+                          const providerTierRaw = (provider.tier || '').toString();
+                          // Normalize tier like 'Tier D' -> 'D', 'A Plus' -> 'APlus', 'tierA' -> 'A'
+                          const normalizedTier = providerTierRaw.replace(/^\s*tier\s*/i, '').replace(/\s+/g, '').replace(/\+/g, 'Plus');
+
+                          const buildTierKeys = (t: string) => {
+                            if (!t) return [];
+                            const keys = new Set<string>();
+                            keys.add(t);
+                            keys.add(t.toLowerCase());
+                            keys.add(t.toUpperCase());
+                            keys.add(`tier${t}`);
+                            keys.add(`tier${t.toLowerCase()}`);
+                            keys.add(`tier${t.toUpperCase()}`);
+                            keys.add(`price${t}`);
+                            keys.add(`price${t.toLowerCase()}`);
+                            keys.add(`price${t.toUpperCase()}`);
+                            return Array.from(keys).filter(Boolean);
+                          };
+
+                          const tierCandidates = buildTierKeys(normalizedTier);
+
+                          const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
+
+                          const findAmount = (t: any) => {
+                            if (!t) return null;
+                            // try exact tier keys first
+                            for (const k of tierCandidates) {
+                              if (t[k] != null) return t[k];
+                            }
+                            // then check nested objects for those exact keys
+                            for (const nk of nestedKeys) {
+                              const obj = t[nk];
+                              if (obj && typeof obj === 'object') {
+                                for (const k of tierCandidates) {
+                                  if (obj[k] != null) return obj[k];
+                                }
+                                if (normalizedTier && obj[normalizedTier] != null) return obj[normalizedTier];
+                              }
+                            }
+                            // fallbacks
+                            if (t.amount != null) return t.amount;
+                            if (t.price != null) return t.price;
+                            // try first numeric value in object
+                            const vals = Object.values(t).filter((v) => v != null && (typeof v === 'number' || !Number.isNaN(Number(v))));
+                            if (vals.length > 0) return vals[0];
+                            return null;
+                          };
+
+                          const code = tariff.code || tariff.tariffCode || tariff.paCode || tariff.codeId || tariff.id || '';
+                          const serviceName = tariff.name || tariff.service || tariff.description || tariff.serviceName || '';
+                          const amountRaw = findAmount(tariff);
+                          const amount = amountRaw == null ? 'N/A' : amountRaw;
+
+                          return (
+                            <tr key={index} className="even:bg-[#FBFDFF] divide-y divide-border">
+                              <td className="px-4 py-3 text-sm text-slate-700 align-top">{code}</td>
+                              <td className="px-4 py-3 text-sm text-slate-700 align-top">{serviceName}</td>
+                              <td className="px-4 py-3 text-sm font-semibold text-slate-900 border-b border-border">{formatAmount(amount)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 ) : (
                   <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
                     <p className="text-sm text-slate-500">No tariff information available.</p>
                   </div>
                 )}
-                <div className="rounded-3xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
-                  <p className="text-sm text-slate-500">Custom tariff</p>
-                  <p className="mt-2 text-base font-semibold text-slate-900">{provider.customTariff ? 'Yes' : 'No'}</p>
-                </div>
-              </div>
-              <div className="mt-6 text-right">
-                <button
-                  type="button"
-                  onClick={() => setActivePopup(null)}
-                  className="rounded-2xl border border-[#E5E7EB] px-5 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                >
-                  Close
-                </button>
               </div>
             </div>
           </div>
@@ -606,7 +711,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
               resetErrors();
               setActivePopup(button.type);
             }}
-            className={`w-full px-3 py-3 text-center text-[17px] uppercase font-medium text-white rounded-[10px] transition ${
+            className={`w-full px-3 py-2 text-center text-[17px] uppercase font-medium text-white rounded-[10px] transition ${
               button.type === 'deactivateProvider'
                 ? 'bg-[#EF4444] hover:bg-[#DC2626]'
                 : button.type === 'activateProvider'

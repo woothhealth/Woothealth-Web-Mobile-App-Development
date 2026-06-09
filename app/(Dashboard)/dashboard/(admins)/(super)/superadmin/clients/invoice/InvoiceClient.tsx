@@ -1,35 +1,109 @@
-'use client';
+ 'use client';
 
-import { useState } from 'react';
-import { mockInvoices, mockClients } from '../mock-clients';
+import { useState, useEffect } from 'react';
+import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { CreditInvoiceModal } from '../components/CreditInvoiceModal';
+import { MdArrowBack } from 'react-icons/md';
 
 export function InvoiceClient() {
-  const [showCreditModal, setShowCreditModal] = useState(false);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const clientIdFromQuery = searchParams.get('clientId');
 
-  // Get first client from mock data (would be based on URL params in real implementation)
-  const client = mockClients[0];
-  const invoices = mockInvoices.filter((inv) => inv.companyName === client.companyName);
+  const clientId = (() => {
+    if (clientIdFromQuery) return clientIdFromQuery;
+    if (!pathname) return null;
+    const parts = pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1];
+    // If path ends with 'invoice' there's no id segment
+    if (!last || last.toLowerCase() === 'invoice') return null;
+    return last;
+  })();
+
+  const [showCreditModal, setShowCreditModal] = useState(false);
+  const [client, setClient] = useState<any | null>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!clientId) {
+      setLoading(false);
+      return;
+    }
+
+    (async () => {
+      setLoading(true);
+      try {
+        const clientRes = await fetch(`/api/admin/clients?clientId=${encodeURIComponent(clientId)}`, { credentials: 'include' });
+        const clientJson = await clientRes.json().catch(() => null);
+        const clientData = clientJson?.data || clientJson;
+        setClient(clientData);
+        // eslint-disable-next-line no-console
+        console.debug('InvoiceClient fetched client:', clientJson);
+
+        // Try to fetch invoices for this client
+        try {
+          const invRes = await fetch(`/api/admin/invoices?clientId=${encodeURIComponent(clientId)}`, { credentials: 'include' });
+          const invJson = await invRes.json().catch(() => null);
+          const invData = invJson?.data || invJson || [];
+          setInvoices(Array.isArray(invData) ? invData : []);
+          // eslint-disable-next-line no-console
+          console.debug('InvoiceClient fetched invoices:', invJson);
+        } catch (invErr) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to fetch invoices for client', clientId, invErr);
+          setInvoices([]);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch client for invoice page', err);
+        setClient(null);
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [clientId]);
+
   const invoice = invoices[0];
   const statusColors: Record<string, string> = {
     active: 'text-green-600',
     Pending: 'text-yellow-600',
   };
 
-  if (!invoice) {
+  if (!clientId) {
     return (
       <div className="p-6">
+        <p className="text-slate-600">Missing clientId in URL. Open this page with `?clientId=`.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <p className="text-slate-600">Loading client data...</p>
+      </div>
+    );
+  }
+
+  if (!invoice) {
+    return (
+      <div className="p-6 h-50 flex flex-col items-center justify-center space-y-4">
         <p className="text-slate-600">No invoices found for this client.</p>
+        <Link href="/dashboard/superadmin/clients" className="border border-border rounded-[15px] p-2 hover:bg-slate-50 flex w-fit items-center gap-2">
+          <MdArrowBack size={22} /> Go Back to Clients
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 p-4 md:p-6 md:w-[80%]">
-      <Link href="/dashboard/superadmin/clients" className="text-sm p-3 rounded-[10px] border border-border w-fit flex items-center gap-2 hover:bg-slate-50">
-        <FaArrowLeft className="" /> Back to Clients
+      <Link href="/dashboard/superadmin/clients" className="border border-border rounded-full p-2 hover:bg-slate-50 flex w-fit">
+        <MdArrowBack size={22} />
       </Link>
       {/* Header */}
       <div className="flex items-center justify-between mt-4">
@@ -47,7 +121,7 @@ export function InvoiceClient() {
       <div className="space-y-4">
         <div className="flex flex-col divide-y divide-border">
           <div className='px-4 md:px-6 py-2'>
-            <p className="text-xl font-semibold text-slate-900">{invoice.companyName}</p>
+            <p className="text-xl font-semibold text-slate-900">{invoice.companyName || client?.companyName || client?.company || client?.name}</p>
           </div>
           <div className='px-4 md:px-6 py-2 flex justify-between items-center'>
             <p className="">Invoice Reference Code</p>
@@ -72,7 +146,7 @@ export function InvoiceClient() {
         <div className="flex flex-col divide-y divide-border">
             <div className='px-4 md:px-6 py-2 flex justify-between items-center'>
               <p className="">Issued By</p>
-              <p className="font-medium text-primary">{invoice.issuedBy}</p>
+                <p className="font-medium text-primary">{invoice.issuedBy}</p>
             </div>
             <div className='px-4 md:px-6 py-2 flex justify-between items-center'>
               <p className="">Issue Date</p>
@@ -115,7 +189,7 @@ export function InvoiceClient() {
             </tr>
           </thead>
           <tbody>
-            {invoice.items.map((item) => (
+            {invoice.items.map((item : any) => (
               <tr key={item.id} className="divide-y divide-border">
                 <td className="px-4 md:px-6 py-3">{item.itemName}</td>
                 <td className="px-4 md:px-6 py-3">#{item.price.toLocaleString()}</td>
@@ -175,9 +249,10 @@ export function InvoiceClient() {
       </div>
 
       {/* Credit Invoice Modal */}
-      {showCreditModal && (
+      {showCreditModal && client && (
         <CreditInvoiceModal
-          clientName={client.companyName}
+          clientId={client.userId}
+          clientName={client.companyName || client.company || client.name}
           clientEmail={client.email}
           phone={client.phone}
           onClose={() => setShowCreditModal(false)}

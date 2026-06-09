@@ -3,10 +3,12 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io';
 import { toast } from 'sonner';
 import Claims from '../(home)/Claims';
+import { getAdminUserById } from '@/lib/adminUser';
 import { FaEyeSlash, FaRegEdit, FaRegEye } from 'react-icons/fa';
+import { isLastDayOfMonth } from 'date-fns';
 
 interface Claim {
   id: string;
@@ -77,27 +79,65 @@ async function getClaim(claimId: string): Promise<Claim | null> {
       if (data.data && data.data.claims && Array.isArray(data.data.claims)) {
         const foundClaim = data.data.claims.find((c: Claim) => c.id === claimId);
         if (foundClaim) {
+          // enrich userName from admin user
+          if (foundClaim.userId) {
+            try {
+              const user = await getAdminUserById(foundClaim.userId);
+              if (user) {
+                foundClaim.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || foundClaim.userName;
+              }
+            } catch (e) {
+              // ignore enrichment errors
+            }
+          }
           return foundClaim;
         }
         // If not found by id, try the first one (assuming single claim response)
         if (data.data.claims.length === 1) {
-          return data.data.claims[0];
+          const single = data.data.claims[0];
+          if (single.userId) {
+            try {
+              const user = await getAdminUserById(single.userId);
+              if (user) single.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || single.userName;
+            } catch (e) {}
+          }
+          return single;
         }
       }
       // Check if data.data is an array
       else if (Array.isArray(data.data)) {
         const foundClaim = data.data.find((c: Claim) => c.id === claimId);
         if (foundClaim) {
+          if (foundClaim.userId) {
+            try {
+              const user = await getAdminUserById(foundClaim.userId);
+              if (user) foundClaim.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || foundClaim.userName;
+            } catch (e) {}
+          }
           return foundClaim;
         }
         // If not found, try the first one
         if (data.data.length === 1) {
-          return data.data[0];
+          const single = data.data[0];
+          if (single.userId) {
+            try {
+              const user = await getAdminUserById(single.userId);
+              if (user) single.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || single.userName;
+            } catch (e) {}
+          }
+          return single;
         }
       }
       // Check if data.data is a single claim object
       else if (data.data && typeof data.data === 'object' && data.data.id) {
-        return data.data;
+        const obj = data.data;
+        if (obj.userId) {
+          try {
+            const user = await getAdminUserById(obj.userId);
+            if (user) obj.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || obj.userName;
+          } catch (e) {}
+        }
+        return obj;
       }
     }
 
@@ -109,21 +149,67 @@ async function getClaim(claimId: string): Promise<Claim | null> {
 
 async function getClaimsByUserId(userId: string): Promise<Claim[]> {
   try {
-    const response = await fetch(`/api/admin/claims?userId=${encodeURIComponent(userId)}`, {
+    if (!userId) return [];
+    // First try: ask backend for claims filtered by userId (if supported)
+    let response = await fetch(`/api/admin/claims?userId=${encodeURIComponent(userId)}`, {
       credentials: 'include',
     });
 
-    if (!response.ok) {
-      return [];
+    let data = null;
+    if (response.ok) {
+      data = await response.json().catch(() => null);
     }
 
-    const data = await response.json();
-
-    if (data.success && data.data && Array.isArray(data.data)) {
-      return data.data;
+    // If backend returned a list, use it (but still filter by userId to be safe)
+    if (data && data.success) {
+      const maybeList: any[] = Array.isArray(data.data)
+        ? data.data
+        : (data.data && Array.isArray(data.data.claims) ? data.data.claims : []);
+      if (maybeList.length > 0) {
+        const target = String(userId);
+        const matches = maybeList.filter((c: any) => {
+          const cid = String(c?.userId ?? c?.user_id ?? c?.enrolleeId ?? c?.enrollee_id ?? c?.user ?? '');
+          return cid === target;
+        });
+        const enriched = await Promise.all(matches.map(async (c: any) => {
+          const uid = c.userId ?? c.user_id ?? c.enrolleeId ?? c.enrollee_id ?? c.user;
+          if (uid) {
+            try {
+              const user = await getAdminUserById(uid);
+              if (user) c.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || c.userName;
+            } catch (e) {}
+          }
+          return c as Claim;
+        }));
+        enriched.sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
+        return enriched;
+      }
     }
 
-    return [];
+    // Fallback: fetch all claims and filter client-side
+    response = await fetch('/api/admin/claims', { credentials: 'include' });
+    if (!response.ok) return [];
+    data = await response.json().catch(() => null);
+    const listAll: Claim[] = Array.isArray(data?.data)
+      ? data.data
+      : (Array.isArray(data) ? data : (Array.isArray(data?.data?.claims) ? data.data.claims : []));
+    const target = String(userId);
+    const filtered = listAll.filter((c: any) => {
+      const cid = String(c?.userId ?? c?.user_id ?? c?.enrolleeId ?? c?.enrollee_id ?? c?.user ?? '');
+      return cid === target;
+    });
+    const enrichedFiltered = await Promise.all(filtered.map(async (c: any) => {
+      const uid = c.userId || c.user_id || c.enrolleeId || c.enrollee_id || c.user;
+      if (uid) {
+        try {
+          const user = await getAdminUserById(uid);
+          if (user) c.userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email || c.userName;
+        } catch (e) {}
+      }
+      return c;
+    }));
+    enrichedFiltered.sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
+    return enrichedFiltered;
   } catch (error) {
     return [];
   }
@@ -165,8 +251,18 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
 }) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<{name: string, message: string}[]>([]);
-  const [isShowPaCode, setIsShowPaCode] = useState(false);
+  const [isShowPaCode, setIsShowPaCode] = useState(true);
   const [recentClaims, setRecentClaims] = useState<Claim[]>([]);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
+    const [isQueryOpen, setIsQueryOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+  const [queryMessage, setQueryMessage] = useState('');
+  // independent collapse states
+  const [collapsedMedical, setCollapsedMedical] = useState(true);
+  const [collapsedActivity, setCollapsedActivity] = useState(true);
+  const [collapsedProvider, setCollapsedProvider] = useState(true);
+  const [collapsedRecent, setCollapsedRecent] = useState(false);
 
   const showPaCode = () => {
     setIsShowPaCode(!isShowPaCode);
@@ -206,16 +302,88 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
 
   useEffect(() => {
     const fetchRecentClaims = async () => {
+      setIsLoading(true);
       if (claim.userId) {
         const claims = await getClaimsByUserId(claim.userId);
         // Filter out the current claim
         const filteredClaims = claims.filter(c => c.id !== claim.id);
         setRecentClaims(filteredClaims);
       }
+      setIsLoading(false);
     };
 
     fetchRecentClaims();
   }, [claim.userId, claim.id]);
+
+  const performStatusChange = async (action: 'approve' | 'reject', message?: string) => {
+    try {
+      // optimistic update
+      // call backend proxy - adapt to your API shape if different
+      const payload: any = { id: claim.id, action, message };
+      const res = await fetch('/api/admin/claims', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+      // eslint-disable-next-line no-console
+      console.debug('Claim action response:', data);
+      if (!res.ok) {
+        toast.error('Failed to update claim status');
+        return;
+      }
+      // reload to reflect updated status
+      toast.success(action === 'approve' ? 'Claim approved' : 'Claim rejected');
+      if (typeof window !== 'undefined') window.location.reload();
+    } catch (err) {
+      console.error('Failed to perform claim action', err);
+      toast.error('Failed to perform action');
+    }
+  };
+
+  const onApproveClick = () => {
+    setConfirmAction('approve');
+    setIsConfirmOpen(true);
+  };
+
+  const onRejectClick = () => {
+    setConfirmAction('reject');
+    setIsConfirmOpen(true);
+  };
+
+  const onQueryClick = () => {
+    setQueryMessage('');
+    setIsQueryOpen(true);
+  };
+
+  const confirmActionNow = async () => {
+    if (!confirmAction) return;
+    setIsConfirmOpen(false);
+    await performStatusChange(confirmAction);
+    setConfirmAction(null);
+  };
+
+  const submitQuery = async () => {
+    setIsQueryOpen(false);
+    try {
+      const payload = { id: claim.id, action: 'query', message: queryMessage };
+      const res = await fetch('/api/admin/claims', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        toast.error('Failed to send query to provider');
+        return;
+      }
+      toast.success('Query sent to provider');
+    } catch (err) {
+      console.error('Query send failed', err);
+      toast.error('Failed to send query');
+    }
+  };
 
   return (
     <div className="w-full py-4 px-3">
@@ -237,9 +405,9 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
           <div>
             {claim.status === 'pending' && (
               <div className='flex gap-2 text-sm'>
-                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-40 font-medium hover:bg-green-700 transition'>Approve Claim</button>
-                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-red-700 transition'>Query Provider</button>
-                <button className='px-4 py-1 md:py-2 rounded-[10px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject Claim</button>
+                <button onClick={onApproveClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-40 font-medium hover:bg-green-700 transition'>Approve Claim</button>
+                <button onClick={onQueryClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-red-700 transition'>Query Provider</button>
+                <button onClick={onRejectClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject Claim</button>
               </div>
             )}
           </div>
@@ -262,7 +430,7 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
           {/* Enrollee Information */}
           <div className="space-y-4 py-2 shadow-sm border border-border rounded-[10px]">
             <h2 className='text-lg font-semibold px-4 md:px-6 pb-2 border-b border-border'>Enrollee information</h2>
-            <div className="flex flex-col space-y-2 md:flex-row items-start space-x-4 px-4 md:px-6 py-4">
+            <div className="flex flex-col space-y-2 md:flex-row items-start space-x-4 px-4 md:px-6 py-4 justify-between">
               <div className={`flex space-x-4`}>
               {/* Avatar */}
               <div className="shrink-0 w-20 h-20 rounded-[10px] bg-linear-to-br from-blue-400 to-primary flex items-center justify-center text-white text-2xl font-bold">
@@ -271,7 +439,7 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
 
               <div className="flex-1 space-y-1">
                 <h4 className="text-xl font-semibold text-gray-900">{claim.userName || 'Unknown Enrollee'}</h4>
-                <div className="grid grid-cols-4 gap-4 text-[15px]">
+                <div className="grid grid-cols-2 gap-4 text-[15px]">
                   <div className='flex flex-col'>
                     <span className="font-medium">HMOID</span>
                     <span className="font-semibold">{claim.hmoId || 'N/A'}</span>
@@ -290,7 +458,13 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
           <div className="border border-border rounded-[10px] space-y-4 py-4">
             <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 pb-4">
               <h3 className="text-lg font-semibold text-gray-900">Plan Types & Benefits</h3>
+              <button onClick={() => setCollapsedMedical(!collapsedMedical)} className="text-sm text-primary flex items-center gap-2">
+                <IoIosArrowDown className={!collapsedMedical ? 'transform rotate-180' : ''} />
+                <span>{collapsedMedical ? 'Show' : 'Hide'}</span>
+              </button>
             </div>
+            {!collapsedMedical && (
+              <>
             <div className="flex flex-col bg-primary px-4 md:px-6 py-4 text-[15px] rounded-[10px] mx-4 md:mx-6">
               <h2 className="text-xl font-bold text-white mb-4">{claim.planType || 'N/A'}</h2>
               <div className='flex flex-col md:flex-row gap-4 w-full'>
@@ -314,153 +488,207 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
               <span className="font-semibold">₦{claim.totalAmount && claim.amount !== undefined ? (claim.totalAmount - claim.amount).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}</span>
             </div>
             </div>
+              </>
+            )}
           </div>
 
-          {/* Medical Details */}
+          {/* Medical Details (collapsible) */}
           <div className='bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4'>
             <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 pb-4">
               <h3 className="text-lg font-semibold">Medical Details</h3>
             </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-4 md:mx-6">
-              <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-              <p className="text-amber-800 whitespace-pre-line">{claim.notes || 'N/A'}</p>
-            </div>
-
-            {/* Treatment Description & Services Rendered */}
-            
-            <div className="px-4 md:px-6 py-4">
-              <div className="flex gap-2 items-center text-[15px] bg-primary py-2 text-[#ffffff] px-4 md:px-6 w-fit mb-2 cursor-pointer rounded-[10px]" onClick={showPaCode}>
-                {isShowPaCode ? <FaRegEye/> : <FaEyeSlash />}
-                <span>Show PA Code</span>
-                {isShowPaCode && (
-                  <span>
-                    {claim.paCode ? claim.paCode : 'N/A'}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-                <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>
-                <div className="flex items-center w-fit gap-2 px-3 py-2 rounded-[10px] font-medium text-sm bg-primary text-white cursor-pointer">
-                  <FaRegEdit /> Edit
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-4 md:mx-6">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
+                  <p className="text-amber-800 whitespace-pre-line">{claim.notes || 'N/A'}</p>
                 </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-[#D9D9D9]">
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Item Code</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Description</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Quantity</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Unit Price</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {claim.treatment.map((item, index) => (
-                      <tr key={index} className="border-b border-gray-200">
-                        <td className="px-4 py-3 text-sm text-primary">{item.itemCode || 'N/A'}</td>
-                        <td className="px-4 py-3 text-sm">{item.description || 'N/A'}</td>
-                        <td className="px-4 py-3 text-sm text-center">{item.quantity || 'N/A'}</td>
-                        <td className="px-4 py-3 text-sm">₦{item.unitPrice ? item.unitPrice.toFixed(2) : 'N/A'}</td>
-                        <td className="px-4 py-3 text-sm font-semibold">₦{item.amount ? item.amount.toFixed(2) : 'N/A'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="bg-gray-50">
-                      <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
-                      <td className="px-4 py-3 font-bold text-primary">
-                        ₦{totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
+
+                {/* Treatment Description & Services Rendered */}
+                <div className="px-4 md:px-6 py-4">
+                  <div className="flex gap-2 items-center text-[15px] bg-primary py-2 text-[#ffffff] px-4 md:px-6 w-fit mb-2 cursor-pointer rounded-[10px]" onClick={showPaCode}>
+                    {isShowPaCode ? <FaRegEye/> : <FaEyeSlash />}
+                    <span>Show PA Code</span>
+                    {isShowPaCode && (
+                      <span>
+                        {claim.paCode ? claim.paCode : 'N/A'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+                    <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>
+                    <div className="flex items-center w-fit gap-2 px-3 py-2 rounded-[10px] font-medium text-sm bg-primary text-white cursor-pointer">
+                      <FaRegEdit /> Edit
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-[#D9D9D9]">
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Item Code</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Description</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Quantity</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Unit Price</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {claim.treatment.map((item, index) => (
+                          <tr key={index} className="border-b border-gray-200">
+                            <td className="px-4 py-3 text-sm text-primary">{item.itemCode || 'N/A'}</td>
+                            <td className="px-4 py-3 text-sm">{item.description || 'N/A'}</td>
+                            <td className="px-4 py-3 text-sm text-center">{item.quantity || 'N/A'}</td>
+                            <td className="px-4 py-3 text-sm">₦{item.unitPrice ? item.unitPrice.toFixed(2) : 'N/A'}</td>
+                            <td className="px-4 py-3 text-sm font-semibold">₦{item.amount ? item.amount.toFixed(2) : 'N/A'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="bg-gray-50">
+                          <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
+                          <td className="px-4 py-3 font-bold text-primary">
+                            ₦{totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
           </div>
 
-          {/* Activity Log */}
+          {/* Activity Log (collapsible) */}
           <div className="bg-white border border-[#D9D9D9] rounded-[10px]">
             <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6 py-4">
               <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
+              <button onClick={() => setCollapsedActivity(!collapsedActivity)} className="text-sm text-primary flex items-center gap-2">
+                <IoIosArrowDown className={!collapsedActivity ? 'transform rotate-180' : ''} />
+                <span>{collapsedActivity ? 'Show' : 'Hide'}</span>
+              </button>
             </div>
-            <div className="px-4 md:px-6 py-4">
-              <p className="text-gray-700">No activities recorded for this claim yet.</p>
-            </div>
+            {!collapsedActivity && (
+              <div className="px-4 md:px-6 py-4">
+                <p className="text-gray-700">No activities recorded for this claim yet.</p>
+              </div>
+            )}
           </div>
 
-          {/* Provider Communication */}
+          {/* Provider Communication (collapsible) */}
           <div className="bg-white border border-[#D9D9D9] rounded-[10px] space-y-4 py-4">
             <div className="flex justify-between items-center border-b border-[#D9D9D9] px-4 md:px-6">
               <h3 className="text-lg font-semibold text-gray-900">Provider Communication</h3>
-            </div>
-            <div className="px-4 md:px-6 py-4 space-y-2">
-              {communications.map((comm, index) => (
-                <div key={index} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
-                  <p className="font-semibold">{comm.name}</p>
-                  <p className="text-gray-700">{comm.message}</p>
-                </div>
-              ))}
-              {comments.map((comm, index) => (
-                <div key={`comment-${index}`} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
-                  <p className="font-semibold">{comm.name}</p>
-                  <p className="text-gray-700">{comm.message}</p>
-                </div>
-              ))}
-            </div>
-            <div className="px-4 md:px-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Comment</h3>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Enter your comment"
-                rows={4}
-              />
-              <div className='flex justify-end'>
-              <button
-                onClick={handleAddComment}
-                className="mt-4 px-4 md:px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-              >
-                Post Comment
+              <button onClick={() => setCollapsedProvider(!collapsedProvider)} className="text-sm text-primary flex items-center gap-2">
+                <IoIosArrowDown className={!collapsedProvider ? 'transform rotate-180' : ''} />
+                <span>{collapsedProvider ? 'Show' : 'Hide'}</span>
               </button>
-              </div>
             </div>
+            {!collapsedProvider && (
+              <>
+                <div className="px-4 md:px-6 py-4 space-y-2">
+                  {communications.map((comm, index) => (
+                    <div key={index} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
+                      <p className="font-semibold">{comm.name}</p>
+                      <p className="text-gray-700">{comm.message}</p>
+                    </div>
+                  ))}
+                  {comments.map((comm, index) => (
+                    <div key={`comment-${index}`} className="flex flex-col bg-[#E5E7EB4D] rounded-[5px] p-3">
+                      <p className="font-semibold">{comm.name}</p>
+                      <p className="text-gray-700">{comm.message}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 md:px-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Comment</h3>
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter your comment"
+                    rows={4}
+                  />
+                  <div className='flex justify-end'>
+                  <button
+                    onClick={handleAddComment}
+                    className="mt-4 px-4 md:px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                  >
+                    Post Comment
+                  </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
          {/* Recent Claims */}
         <div className='bg-[#ffffff] rounded-[10px] h-fit py-4 space-y-4'>
-          <h2 className="text-lg font-semibold px-4 md:px-6 border-b border-border pb-2">Recent Claims ({timeframeText})</h2>
-          <div className="px-4 space-y-3">
-            {recentClaims.length === 0 ? (
-              <p className="text-gray-500 text-sm">No recent claims found for this user.</p>
-            ) : (
-              recentClaims.slice(0, 5).map((recentClaim) => (
-                <div key={recentClaim.id} className="border border-gray-200 rounded-[10px] p-4 bg-gray-50">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-sm text-primary">{recentClaim.hospitalProvider}</h3>
-                    <p className="font-semibold">₦{recentClaim.amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                  </div>
-                  <div className="flex flex-col mb-3">
-                    <span>{formatDate(recentClaim.dateOfService)}</span>
-                    <span>{recentClaim.claimType || 'N/A'}</span>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs w-fit font-semibold ${getStatusColor(recentClaim.status)}`}>
-                      {recentClaim.status}
-                    </span>
-                  </div>
-                  <Link
-                    href={`/dashboard/superadmin/claims/${recentClaim.id}`}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-colors"
-                  >
-                    View Claim
-                  </Link>
-                </div>
-              ))
-            )}
+          <div className="flex justify-between items-center px-4 md:px-6 border-b border-border pb-2">
+            <h2 className="text-lg font-semibold">Recent Claims ({timeframeText})</h2>
+            <button onClick={() => setCollapsedRecent(!collapsedRecent)} className="text-sm text-primary flex items-center gap-2">
+              <IoIosArrowDown className={!collapsedRecent ? 'transform rotate-180' : ''} />
+              <span>{collapsedRecent ? 'Show' : 'Hide'}</span>
+            </button>
           </div>
+          {!collapsedRecent && (
+            <div className="px-4 space-y-3">
+              {isLoading ? (
+                <p className="text-gray-500 text-sm">Loading recent claims...</p>
+              ) : recentClaims.length === 0 ? (
+                <p className="text-gray-500 text-sm">No recent claims found for this enrollee.</p>
+              ) : (
+                recentClaims.slice(0, 5).map((recentClaim) => (
+                  <div key={recentClaim.id} className="border border-gray-200 rounded-[10px] p-4 bg-gray-50">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-sm text-primary">{recentClaim.hospitalProvider}</h3>
+                      <p className="font-semibold">₦{recentClaim.amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    </div>
+                    <div className="flex flex-col mb-3">
+                      <span>{formatDate(recentClaim.dateOfService)}</span>
+                      <span>{recentClaim.claimType || 'N/A'}</span>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs w-fit font-semibold ${getStatusColor(recentClaim.status)}`}>
+                        {recentClaim.status}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/dashboard/superadmin/claims/${recentClaim.id}`}
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-colors"
+                    >
+                      View Claim
+                    </Link>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Confirm Action Modal */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Confirm {confirmAction === 'approve' ? 'Approval' : 'Rejection'}</h3>
+            <p className="mb-4">Are you sure you want to {confirmAction === 'approve' ? 'approve' : 'reject'} this claim?</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setIsConfirmOpen(false)} className="px-4 py-2 rounded-md border">Cancel</button>
+              <button onClick={confirmActionNow} className="px-4 py-2 rounded-md bg-primary text-white">Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Query Provider Modal */}
+      {isQueryOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Query Provider</h3>
+            <p className="mb-2">Enter a message to send to the provider:</p>
+            <textarea value={queryMessage} onChange={(e) => setQueryMessage(e.target.value)} className="w-full p-3 border rounded-md mb-4" rows={6} />
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setIsQueryOpen(false)} className="px-4 py-2 rounded-md border">Cancel</button>
+              <button onClick={submitQuery} className="px-4 py-2 rounded-md bg-primary text-white">Send Query</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

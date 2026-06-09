@@ -66,7 +66,16 @@ export async function POST(req: Request) {
       body: JSON.stringify(body),
       credentials: 'include',
     });
-    const data = await backendRes.json();
+
+    // read response as text first so we can log raw body on errors
+    const text = await backendRes.text();
+    let data: any = text;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      // keep raw text if not JSON
+    }
+
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin plans POST error:', error?.message || error);
@@ -94,16 +103,47 @@ export async function PUT(req: Request) {
       return NextResponse.json({ success: true, data: { $id: planId, ...body }, message: 'Plan updated (mock)' }, { status: 200 });
     }
 
+    // Ensure backend receives the planId in the body in case it expects it there
+    const forwardBody = { ...(body || {}), planId };
+
     const backendRes = await fetch(`${BACKEND_URL}/admin/plans/${planId}`, {
       method: 'PUT',
       headers: {
         ...getAdminHeaders(cookieHeader),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(forwardBody),
       credentials: 'include',
     });
-    const data = await backendRes.json();
+
+    const text = await backendRes.text();
+    let data: any = text;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      // keep raw text if not JSON
+    }
+
+    if (backendRes.status === 200 && data && typeof data === 'object' && data.success === false) {
+      console.error('Admin plans PUT returned 200 but payload indicates failure', {
+        status: backendRes.status,
+        statusText: backendRes.statusText,
+        requestBody: forwardBody,
+        responseBody: data,
+        responseText: text,
+      });
+    }
+
+    if (!backendRes.ok) {
+      console.error('Admin plans PUT failed', {
+        status: backendRes.status,
+        statusText: backendRes.statusText,
+        requestBody: forwardBody,
+        responseBody: data,
+        responseText: text,
+      });
+    }
+
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error('Admin plans PUT error:', error?.message || error);

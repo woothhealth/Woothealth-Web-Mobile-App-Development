@@ -57,13 +57,15 @@ const normalize = (n: any): NotificationItem => {
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const intervalRef = useRef<number | null>(null);
-  const POLL_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+  const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
   const load = useCallback(async () => {
+    // Attempt to fetch notifications regardless of presence of a readable
+    // document.cookie. Session cookies are often HttpOnly and won't be
+    // visible to `document.cookie`, so checking cookie visibility is
+    // unreliable. Instead, attempt the fetch and handle non-OK responses.
     try {
-      // If running in browser and there's no session/role cookie, skip loading notifications.
-      // Always attempt to fetch notifications from the proxy. Session cookies are often HttpOnly
-      // and not visible via `document.cookie`, so client-side checks are unreliable.
       const api = getNotificationsApi();
       console.debug('NotificationProvider: fetching', api);
       const res = await fetch(`${api}?page=1&limit=50`, { cache: 'no-store', credentials: 'include' });
@@ -87,6 +89,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const fetchNewNotifications = useCallback(async () => {
+    // Try polling; if the server returns 401/403 the polling will stop later.
     try {
       const api = getNotificationsApi();
       // fetch the most recent page and merge any new items
@@ -120,14 +123,30 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   useEffect(() => {
-    // Run a single load on mount. Disable polling while notifications backend is being debugged.
-    load();
-    // Start polling for new notifications every POLL_INTERVAL_MS
-    if (typeof window !== 'undefined') {
-      intervalRef.current = window.setInterval(() => {
-        fetchNewNotifications();
-      }, POLL_INTERVAL_MS) as unknown as number;
-    }
+    // Determine if user is logged in by calling /api/me; if not logged in, skip loading/polling
+    const checkSessionAndStart = async () => {
+      if (typeof window === 'undefined') return;
+      try {
+        const res = await fetch('/api/me', { credentials: 'include', cache: 'no-store' });
+        if (!res.ok) {
+          // Not logged in or session invalid — do not start polling
+          setLoggedIn(false);
+          setNotifications([]);
+          return;
+        }
+        // Logged in — proceed to load notifications and start polling
+        setLoggedIn(true);
+        await load();
+        intervalRef.current = window.setInterval(() => {
+          fetchNewNotifications();
+        }, POLL_INTERVAL_MS) as unknown as number;
+      } catch (err) {
+        console.error('Session check failed, skipping notifications', err);
+        setLoggedIn(false);
+      }
+    };
+
+    checkSessionAndStart();
     return () => {};
   }, [load]);
 
@@ -140,6 +159,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     };
   }, []);
+
+  // stop polling if logged out after initial check
+  useEffect(() => {
+    if (loggedIn === false && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, [loggedIn]);
 
   const addNotification = useCallback((title: string, message: string, type = 'info') => {
     const id = `local-${Date.now()}-${Math.random()}`;

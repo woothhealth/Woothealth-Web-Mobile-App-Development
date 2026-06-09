@@ -12,12 +12,13 @@ interface CreditInvoiceItem {
 
 interface CreditInvoiceModalProps {
   clientName: string;
+  clientId: string;
   clientEmail: string;
   phone: string;
   onClose: () => void;
 }
 
-export function CreditInvoiceModal({ clientName, clientEmail, phone, onClose }: CreditInvoiceModalProps) {
+export function CreditInvoiceModal({ clientName, clientEmail, phone, clientId, onClose }: CreditInvoiceModalProps) {
   const [items, setItems] = useState<CreditInvoiceItem[]>([
     { id: '1', itemName: '', price: 0, quantity: 1 },
   ]);

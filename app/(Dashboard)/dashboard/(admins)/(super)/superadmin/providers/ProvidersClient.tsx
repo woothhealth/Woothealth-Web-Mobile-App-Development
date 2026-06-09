@@ -131,7 +131,7 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
 
   const headers = ['Name', 'Address', 'Email', 'Type', 'Status', 'Action'];
 
-  const ITEMS_PER_PAGE = 20;
+  const ITEMS_PER_PAGE = 50;
   const PAGE_WINDOW = 8;
 
 
@@ -303,7 +303,7 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
             <button
               type="button"
               onClick={() => setShowCategoryDropdown((prev) => !prev)}
-              className="w-full min-w-[170px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-4 py-2 text-left flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-[#49A5EF] transition"
+              className="w-full min-w-42 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-4 py-2 text-left flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-[#49A5EF] transition"
             >
               <span className="text-sm text-slate-700">
                 {categories.find((c) => c.value === selectedCategory)?.label || 'Select category'}
@@ -332,7 +332,7 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
             <button
               type="button"
               onClick={() => setShowStatusDropdown((prev) => !prev)}
-              className="w-full min-w-[170px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-4 py-2 text-left flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-[#49A5EF] transition"
+              className="w-full min-w-42 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-4 py-2 text-left flex items-center justify-between focus:outline-none focus:ring-1 focus:ring-[#49A5EF] transition"
             >
               <span className="text-sm text-slate-700">
                 {statusFilter === 'All' ? 'All Statuses' : statusFilter}
@@ -468,31 +468,6 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
                             <FaEye /> View
                           </Link>
                           <button
-                            onClick={async () => {
-                              // Fetch individual provider data for edit
-                              try {
-                                const response = await fetch(`/api/admin/providers?id=${p.$id}`, { credentials: 'include' });
-                                if (response.ok) {
-                                  const data = await response.json();
-                                  if (data.success && data.data) {
-                                    setEditingProvider(data.data);
-                                  } else {
-                                    setEditingProvider(p); // fallback to list data
-                                  }
-                                } else {
-                                  setEditingProvider(p); // fallback to list data
-                                }
-                              } catch (error) {
-                                setEditingProvider(p); // fallback to list data
-                              }
-                              setIsEditModalOpen(true);
-                              setOpenMenuId(null);
-                            }}
-                            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                          >
-                            <FaEdit /> Edit
-                          </button>
-                          <button
                             onClick={() => {
                               setDeleteTarget(p);
                               setOpenMenuId(null);
@@ -510,51 +485,30 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
             </table>
           </div>
           <div ref={tableRef} />
-            {totalPages > 1 && (
-  <div className="flex justify-center mt-4 lg:p-4 items-center gap-0.5 lg:gap-2">
-
-    {paginationPages[0] > 1 && (
-      <>
-        <button
-          onClick={() => setPage(1)}
-          className="lg:px-3 px-2 py-1 text-sm md:text-base rounded-lg border bg-white"
-        >
-          1
-        </button>
-        {paginationPages[0] > 2 && <span>...</span>}
-      </>
-    )}
-
-    {paginationPages.map((pNum) => (
-      <button
-        key={pNum}
-        onClick={() => setPage(pNum)}
-        className={`lg:px-3 px-2 text-sm md:text-base py-1 rounded-lg border ${
-          pNum === page
-            ? 'bg-[#49A5EF] text-white'
-            : 'bg-white text-black'
-        }`}
-      >
-        {pNum}
-      </button>
-    ))}
-
-    {paginationPages[paginationPages.length - 1] < totalPages && (
-      <>
-        {paginationPages[paginationPages.length - 1] < totalPages - 1 && (
-          <span>...</span>
-        )}
-        <button
-          onClick={() => setPage(totalPages)}
-          className="lg:px-3 px-2 py-1 text-sm md:text-base rounded-lg border bg-white"
-        >
-          {totalPages}
-        </button>
-      </>
-    )}
-
-  </div>
-)}
+            {/* {totalPages > 1 && ( */}
+              <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200 mt-4">
+                <div className="text-sm text-slate-700">
+                  Showing {((page - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(page * ITEMS_PER_PAGE, filteredProviders.length)} of {filteredProviders.length} providers
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={page === 1 || loading}
+                    className="px-3 py-1 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-3 py-1 text-sm font-medium text-slate-900">Page {page} of {totalPages}</span>
+                  <button
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={page === totalPages || loading}
+                    className="px-3 py-1 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            {/* )} */}
           </>
         )}
 

@@ -78,10 +78,13 @@ export async function createAdminLead(payload: any) {
     body: JSON.stringify(payload),
     credentials: 'include',
   });
+  const data = await parseJson(res);
+  console.debug('createAdminLead response:', res.status, data);
   if (!res.ok) {
-    await parseError(res, 'Failed to create lead');
+    const msg = (data && (data.message || data.error)) || JSON.stringify(data) || 'Failed to create lead';
+    throw new Error(msg);
   }
-  return res.json();
+  return data;
 }
 
 export async function updateAdminLead(leadId: string, payload: any) {
@@ -91,10 +94,13 @@ export async function updateAdminLead(leadId: string, payload: any) {
     body: JSON.stringify(payload),
     credentials: 'include',
   });
+  const data = await parseJson(res);
+  console.debug('updateAdminLead response:', res.status, data);
   if (!res.ok) {
-    await parseError(res, 'Failed to update lead');
+    const msg = (data && (data.message || data.error)) || JSON.stringify(data) || 'Failed to update lead';
+    throw new Error(msg);
   }
-  return res.json();
+  return data;
 }
 
 export async function deleteAdminLead(leadId: string) {
@@ -102,8 +108,11 @@ export async function deleteAdminLead(leadId: string) {
     method: 'DELETE',
     credentials: 'include',
   });
+  const data = await parseJson(res);
+  console.debug('deleteAdminLead response:', res.status, data);
   if (!res.ok) {
-    await parseError(res, 'Failed to delete lead');
+    const msg = (data && (data.message || data.error)) || JSON.stringify(data) || 'Failed to delete lead';
+    throw new Error(msg);
   }
-  return res.json();
+  return data;
 }

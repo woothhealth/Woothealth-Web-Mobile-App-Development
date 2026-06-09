@@ -15,8 +15,8 @@ type UserProfile = {
   dependants: number;
   hmoId: string;
   plan: string;
-  homeAddress: string;
-  dob: string;
+  address: string;
+  dateOfBirth: string;
   gender: 'Male' | 'Female' | 'Other';
   coverStartDate: string;
   coverEndDate: string;
@@ -109,8 +109,8 @@ export default function UserTableClient() {
           hmoId: user.userId,
           role: user.role || 'User',
           plan: user.plan || 'N/A',
-          homeAddress: '', // Not in API
-          dob: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+          address: '', // Not in API
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
           gender: user.gender === 'male' ? 'Male' : user.gender === 'female' ? 'Female' : 'Other',
           coverStartDate: '', // Not in API
           coverEndDate: '', // Not in API
@@ -281,7 +281,7 @@ export default function UserTableClient() {
             ) : (
               filteredUsers.map((user) => (
                 <tr key={user.id} className="transition hover:bg-slate-50">
-                  <td className="px-4 py-2 md:py-4 whitespace-nowrap w-fit">{user.fullName}</td>
+                  <td className="px-4 py-2 md:py-4 whitespace-nowrap w-fit capitalize">{user.fullName}</td>
                   <td className="px-4 py-2 md:py-4">{user.email}</td>
                   <td className="px-4 py-2 md:py-4 whitespace-nowrap w-fit">{user.phone}</td>
                   <td className={`px-4 py-2 md:py-4 text-center`}>

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
+import { IoIosArrowBack } from 'react-icons/io';
+import { toast } from 'sonner';
 import ProviderActionButtonsHandler from '../../ProviderActionButtonsHandler';
 
 interface Provider {
@@ -12,6 +14,7 @@ interface Provider {
   name: string;
   address?: string;
   state?: string;
+  profile_pic?: string;
   email?: string[] | string;
   phone?: string[] | string;
   type?: string;
@@ -100,6 +103,17 @@ export default function ProviderProfilePage() {
   const providerId = params.providerId as string;
   const [provider, setProvider] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterOptions = ['All', 'System', 'Status'];
+  const [showCreateFeed, setShowCreateFeed] = useState(false);
+  const [feedText, setFeedText] = useState('');
+  const [agentName, setAgentName] = useState('');
+  const [feedTimestamp, setFeedTimestamp] = useState('');
+  const [feedType, setFeedType] = useState('general');
+  const [feedHistory, setFeedHistory] = useState<any[]>([]);
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [feedSubmitting, setFeedSubmitting] = useState(false);
 
   const handleProviderUpdate = (updatedProvider: Provider) => {
     setProvider(updatedProvider);
@@ -115,11 +129,105 @@ export default function ProviderProfilePage() {
       setLoading(true);
       const providerData = await getProvider(providerId);
       setProvider(providerData);
+      if (providerData) void fetchFeedsForProvider(providerData.$id || providerId);
       setLoading(false);
     };
 
     fetchProvider();
   }, [providerId]);
+
+  const toggleFilterMenu = () => setIsFilterOpen((prev) => !prev);
+  const selectFilter = (option: string) => {
+    setSelectedFilter(option);
+    setIsFilterOpen(false);
+  };
+
+  async function fetchFeedsForProvider(id?: string | null) {
+    if (!id) {
+      setFeedHistory([]);
+      return;
+    }
+    try {
+      setFeedLoading(true);
+      const route = `/api/admin/feedback?search=${encodeURIComponent(id)}`;
+      const res = await fetch(route, { credentials: 'include' });
+      if (!res.ok) {
+        setFeedHistory([]);
+        setFeedLoading(false);
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+      const normalized = (list as any[]).map((f) => normalizeFeed(f));
+      setFeedHistory(normalized);
+      setFeedLoading(false);
+    } catch (err) {
+      console.error('Failed to fetch feeds for provider', id, err);
+      setFeedHistory([]);
+      setFeedLoading(false);
+    }
+  }
+
+  function normalizeFeed(f: any) {
+    return {
+      id: f.id || f.$id || f._id || `feed-${Date.now()}`,
+      type: (f.type || f.feedType || 'general').toString().toLowerCase(),
+      agentName: f.agentName || f.agent || 'Admin User',
+      description: f.description || f.note || f.message || '',
+      feedTimestamp: f.feedTimestamp || f.createdAt || new Date().toISOString(),
+      createdAt: f.createdAt || f.feedTimestamp || new Date().toISOString(),
+    };
+  }
+
+  const filteredFeeds = feedHistory.filter((f) => selectedFilter === 'All' || (f.type || '').toString().toLowerCase() === selectedFilter.toLowerCase());
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '—';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
+  const handleAddFeed = async () => {
+    if (!feedText.trim()) return;
+    setFeedSubmitting(true);
+    try {
+      const payload = {
+        userId: provider?.$id || providerId,
+        type: feedType,
+        agentName: agentName || 'Admin User',
+        description: feedText.trim(),
+        feedTimestamp: feedTimestamp || new Date().toISOString(),
+      };
+      const res = await fetch('/api/admin/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        let parsed: any = {};
+        try { parsed = JSON.parse(text); } catch {}
+        throw new Error(parsed?.message || parsed?.error || `Failed to create feed (${res.status})`);
+      }
+      const parsed = await res.json().catch(() => null);
+      const created = parsed?.data ?? parsed ?? payload;
+      setFeedHistory((current) => [normalizeFeed(created), ...current]);
+      setFeedText('');
+      setFeedType('general');
+      setAgentName('');
+      setFeedTimestamp('');
+      setShowCreateFeed(false);
+      toast.success('Feed added successfully.');
+    } catch (err) {
+      console.error('Failed to create feed', err);
+    } finally {
+      setFeedSubmitting(false);
+    }
+  };
+
+  const initials = (provider?.name || '').split(' ').map((s) => s.charAt(0)).slice(0,2).join('').toUpperCase();
 
   if (loading) {
     return (
@@ -152,6 +260,7 @@ export default function ProviderProfilePage() {
 
   const emailDisplay = Array.isArray(provider.email) ? provider.email.join(', ') : (provider.email as string) || '—';
   const phoneDisplay = Array.isArray(provider.phone) ? provider.phone.join(', ') : (provider.phone as string) || '—';
+  const profilePicDisplay = provider.profile_pic || '—';
 
   return (
     <section className="space-y-4 md:space-y-6 px-2 md:p-6">
@@ -168,7 +277,7 @@ export default function ProviderProfilePage() {
         <div className="space-y-4 rounded-[10px] bg-white md:px-4 px-2 py-6 shadow-sm">
           <div className='flex justify-center items-center flex-col space-y-2 h-fit text-center border-b border-[#D9D9D9] pb-6'>
             <div className='h-20 w-20 rounded-full bg-[#E5E7EB] flex items-center justify-center font-semibold text-3xl border-4 border-[#D9D9D9]'>
-              {provider.name?.charAt(0).toUpperCase() || 'P'}
+              {provider.name?.charAt(0).toUpperCase() || profilePicDisplay || 'P'}
             </div>
             <h1 className="text-3xl font-semibold">{provider.name}</h1>
             <div className='flex items-center space-x-2 text-sm'>
@@ -199,55 +308,180 @@ export default function ProviderProfilePage() {
         </div>
 
         {/* Right Column: Recent Activity/Feed */}
-        <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm h-fit">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
+        <div className='space-y-4 lg:space-y-16'>
+          {/* Feed */}
+        <div className="space-y-4 rounded-[10px] bg-white p-4 shadow-md h-fit">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <h2 className="text-lg font-semibold text-slate-900">Most Recent Feeds</h2>
             <button
               type="button"
-              onClick={() => {
-                // Handle add activity
-              }}
-              className="inline-flex items-center gap-2 rounded-2xl bg-[#49A5EF] px-4 py-2 text-xs font-semibold text-white hover:bg-[#3d8ed8]"
+              onClick={() => setShowCreateFeed(true)}
+              className="inline-flex items-center gap-2 rounded-[10px] bg-[#10B981] px-4 py-2 text-xs font-semibold text-white hover:bg-[#10B981]/90"
             >
-              Add Activity
+              Create Feed
             </button>
           </div>
 
-          {/* Activity List Placeholder */}
-          <div className="max-h-96 space-y-3 overflow-y-auto">
-            <div className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="rounded-full bg-[#EFF6FF] px-2 py-1 text-xs font-medium text-[#2563EB]">
-                      System
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {provider.$createdAt ? new Date(provider.$createdAt).toLocaleDateString() : 'N/A'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-700">Provider account created</p>
-                </div>
+          <div className='flex space-x-2 w-full'>
+            <p className='w-full font-semibold'>Filter By</p>
+            <div className='relative w-full'>
+              <div
+                onClick={toggleFilterMenu}
+                className="flex items-center w-full justify-between rounded-[5px] border border-border px-3 py-1 text-sm font-medium text-slate-700 hover:bg-gray-100"
+              >
+                {selectedFilter}
+                <IoIosArrowBack
+                  size={12}
+                  className={`transform transition-transform ${isFilterOpen ? 'rotate-90' : 'rotate-270'}`}
+                />
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="rounded-full bg-[#EFF6FF] px-2 py-1 text-xs font-medium text-[#2563EB]">
-                      Status
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {provider.$updatedAt ? new Date(provider.$updatedAt).toLocaleDateString() : 'N/A'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-700">Provider status: {provider.status || 'Active'}</p>
+              {isFilterOpen && (
+                <div className="absolute top-full left-0 mt-1 flex flex-col space-y-1 rounded-[10px] border border-border w-full bg-white shadow-lg">
+                  {filterOptions.map((option) => (
+                    <div
+                      key={option}
+                      className={`w-full text-left px-4 py-2 text-sm font-medium rounded-[10px] ${
+                        selectedFilter === option
+                          ? 'bg-[#49A5EF] text-white'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                      onClick={() => selectFilter(option)}
+                    >
+                      {option}
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
           </div>
+
+          <div className="mt-3 space-y-3">
+            {feedLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+              </div>
+            ) : filteredFeeds.length === 0 ? (
+              <p className="text-sm text-slate-500">No feeds available for this provider.</p>
+            ) : (
+              filteredFeeds.map((f: any) => (
+                <div key={f.id} className="rounded-lg border border-[#E5E7EB] p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold uppercase">{f.type}</div>
+                    <div className="text-xs text-slate-500">{formatDate(f.feedTimestamp || f.createdAt)}</div>
+                  </div>
+                  <div className="mt-2 text-sm text-slate-700">{f.description}</div>
+                  <div className="mt-2 text-xs text-slate-500 capitalize">{f.agentName}</div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Create Feed Modal */}
+          {showCreateFeed && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
+              <div className="w-full max-w-md rounded-[15px] bg-white p-6 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-slate-900">Add Feed</h2>
+                  <div onClick={() => setShowCreateFeed(false)} className="cursor-pointer"><IoIosArrowBack /></div>
+                </div>
+
+                  <div className="mt-4">
+                  <div className="flex flex-col items-center space-y-1">
+                    {initials && (
+                      <div className='h-16 w-16 rounded-full bg-[#E5E7EB] flex items-center justify-center font-semibold text-xl border-2 border-[#D9D9D9]'>
+                        {initials}
+                      </div>
+                    )}
+                    <h2 className="text-xl font-semibold uppercase">{provider.name}</h2>
+                    <div className="flex items-center space-x-2 text-white">
+                      <span className={`px-2 py-1 text-[11px] rounded-[5px] bg-[#49A5EF]`}>
+                        {provider.type || 'No Type'}
+                      </span>
+                      <span className={`px-2 py-1 text-xs rounded-[5px] ${statusColors[provider.status || ''] || ''}`}>
+                        {provider.status || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Feed Type</span>
+                    <select
+                      value={feedType}
+                      onChange={(e) => setFeedType(e.target.value)}
+                      className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+                    >
+                      <option value="general">General Inquiry</option>
+                      <option value="pa-code">PA Code</option>
+                      <option value="plan-purchase">Plan Purchase</option>
+                      <option value="benefits">Benefits</option>
+                      <option value="declined-care">Denied Care</option>
+                    </select>
+                  </label>
+
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Description</span>
+                    <textarea
+                      value={feedText}
+                      onChange={(e) => setFeedText(e.target.value)}
+                      rows={4}
+                      placeholder="Enter feed description..."
+                      className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF] resize-none"
+                    />
+                  </label>
+                </div>
+
+                <div className='grid grid-cols-2 gap-4 mt-4'>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Agent Name</span>
+                    <input
+                      type="text"
+                      value={agentName}
+                      onChange={(e) => setAgentName(e.target.value)}
+                      className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-700">Time and Date stamp</span>
+                    <input
+                      type="datetime-local"
+                      value={feedTimestamp}
+                      onChange={(e) => setFeedTimestamp(e.target.value)}
+                      className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#49A5EF] focus:outline-none focus:ring-1 focus:ring-[#49A5EF]"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateFeed(false)}
+                    className="flex-1 rounded-2xl border border-[#E5E7EB] px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddFeed}
+                    disabled={feedSubmitting}
+                    className={`flex-1 rounded-2xl px-4 py-2 text-sm font-semibold text-white ${feedSubmitting ? 'bg-gray-300' : 'bg-[#49A5EF] hover:bg-[#3d8ed8]'}`}
+                  >
+                    {feedSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                        <span>Creating...</span>
+                      </div>
+                    ) : (
+                      'Create Feed'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+      </div>
       </div>
     </section>
   );

@@ -37,76 +37,6 @@ const mockProviders = [
     "$databaseId": "providers",
     "$collectionId": "providers"
   },
-  {
-    "sn": 284,
-    "name": "Sunshine Medical Center",
-    "email": [
-      "sunshine@gmail.com"
-    ],
-    "phone": [
-      "2.34E+12"
-    ],
-    "address": "123, Hospital Lane, Lagos",
-    "state": "Lagos",
-    "local_govt": null,
-    "lat": null,
-    "long": null,
-    "tier": "Tier A",
-    "type": "Dental Clinic",
-    "remark": "Dental services; Orthodontics; Implants;",
-    "hasLogin": true,
-    "city": null,
-    "specialization": null,
-    "providerCode": null,
-    "providerTariff": [
-      "dental"
-    ],
-    "customTariff": false,
-    "$id": "WHP-10252-B",
-    "$sequence": 3619,
-    "$createdAt": "2026-04-13T11:04:04.493+00:00",
-    "$updatedAt": "2026-04-23T12:00:29.084+00:00",
-    "$permissions": [
-      "read(\"any\")"
-    ],
-    "$databaseId": "providers",
-    "$collectionId": "providers"
-  },
-  {
-    "sn": 285,
-    "name": "Vision Care Optical",
-    "email": [
-      "visioncare@gmail.com"
-    ],
-    "phone": [
-      "2.36E+12"
-    ],
-    "address": "456, Vision Street, Abuja",
-    "state": "FCT",
-    "local_govt": null,
-    "lat": null,
-    "long": null,
-    "tier": "Tier B",
-    "type": "Optical Clinic",
-    "remark": "Eye care; Spectacles; Contact lenses;",
-    "hasLogin": false,
-    "city": null,
-    "specialization": null,
-    "providerCode": null,
-    "providerTariff": [
-      "optical"
-    ],
-    "customTariff": true,
-    "$id": "WHP-10253-C",
-    "$sequence": 3620,
-    "$createdAt": "2026-04-14T11:04:04.493+00:00",
-    "$updatedAt": "2026-04-24T12:00:29.084+00:00",
-    "$permissions": [
-      "read(\"any\")"
-    ],
-    "$databaseId": "providers",
-    "$collectionId": "providers"
-  }
 ];
 
 export async function GET(req: Request) {
@@ -278,26 +208,71 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { id, ...updateData } = body;
 
+    // Clean updateData: remove empty strings, empty arrays, null/undefined, and trim strings
+    const cleanValue = (v: any): any => {
+      if (v === null || v === undefined) return undefined;
+      if (typeof v === 'string') {
+        const t = v.trim();
+        return t === '' ? undefined : t;
+      }
+      if (Array.isArray(v)) {
+        const arr = v.map((it) => (typeof it === 'string' ? it.trim() : it)).filter((it) => it !== '' && it !== null && it !== undefined);
+        return arr.length === 0 ? undefined : arr;
+      }
+      if (typeof v === 'object') {
+        const o: any = {};
+        for (const [k, val] of Object.entries(v)) {
+          const cleaned = cleanValue(val);
+          if (cleaned !== undefined) o[k] = cleaned;
+        }
+        return Object.keys(o).length === 0 ? undefined : o;
+      }
+      return v;
+    };
+
+    const cleanedUpdateData: any = {};
+    for (const [k, v] of Object.entries(updateData)) {
+      const cleaned = cleanValue(v);
+      if (cleaned !== undefined) cleanedUpdateData[k] = cleaned;
+    }
+
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (BACKEND_URL) {
       try {
-        const backendRes = await fetch(
-          BACKEND_URL + "/admin/providers/" + id,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              ...getAdminHeaders(cookieHeader),
-            },
-            body: JSON.stringify(updateData),
-            credentials: "include",
-          }
-        );
+        const targetUrl = BACKEND_URL + "/admin/providers/" + id;
 
+        if (!id) {
+          return NextResponse.json({ error: 'Provider id (documentId) is required' }, { status: 400 });
+        }
+
+        if (Object.keys(cleanedUpdateData).length === 0) {
+          return NextResponse.json({ error: 'No changes to update' }, { status: 400 });
+        }
+
+        // Backend expects documentId + updated data
+        const forwardBody = { documentId: id, data: cleanedUpdateData };
+        const backendRes = await fetch(targetUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...getAdminHeaders(cookieHeader),
+          },
+          body: JSON.stringify(forwardBody),
+          credentials: "include",
+        });
+
+        const respText = await backendRes.text().catch(() => '');
         if (backendRes.ok) {
-          const data = await backendRes.json();
+          let data: any = {};
+          try { data = JSON.parse(respText); } catch { data = { text: respText }; }
           return NextResponse.json(data);
+        } else {
+          // Log backend error for debugging (status + body)
+          let parsedErr: any = { error: respText };
+          try { parsedErr = JSON.parse(respText); } catch {}
+          console.error('admin/providers PUT backend error', { targetUrl, status: backendRes.status, response: parsedErr });
+          return NextResponse.json(parsedErr, { status: backendRes.status });
         }
       } catch (backendError) {
         // Backend request failed, will fall back to mock

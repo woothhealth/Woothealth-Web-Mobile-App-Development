@@ -26,7 +26,7 @@ const ClaimsPage = () => {
   const [selectedStatus, setSelectedStatus] = useState<ClaimStatus | 'all'>('all');
   const [showCreateClaim, setShowCreateClaim] = useState(false);
   const [hmoId, setHmoId] = useState('');
-  const [paCode, setPaCode] = useState('');
+  const [authorizationCode, setAuthorizationCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -86,8 +86,8 @@ const ClaimsPage = () => {
       return;
     }
 
-    if (!paCode.trim()) {
-      toast.error('PA Code is required');
+    if (!authorizationCode.trim()) {
+      toast.error('Authorization Code is required');
       return;
     }
 
@@ -95,7 +95,7 @@ const ClaimsPage = () => {
     try {
       const payload = {
         hmoId: hmoId.trim(),
-        paCode: paCode.trim(),
+        authorizationCode: authorizationCode.trim(),
         dateOfService: new Date().toISOString(),
         notes: 'Submitted from provider UI',
         treatment: [
@@ -114,7 +114,7 @@ const ClaimsPage = () => {
       toast.success('Claim filed successfully');
       setShowCreateClaim(false);
       setHmoId('');
-      setPaCode('');
+      setAuthorizationCode('');
     } catch (error: any) {
       console.error('Claim submission failed', error);
       toast.error(error?.message || 'Failed to file claim. Please try again.');
@@ -259,8 +259,8 @@ const ClaimsPage = () => {
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">PA Code</label>
                 <input
-                  value={paCode}
-                  onChange={(e) => setPaCode(e.target.value)}
+                  value={authorizationCode}
+                  onChange={(e) => setAuthorizationCode(e.target.value)}
                   className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#49A5EF] focus:ring-2 focus:ring-[#49A5EF]/20"
                   placeholder="Enter PA Code"
                 />

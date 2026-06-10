@@ -26,6 +26,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         quantity: 1,
         unitPrice: 0,
         amount: 0,
+        itemCode: '',
       }
     ],
     requestedBy: '',
@@ -90,7 +91,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         };
 
         const tierCandidates = buildTierKeys(resolvedTier);
-        const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
+        const nestedKeys = ['itemCode', 'prices', 'price', 'tiers', 'amounts', 'rates'];
 
         const findAmount = (t: any) => {
           if (!t) return null;
@@ -118,9 +119,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         const items: any[] = rawList.map((t) => {
           const name = t.serviceName || t.service_name || t.procedureName || t.procedure_name || t.itemName || t.name || t.item_name || t.description || t.service || '';
           const code = t.code || t.item || t.serviceCode || t.procedureCode || '';
+          const itemCode = t.itemCode || '';
           const amount = findAmount(t);
-          const searchText = `${(name || '')} ${(code || '')}`.toString().toLowerCase();
-          return { name, code, amount, raw: t, searchText };
+          const searchText = `${(name || '')} ${(code || '')} ${(itemCode || '')}`.toString().toLowerCase();
+          return { name, code, itemCode, amount, raw: t, searchText };
         }).filter(i => i.name);
 
         // Filter by provider type (if available) and ensure amount exists
@@ -291,7 +293,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         const price = Number(exact.amount) || 0;
         setFormData(prev => ({
           ...prev,
-          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, unitPrice: price, amount: (item.quantity || 1) * price } : item)
+          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: exact.name || item.item, itemCode: exact.itemCode || exact.code || item.itemCode || '', unitPrice: price, amount: (item.quantity || 1) * price } : item)
         }));
         setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
         return;
@@ -302,7 +304,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         const price = Number(single.amount) || 0;
         setFormData(prev => ({
           ...prev,
-          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, unitPrice: price, amount: (item.quantity || 1) * price } : item)
+          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: single.name || item.item, itemCode: single.itemCode || single.code || item.itemCode || '', unitPrice: price, amount: (item.quantity || 1) * price } : item)
         }));
       }
 
@@ -317,7 +319,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         if (item.id !== id) return item;
         const qty = item.quantity || 1;
         const unitPrice = Number(suggestion.amount) || 0;
-        return { ...item, item: suggestion.name, unitPrice, amount: unitPrice * qty };
+        return { ...item, item: suggestion.name, itemCode: suggestion.itemCode || suggestion.code || item.itemCode || '', unitPrice, amount: unitPrice * qty };
       })
     }));
     setItemSearchMap(prev => ({ ...prev, [id]: '' }));
@@ -368,6 +370,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
     const newItem: TreatmentItem = {
       id: Date.now().toString(),
       item: '',
+      itemCode: '',
       quantity: 1,
       unitPrice: 0,
       amount: 0,
@@ -425,6 +428,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
       const treatmentItemsPayload = formData.treatmentItems.map((item) => ({
         id: item.id,
         item: item.item || '',
+        itemCode: item.itemCode || '',
         description: item.item || '',
         quantity: item.quantity || 1,
         unitPrice: Number(item.unitPrice) || 0,

@@ -493,3 +493,59 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const cookieHeader = req.headers.get("cookie") || "";
+    const guard = requireAdminRole(cookieHeader);
+    if (guard) return guard;
+
+    const body = await req.json().catch(() => ({}));
+    const { id, action, message } = body as any;
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Missing claim id' }, { status: 400 });
+    }
+
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+
+    // Development / mock mode
+    if (!BACKEND_URL) {
+      // Return a mocked update response so the UI can proceed in dev
+      return NextResponse.json({ success: true, data: { id, status: action === 'approve' ? 'approved' : (action === 'reject' ? 'rejected' : action), message: message || null }, message: 'Claim updated (mock)' }, { status: 200 });
+    }
+
+    // Attempt to forward the action to the backend. Prefer PATCH then fallback to PUT.
+    const endpoint = `${BACKEND_URL.replace(/\/$/, '')}/admin/claims/${encodeURIComponent(id)}`;
+    const headers: any = {
+      ...getAdminHeaders(cookieHeader),
+      'Content-Type': 'application/json',
+    };
+
+    let backendRes = await fetch(endpoint, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ action, message }),
+      credentials: 'include',
+    });
+
+    if (!backendRes.ok) {
+      // Try PUT as a fallback
+      backendRes = await fetch(endpoint, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ action, message }),
+        credentials: 'include',
+      });
+    }
+
+    if (!backendRes.ok) {
+      const text = await backendRes.text().catch(() => null);
+      return NextResponse.json({ success: false, error: 'Backend update failed', details: text }, { status: backendRes.status || 500 });
+    }
+
+    const data = await backendRes.json().catch(() => null);
+    return NextResponse.json(data || { success: true }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: 'Failed to update claim' }, { status: 500 });
+  }
+}

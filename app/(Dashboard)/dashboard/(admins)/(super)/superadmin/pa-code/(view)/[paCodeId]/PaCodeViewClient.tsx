@@ -65,10 +65,15 @@ async function getPaCode(paCodeId: string): Promise<PaCode | null> {
         if (Array.isArray(paCode.treatment)) {
           paCode.treatment = paCode.treatment.map((it: any) => {
             const item: any = { ...(it || {}) };
+            // normalize common field name variations so UI can rely on consistent keys
+            item.itemCode = item.itemCode || item.item_code || item.ItemCode || item.code || item.Code || item.item || '';
+            item.description = item.description || item.Description || item.desc || item.note || '';
             const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
             const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
             // ensure unitPrice present
             item.unitPrice = price;
+            // ensure quantity present
+            item.quantity = qty;
             // ensure Amount (capital A) present for UI and totals; compute if missing or zero
             const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
             if (!existingAmount && price && qty) {
@@ -203,6 +208,55 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
     setTreatmentNeeded(prev => ({ ...prev, [index]: !prev[index] }));
   };
 
+  const saveTreatmentChanges = async () => {
+    if (!paCode) return;
+
+    const updatedTreatment = (paCode.treatment || []).map((it: any, idx: number) => {
+      const include = treatmentNeeded[idx] !== false;
+      // prefer computed values from unitPrice * quantity, fall back to existing Amount
+      const qty = Number(it.quantity ?? it.Quantity ?? 1) || 1;
+      const price = Number(it.unitPrice ?? it.unit_price ?? it.price ?? it.Amount ?? it.amount) || 0;
+      const computedAmount = price && qty ? price * qty : (Number(it.Amount ?? it.amount ?? 0) || 0);
+      const amount = include ? computedAmount : 0;
+      return { ...it, Amount: amount, amount };
+    });
+    // NOTE: actual save is intentionally disabled for now while you rethink the logic.
+    // Uncomment the line below to enable saving.
+    // await sendTreatmentUpdate(updatedTreatment);
+
+    console.debug('Prepared treatment update (save disabled):', updatedTreatment);
+    toast.success('Prepared changes (save currently disabled)');
+  };
+
+  const sendTreatmentUpdate = async (updatedTreatment: any[]) => {
+    if (!paCode) return;
+    const id = (paCode as any).$id || (paCode as any).id || (paCode as any).paCodeId;
+    if (!id) return;
+
+    setIsUpdating(true);
+    try {
+      const res = await fetch('/api/admin/pa-codes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id, treatment: updatedTreatment }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        console.error('Failed to update treatment items', { status: res.status, data });
+        toast.error('Failed to update treatment items');
+        return;
+      }
+      toast.success('Treatment items updated');
+      try { router.refresh(); } catch (e) {}
+    } catch (err) {
+      console.error('Network error updating treatment items', err);
+      toast.error('Network error updating treatment items');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleApprove = () => {
     // optimistic UI + backend update
     updateStatus('approved');
@@ -299,6 +353,8 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
     const include = treatmentNeeded[idx] !== false; // default true
     return sum + (include ? (item.Amount || 0) : 0);
   }, 0) || 0;
+
+  const hasUnchecked = Object.values(treatmentNeeded).some(v => v === false);
 
   const displayName = user
     ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || paCode?.patientName || 'No Name'
@@ -448,13 +504,20 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-6">
               <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-              <p className="text-amber-800 whitespace-pre-line">{paCode.rawDisplayDiagnosis || paCode.diagnosis || 'N/A'}</p>
+              <p className="text-amber-800 whitespace-pre-line capitalize">{paCode.rawDisplayDiagnosis || paCode.diagnosis || 'N/A'}</p>
             </div>
 
             {/* Treatment Description & Services Rendered */}
             <div className="px-6 py-4">
-              <div className="mb-4">
+              <div className="mb-4 flex justify-between items-center">
                 <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>
+                {/* Show Save only when user unchecked any treatment items (checkboxes visible only for pending) */}
+                {paCode.status === 'pending' && hasUnchecked && (
+                  <button disabled={isUpdating} onClick={saveTreatmentChanges} className={`px-6 py-1 rounded-[5px] bg-primary text-sm text-white font-medium hover:opacity-95 transition ${isUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                    {isUpdating ? <div className="inline-block animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full" /> : null}
+                    Save
+                  </button>
+                )}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
@@ -484,6 +547,7 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
                               type="checkbox"
                               checked={treatmentNeeded[index] !== false}
                               onChange={() => toggleTreatmentNeeded(index)}
+                              disabled={isUpdating}
                               aria-label={`Include item ${item.itemCode || index}`}
                             />
                           </td>

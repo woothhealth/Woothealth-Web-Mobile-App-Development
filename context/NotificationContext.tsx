@@ -177,7 +177,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const markAsRead = useCallback(async (id: string) => {
     // optimistic update
-    setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: true, raw: { ...(n.raw || {}), status: 'read', read: true } } : n)));
     try {
       const api = getNotificationsApi();
       const res = await fetch(`${api}?id=${encodeURIComponent(id)}`, {
@@ -189,11 +189,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (!res.ok) {
         console.error('markAsRead failed', res.status, await res.text());
         // revert optimistic change
-        setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: false } : n)));
+        setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: false, raw: { ...(n.raw || {}), status: 'pending', read: false } } : n)));
       }
     } catch (err) {
       console.error('markAsRead error', err);
-      setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: false } : n)));
+      setNotifications((s) => s.map((n) => (n.id === id ? { ...n, read: false, raw: { ...(n.raw || {}), status: 'pending', read: false } } : n)));
     }
   }, []);
 

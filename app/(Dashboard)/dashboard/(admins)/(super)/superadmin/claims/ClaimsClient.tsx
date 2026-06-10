@@ -26,14 +26,14 @@ export default function ClaimsClient() {
   const [localClaims, setLocalClaims] = useState<Claim[]>(claims);
   const [deleteTarget, setDeleteTarget] = useState<Claim | null>(null);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'patient'| 'userID' | 'provider' | 'status'>('patient');
+  const [selectedCategory, setSelectedCategory] = useState<'userID' | 'provider' | 'status'>('userID');
   const [statusFilter, setStatusFilter] = useState<'all'|'pending'|'approved'|'rejected'|'paid'>('all');
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const tableRef = useRef<HTMLDivElement | null>(null);
 
   const categories = [
-    { label: 'Patient', value: 'patient' },
+    // { label: 'Patient', value: 'patient' },
     { label: 'Provider', value: 'provider' },
     { label: 'Status', value: 'status' },
   ];
@@ -46,13 +46,13 @@ export default function ClaimsClient() {
     { label: 'Paid', value: 'paid' },
   ];
 
-  const headers = ['Date of Service', 'Patient', 'HMO ID', 'Provider', 'Amount', 'Status', 'Action'];
+  const headers = ['Date of Service', 'HMO ID', 'Provider', 'Amount', 'Status', 'Action'];
 
   const filteredClaims = useMemo(() => {
     const q = search.toLowerCase();
     return localClaims.filter((claim: Claim) => {
       if (statusFilter !== 'all' && (claim.status || '').toLowerCase() !== statusFilter) return false;
-      if (selectedCategory === 'patient') return (claim.userName || '').toLowerCase().includes(q);
+      // if (selectedCategory === 'patient') return (claim.userName || '').toLowerCase().includes(q);
       if (selectedCategory === 'provider') return claim.hospitalProvider.toLowerCase().includes(q);
       if (selectedCategory === 'status') return claim.status.toLowerCase().includes(q);
       return true;
@@ -170,7 +170,7 @@ export default function ClaimsClient() {
           <table className="min-w-full table-fixed">
             <colgroup>
               <col style={{width: '15%'}} />
-              <col style={{width: '15%'}} />
+              {/* <col style={{width: '15%'}} /> */}
               <col style={{width: '15%'}} />
               <col style={{width: '20%'}} />
               <col style={{width: '15%'}} />
@@ -217,7 +217,7 @@ export default function ClaimsClient() {
                   {paginatedClaims.map((claim: Claim) => (
                     <tr key={claim.id} className="hover:bg-gray-50 text-[15px] md:text-base">
                       <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatDate(claim.dateOfService)}</td>
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.userName || 'N/A'}</td>
+                      {/* <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.userName || 'N/A'}</td> */}
                       <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hmoId || 'N/A'}</td>
                       <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hospitalProvider}</td>
                       <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatCurrency(claim.amount)}</td>
@@ -259,7 +259,7 @@ export default function ClaimsClient() {
               <table className='min-w-full table-fixed'>
                 <colgroup>
                   <col style={{width: '15%'}} />
-                  <col style={{width: '15%'}} />
+                  {/* <col style={{width: '15%'}} /> */}
                   <col style={{width: '15%'}} />
                   <col style={{width: '20%'}} />
                   <col style={{width: '15%'}} />
@@ -270,7 +270,7 @@ export default function ClaimsClient() {
                   {paginatedClaims.map((claim: Claim) => (
                     <tr key={claim.id} className="hover:bg-gray-50 text-[15px]">
                       <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatDate(claim.dateOfService)}</td>
-                      <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.userName || 'N/A'}</td>
+                      {/* <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.userName || 'N/A'}</td> */}
                       <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hmoId || 'N/A'}</td>
                       <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hospitalProvider}</td>
                       <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatCurrency(claim.amount)}</td>

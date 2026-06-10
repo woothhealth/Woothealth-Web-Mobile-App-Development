@@ -36,6 +36,7 @@ interface Claim {
     amount: number;
   }>;
   notes?: string;
+  rawDisplayDiagnosis?: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -73,12 +74,54 @@ async function getClaim(claimId: string): Promise<Claim | null> {
 
     const data = await response.json();
 
+    // helper to normalize treatment items and derive display fields
+    const normalizeClaim = (obj: any) => {
+      try {
+        if (Array.isArray(obj.treatment)) {
+          obj.treatment = obj.treatment.map((it: any) => {
+            const item: any = { ...(it || {}) };
+            const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
+            const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
+            item.unitPrice = price;
+            const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
+            item.amount = existingAmount || price * qty;
+            item.Amount = item.amount;
+            return item;
+          });
+        }
+
+        if ((obj.totalAmount == null || obj.totalAmount === 0) && Array.isArray(obj.treatment)) {
+          try {
+            obj.totalAmount = obj.treatment.reduce((s: number, it: any) => s + (Number(it.Amount || it.amount || 0) || 0), 0);
+          } catch (e) {}
+        }
+
+        // derive a display-friendly diagnosis from notes (strip any [AUTHORIZATION] block)
+        try {
+          const raw = obj.notes || '';
+          if (typeof raw === 'string') {
+            const m = raw.match(/\[AUTHORIZATION/i);
+            obj.rawDisplayDiagnosis = m && m.index != null ? raw.slice(0, m.index).trim() : raw.trim();
+          } else {
+            obj.rawDisplayDiagnosis = '';
+          }
+        } catch (e) {
+          obj.rawDisplayDiagnosis = obj.notes || '';
+        }
+
+        return obj;
+      } catch (e) {
+        return obj;
+      }
+    };
+
     // Handle different response structures
     if (data.success) {
       // Check if data.data.claims is an array (like bulk fetch)
       if (data.data && data.data.claims && Array.isArray(data.data.claims)) {
         const foundClaim = data.data.claims.find((c: Claim) => c.id === claimId);
         if (foundClaim) {
+          normalizeClaim(foundClaim);
           // enrich userName from admin user
           if (foundClaim.userId) {
             try {
@@ -95,6 +138,7 @@ async function getClaim(claimId: string): Promise<Claim | null> {
         // If not found by id, try the first one (assuming single claim response)
         if (data.data.claims.length === 1) {
           const single = data.data.claims[0];
+          normalizeClaim(single);
           if (single.userId) {
             try {
               const user = await getAdminUserById(single.userId);
@@ -108,6 +152,7 @@ async function getClaim(claimId: string): Promise<Claim | null> {
       else if (Array.isArray(data.data)) {
         const foundClaim = data.data.find((c: Claim) => c.id === claimId);
         if (foundClaim) {
+          normalizeClaim(foundClaim);
           if (foundClaim.userId) {
             try {
               const user = await getAdminUserById(foundClaim.userId);
@@ -119,6 +164,7 @@ async function getClaim(claimId: string): Promise<Claim | null> {
         // If not found, try the first one
         if (data.data.length === 1) {
           const single = data.data[0];
+          normalizeClaim(single);
           if (single.userId) {
             try {
               const user = await getAdminUserById(single.userId);
@@ -131,6 +177,7 @@ async function getClaim(claimId: string): Promise<Claim | null> {
       // Check if data.data is a single claim object
       else if (data.data && typeof data.data === 'object' && data.data.id) {
         const obj = data.data;
+        normalizeClaim(obj);
         if (obj.userId) {
           try {
             const user = await getAdminUserById(obj.userId);
@@ -406,7 +453,7 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
             {claim.status === 'pending' && (
               <div className='flex gap-2 text-sm'>
                 <button onClick={onApproveClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#10B981] text-white w-fit md:w-40 font-medium hover:bg-green-700 transition'>Approve Claim</button>
-                <button onClick={onQueryClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-red-700 transition'>Query Provider</button>
+                <button onClick={onQueryClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#E5E7EB4D] font-medium hover:bg-gray-500 transition'>Query Provider</button>
                 <button onClick={onRejectClick} className='px-4 py-1 md:py-2 rounded-[10px] bg-[#EF4444] text-white font-medium hover:bg-red-700 transition'>Reject Claim</button>
               </div>
             )}
@@ -499,7 +546,7 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
             </div>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-4 md:mx-6">
                   <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-                  <p className="text-amber-800 whitespace-pre-line">{claim.notes || 'N/A'}</p>
+                  <p className="text-amber-800 whitespace-pre-line">{claim.rawDisplayDiagnosis || claim.notes || 'N/A'}</p>
                 </div>
 
                 {/* Treatment Description & Services Rendered */}

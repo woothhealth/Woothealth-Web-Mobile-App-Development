@@ -80,9 +80,9 @@ export default function NotificationCenter() {
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute -right-10 lg-right-0 mt-4 w-55 lg:w-70 bg-white border border-gray-200 rounded-lg shadow-xl z-40 max-h-90 overflow-y-auto">
+        <div className="absolute -right-10 lg-right-0 mt-4 w-55 lg:w-90 bg-white border border-gray-200 rounded-lg shadow-xl z-40 max-h-90 overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 px-4 py-3 border-b border-border">
+          <div className="sticky top-0 px-4 py-3 border-b border-border bg-[#ffffff] z-10">
             <div className="flex justify-between items-center">
               <h3 className="font-semibold text-sm md:text-base text-gray-800">Notifications</h3>
               {unreadCount > 0 && (

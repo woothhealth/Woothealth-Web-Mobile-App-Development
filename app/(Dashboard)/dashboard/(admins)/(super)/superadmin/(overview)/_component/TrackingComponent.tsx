@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { TiClipboard } from "react-icons/ti";
 
 const TrackingComponent = () => {
-    const [resolved, setResolved] = useState<number>(127)
-    const [inProgress, setInProgress] = useState<number>(45)
-    const [escalated, setEscalated] = useState<number>(12)
+    const [resolved, setResolved] = useState<number>(0)
+    const [inProgress, setInProgress] = useState<number>(0)
+    const [escalated, setEscalated] = useState<number>(0)
 
     useEffect(() => {
         let mounted = true

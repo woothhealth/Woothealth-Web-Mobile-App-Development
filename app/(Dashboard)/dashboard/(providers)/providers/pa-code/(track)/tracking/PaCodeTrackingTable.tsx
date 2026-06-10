@@ -20,7 +20,28 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
 
   const { data: paData, isLoading, isError, error } = useProviderPA();
 
-  const all = Array.isArray(paData) ? (paData as PaCode[]) : [];
+  // Raw API data may use different field names (e.g. $id, patientId, createdDate).
+  // Normalize into a consistent shape the UI expects.
+  const normalizePaCodes = (items: any[]): PaCode[] => {
+    return items.map((p: any) => ({
+      id: p.id || p.$id || p._id || '',
+      patientName: p.patientName || p.patientFullName || p.patientId || '',
+      hmoid: p.hmoid || p.patientId || '',
+      authorizationCode: p.authorizationCode || p.authorization_code || '',
+      careType: p.careType || p.providerTier || (p.treatmentItems && p.treatmentItems.length ? p.treatmentItems[0].type : '') || '',
+      dateOfService: p.dateOfService || p.createdDate || p.$createdAt || '',
+      status: (p.status || '').toLowerCase()
+    } as PaCode));
+  };
+
+  // Support API responses that either return an array directly or a wrapper { data: [...] }
+  const getPaArray = (raw: any) => {
+    if (Array.isArray(raw)) return raw;
+    if (raw && Array.isArray(raw.data)) return raw.data;
+    return [];
+  };
+
+  const all = normalizePaCodes(getPaArray(paData));
 
   // Load PA codes from provider API
   useEffect(() => {
@@ -28,33 +49,45 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
   }, [isLoading]);
 
   useEffect(() => {
-    if (paData && Array.isArray(paData)) {
-      setFilteredPaCodes(paData as PaCode[]);
-    } else if (!isLoading && !paData) {
+    const paArray = getPaArray(paData);
+    if (paArray && paArray.length) {
+      setFilteredPaCodes(normalizePaCodes(paArray));
+    } else if (!isLoading) {
       setFilteredPaCodes([]);
     }
   }, [paData, isLoading]);
 
   // Filter PA codes based on search and status
   useEffect(() => {
-    const all = (paData && Array.isArray(paData) ? (paData as PaCode[]) : []);
-    let filtered = all;
+    const allNorm = normalizePaCodes(getPaArray(paData));
+    let filtered = allNorm;
 
     // Filter by search term (patient name, hmoid, authorization code)
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (paCode) =>
-          paCode.patientName.toLowerCase().includes(term) ||
-          paCode.hmoid.toLowerCase().includes(term) ||
-          paCode.authorizationCode.toLowerCase().includes(term) ||
-          paCode.careType.toLowerCase().includes(term)
-      );
+      filtered = filtered.filter((paCode) => {
+        const patientName = (paCode.patientName || '').toString().toLowerCase();
+        const hmoid = (paCode.hmoid || '').toString().toLowerCase();
+        const auth = (paCode.authorizationCode || '').toString().toLowerCase();
+        const care = (paCode.careType || '').toString().toLowerCase();
+
+        return (
+          patientName.includes(term) ||
+          hmoid.includes(term) ||
+          auth.includes(term) ||
+          care.includes(term)
+        );
+      });
     }
 
     // Filter by status
     if (filterStatus !== 'all') {
-      filtered = filtered.filter((paCode) => paCode.status === filterStatus);
+      // allow mapping of API statuses like 'pending' to UI filter values
+      filtered = filtered.filter((paCode) => {
+        const st = (paCode.status || '').toLowerCase();
+        if (filterStatus === 'under review') return st === 'under review' || st === 'pending';
+        return st === filterStatus;
+      });
     }
 
     setFilteredPaCodes(filtered as PaCode[]);
@@ -65,6 +98,7 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
       case 'approved':
         return 'bg-[#10B9811A] text-[#10B981]';
       case 'under review':
+      case 'pending':
         return 'bg-[#F59E0B1A] text-[#F59E0B]';
       case 'declined':
         return 'bg-[#EF44441A] text-[#EF4444]';
@@ -160,20 +194,20 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
             ) : (
               filteredPaCodes.map((paCode) => (
                 <tr
-                  key={paCode.id}
+                  key={paCode.id || paCode.authorizationCode}
                   className="border-b border-gray-200 hover:bg-gray-50 transition-colors text-[15px]"
                 >
                   <td className="px-6 py-4">
-                    {formatDate(paCode.dateOfService)}
+                    {paCode.dateOfService ? formatDate(paCode.dateOfService) : ''}
                   </td>
                   <td className="px-6 py-4">
-                    {paCode.hmoid}
+                    {paCode.hmoid || paCode.patientName || '-'}
                   </td>
                   <td className="px-6 py-4">
                     {paCode.authorizationCode}
                   </td>
                   <td className="px-6 py-4">
-                    {paCode.careType}
+                    {paCode.careType || '-'}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span
@@ -181,7 +215,9 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
                         paCode.status
                       )}`}
                     >
-                      {paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1)}
+                      {((paCode.status || '')
+                        ? paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1)
+                        : 'Unknown')}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">

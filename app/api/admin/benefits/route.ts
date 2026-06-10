@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       return NextResponse.json({ success: true, data: [], message: 'Benefits list retrieved (mock)' }, { status: 200 });
     }
 
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
     const data = await backendRes.json();
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin benefits GET error:', error?.message || error);
+    // console.error('Admin benefits GET error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to fetch admin benefits' }, { status: 500 });
   }
 }
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       return NextResponse.json({ success: true, data: { $id: Date.now().toString(), ...body }, message: 'Benefit created (mock)' }, { status: 201 });
     }
 
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     const data = await backendRes.json();
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin benefits POST error:', error?.message || error);
+    // console.error('Admin benefits POST error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to create benefit' }, { status: 500 });
   }
 }
@@ -90,7 +90,7 @@ export async function PUT(req: Request) {
     }
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       return NextResponse.json({ success: true, data: { $id: benefitId, ...body }, message: 'Benefit updated (mock)' }, { status: 200 });
     }
 
@@ -106,7 +106,7 @@ export async function PUT(req: Request) {
     const data = await backendRes.json();
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin benefits PUT error:', error?.message || error);
+    // console.error('Admin benefits PUT error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to update benefit' }, { status: 500 });
   }
 }
@@ -126,7 +126,7 @@ export async function DELETE(req: Request) {
     }
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       return NextResponse.json({ success: true, message: 'Benefit deleted (mock)' }, { status: 200 });
     }
 
@@ -140,7 +140,7 @@ export async function DELETE(req: Request) {
     const data = await backendRes.json();
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin benefits DELETE error:', error?.message || error);
+    // console.error('Admin benefits DELETE error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to delete benefit' }, { status: 500 });
   }
 }

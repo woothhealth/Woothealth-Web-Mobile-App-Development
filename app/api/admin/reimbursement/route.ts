@@ -63,7 +63,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin reimbursement GET error:', error?.message || error);
+    // console.error('Admin reimbursement GET error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to fetch reimbursements' }, { status: 500 });
   }
 }
@@ -100,7 +100,7 @@ export async function PUT(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin reimbursement PUT error:', error?.message || error);
+    // console.error('Admin reimbursement PUT error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to update reimbursement' }, { status: 500 });
   }
 }
@@ -134,7 +134,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin reimbursement DELETE error:', error?.message || error);
+    // console.error('Admin reimbursement DELETE error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to delete reimbursement' }, { status: 500 });
   }
 }

@@ -1,3 +1,5 @@
+import { DASHBOARD_ADMIN_ROLES } from './roles';
+
 export type AdminUser = {
   $id?: string;
   userId?: string;
@@ -48,6 +50,36 @@ export async function getAdminUserById(userId: string): Promise<AdminUser | null
   } catch (error) {
     console.error('Error fetching admin user:', error);
     return null;
+  }
+}
+
+export async function getAdminUsersCount(roles: string[] = DASHBOARD_ADMIN_ROLES as unknown as string[]): Promise<number> {
+  try {
+    const res = await fetch(`/api/admin/user?limit=1000`, {
+      credentials: 'include',
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      console.debug('GET /api/admin/user returned non-ok status when counting admins', { status: res.status });
+      return 0;
+    }
+
+    const data = await res.json();
+    const payload = data?.data ?? data;
+    const list = Array.isArray(payload) ? payload : (Array.isArray(payload?.items) ? payload.items : []);
+
+    const normalizedRoles = (roles || []).map((r) => String(r).toLowerCase());
+
+    const count = list.reduce((acc: number, u: any) => {
+      const role = (u?.role || u?.roleName || '').toString().toLowerCase();
+      return acc + (normalizedRoles.includes(role) ? 1 : 0);
+    }, 0);
+
+    return count;
+  } catch (err) {
+    console.error('Error counting admin users', err);
+    return 0;
   }
 }
 

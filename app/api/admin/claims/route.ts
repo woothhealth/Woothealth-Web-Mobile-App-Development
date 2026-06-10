@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     // Handle individual claim request
     if (claimId) {
       if (!BACKEND_URL) {
-        console.error('Missing BACKEND_URL environment variable');
+        // console.error('Missing BACKEND_URL environment variable');
         // Return mock data for development
         const mockClaims = [
           {
@@ -222,7 +222,7 @@ export async function GET(req: Request) {
     }
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       // Return mock data for development with proper structure
       const mockClaims = [
         {
@@ -360,7 +360,7 @@ export async function GET(req: Request) {
     );
 
     if (!backendRes.ok) {
-      console.warn(`Backend returned ${backendRes.status} for admin claims`);
+      // console.warn(`Backend returned ${backendRes.status} for admin claims`);
       // Return empty data if backend fails
       return NextResponse.json({
         success: true,
@@ -425,7 +425,7 @@ export async function GET(req: Request) {
       message: "Claims list retrieved"
     }, { status: 200 });
   } catch (error: any) {
-    console.error('Admin claims GET error:', error?.message || error);
+    // console.error('Admin claims GET error:', error?.message || error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch admin claims' },
       { status: 500 }
@@ -443,7 +443,7 @@ export async function POST(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       // Return mock success for development
       return NextResponse.json({
         success: true,
@@ -474,7 +474,7 @@ export async function POST(req: Request) {
     );
 
     if (!backendRes.ok) {
-      console.warn(`Backend returned ${backendRes.status} for admin claims POST`);
+      // console.warn(`Backend returned ${backendRes.status} for admin claims POST`);
     }
 
     const data = await backendRes.json();
@@ -486,7 +486,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data || { success: true, data: [] }, { status: 200 });
   } catch (error: any) {
-    console.error('Admin claims POST error:', error?.message || error);
+    // console.error('Admin claims POST error:', error?.message || error);
     return NextResponse.json(
       { success: false, error: 'Failed to create admin claim' },
       { status: 500 }

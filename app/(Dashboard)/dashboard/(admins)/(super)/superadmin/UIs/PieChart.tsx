@@ -5,9 +5,9 @@ import React, { useEffect, useState } from 'react';
 
 // #region Sample fallback data
 const MOCK_DATA = [
-  { name: 'Approved', value: 1248 },
-  { name: 'Rejected', value: 218 },
-  { name: 'Pending', value: 534 },
+  { name: 'Approved', value: 0 },
+  { name: 'Rejected', value: 0 },
+  { name: 'Pending', value: 0 },
 ];
 
 // #endregion

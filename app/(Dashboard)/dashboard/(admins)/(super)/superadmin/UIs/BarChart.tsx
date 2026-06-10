@@ -16,69 +16,69 @@ import {
 const data = [
   {
     name: 'Jan',
-    uv: 4000,
-    Data: 2400,
-    amt: 2400,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Feb',
-    uv: 3000,
-    Data: 1398,
-    amt: 2210,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Mar',
-    uv: 2000,
-    Data: 9800,
-    amt: 2290,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Apr',
-    uv: 2780,
-    Data: 3908,
-    amt: 2000,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'May',
-    uv: 1890,
-    Data: 4800,
-    amt: 2181,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'June',
-    uv: 2390,
-    Data: 3800,
-    amt: 2500,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Jul',
-    uv: 3490,
-    Data: 4300,
-    amt: 2100,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Sep',
-    uv: 3490,
-    Data: 4300,
-    amt: 2100,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Oct',
-    uv: 3490,
-    Data: 4300,
-    amt: 2100,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Nov',
-    uv: 3490,
-    Data: 4300,
-    amt: 2100,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
   {
     name: 'Dec',
-    uv: 3490,
-    Data: 4300,
-    amt: 2100,
+    uv: 0,
+    Data: 0,
+    amt: 0,
   },
 ];
 
@@ -146,7 +146,7 @@ const BarChartView = ({
 }) => {
   return (
     <BarChart
-      style={{ width: '90%', maxWidth: '450px', maxHeight: '80vh', aspectRatio: 1.3 }}
+      style={{ width: '90%', maxWidth: '90%', maxHeight: '90vh', aspectRatio: 1.3 }}
       responsive
       data={data}
       margin={{

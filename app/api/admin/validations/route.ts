@@ -121,7 +121,7 @@ export async function GET(req: Request) {
       message: "Validations list retrieved"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching validations:", error);
+    // console.error("Error fetching validations:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -172,7 +172,7 @@ export async function POST(req: Request) {
       message: "Validation created successfully (mock)"
     }, { status: 201 });
   } catch (error) {
-    console.error("Error creating validation:", error);
+    // console.error("Error creating validation:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -224,7 +224,7 @@ export async function PUT(req: Request) {
       message: "Validation updated successfully (mock)"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error updating validation:", error);
+    // console.error("Error updating validation:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -277,7 +277,7 @@ export async function DELETE(req: Request) {
       message: "Validation deleted successfully (mock)"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting validation:", error);
+    // console.error("Error deleting validation:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

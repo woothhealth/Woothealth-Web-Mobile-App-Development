@@ -10,11 +10,13 @@ export function AdminClaimsProvider({ children }: { children: React.ReactNode })
 
   const claims = claimsData?.data || []
   const total = claimsData?.total || 0
+  const claimsPrice = claimsData?.totalPrice || 0
 
   return (
     <AdminClaimsContext.Provider value={{
       claims,
       total,
+      claimsPrice,
       loading: isLoading,
       error,
       refetch

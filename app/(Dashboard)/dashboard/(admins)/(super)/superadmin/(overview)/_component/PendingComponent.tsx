@@ -3,8 +3,8 @@ import { FaArrowUp } from 'react-icons/fa'
 import { MdOutlinePendingActions } from 'react-icons/md'
 
 const PendingComponent = () => {
-  const [pendingCount, setPendingCount] = useState<number | null>(2560)
-  const [percentChange, setPercentChange] = useState<string>('5.7%')
+  const [pendingCount, setPendingCount] = useState<number | null>(0)
+  const [percentChange, setPercentChange] = useState<string>('0%')
 
   useEffect(() => {
     let mounted = true

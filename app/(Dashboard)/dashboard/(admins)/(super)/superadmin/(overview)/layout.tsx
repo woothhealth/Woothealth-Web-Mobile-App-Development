@@ -2,6 +2,11 @@
 
 import { AdminOverviewProvider } from "@/Components/AdminOverviewContext";
 import { AdminEnrolleesProvider } from "@/Components/AdminEnrolleesContext";
+import { AdminClaimsProvider } from "@/Components/AdminClaimsContext";
+import { AdminWalletProvider } from "@/Components/AdminWalletContext";
+import { AdminClientProvider } from "@/Components/AdminClientContext";
+import { ProvidersStatsProvider } from '../providers/ProvidersStatsContext';
+import { BenefitsStatsProvider } from '../benefits/BenefitsStatsContext';
 
 export default function OverviewAdminDashboardLayout({
   children,
@@ -11,9 +16,19 @@ export default function OverviewAdminDashboardLayout({
   return (
     <AdminOverviewProvider>
       <AdminEnrolleesProvider>
-        <div className="relative w-full bg-[#FAFAFA] pb-4 mt-4 md:mt-0 space-y-2">
-          {children}
-        </div>
+        <AdminClaimsProvider>
+          <AdminClientProvider>
+            <AdminWalletProvider>
+              <ProvidersStatsProvider>
+                <BenefitsStatsProvider>
+                <div className="relative w-full bg-[#FAFAFA] pb-4 mt-4 md:mt-0 space-y-2">
+                  {children}
+                </div>
+                </BenefitsStatsProvider>
+              </ProvidersStatsProvider>
+            </AdminWalletProvider>
+          </AdminClientProvider>
+        </AdminClaimsProvider>
       </AdminEnrolleesProvider>
     </AdminOverviewProvider>
   );

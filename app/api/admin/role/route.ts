@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL for admin role proxy');
+      // console.error('Missing BACKEND_URL for admin role proxy');
       const mock = [
         { id: 'role-1', name: 'Superadmin', description: 'Full access', totalUsers: 1, users: [], moduleAccess: [], createdAt: new Date().toISOString() },
         { id: 'role-2', name: 'Admin', description: 'Admin access', totalUsers: 2, users: [], moduleAccess: [], createdAt: new Date().toISOString() },
@@ -41,7 +41,9 @@ export async function GET(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend admin roles GET failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend admin roles GET failed', backendRes.status, String(raw).slice(0, 1000));
+    }
 
     // Normalize envelope responses
     if (data && typeof data === 'object' && data.success && data.data) {
@@ -50,7 +52,7 @@ export async function GET(req: Request) {
     if (Array.isArray(data)) return NextResponse.json({ success: true, data, total: data.length }, { status: backendRes.status });
     return NextResponse.json(data || { success: true, data: [] }, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Admin role GET error:', err?.message || err);
+    // console.error('Admin role GET error:', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to fetch roles' }, { status: 500 });
   }
 }
@@ -75,10 +77,12 @@ export async function POST(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend admin roles POST failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend admin roles POST failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data || {}, { status: backendRes.status || 200 });
   } catch (err: any) {
-    console.error('Admin role POST error:', err?.message || err);
+    // console.error('Admin role POST error:', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to create role' }, { status: 500 });
   }
 }
@@ -107,10 +111,12 @@ export async function PUT(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend admin roles PUT failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend admin roles PUT failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data || {}, { status: backendRes.status || 200 });
   } catch (err: any) {
-    console.error('Admin role PUT error:', err?.message || err);
+    // console.error('Admin role PUT error:', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to update role' }, { status: 500 });
   }
 }
@@ -137,10 +143,12 @@ export async function DELETE(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend admin roles DELETE failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend admin roles DELETE failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data || {}, { status: backendRes.status || 200 });
   } catch (err: any) {
-    console.error('Admin role DELETE error:', err?.message || err);
+    // console.error('Admin role DELETE error:', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to delete role' }, { status: 500 });
   }
 }

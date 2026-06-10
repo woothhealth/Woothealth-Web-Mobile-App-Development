@@ -36,7 +36,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin tickets GET error:', error?.message || error);
+    // console.error('Admin tickets GET error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to fetch admin tickets' }, { status: 500 });
   }
 }
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin tickets POST error:', error?.message || error);
+    // console.error('Admin tickets POST error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to create ticket' }, { status: 500 });
   }
 }
@@ -104,7 +104,7 @@ export async function PUT(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin tickets PUT error:', error?.message || error);
+    // console.error('Admin tickets PUT error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to update ticket' }, { status: 500 });
   }
 }
@@ -138,7 +138,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin tickets DELETE error:', error?.message || error);
+    // console.error('Admin tickets DELETE error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to delete ticket' }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { cookies } from 'next/headers';
 import { deleteSession, setSession, getSession } from './session';
+import { hasDashboardAccess, getDashboardPath } from './roles';
 
 export const loginAction = async (formData: FormData) => {
   const email = formData.get("email");
@@ -38,7 +39,13 @@ export const logoutAction = async () => {
   // Determine the redirect target based on current session role.
   const session = await getSession();
   const role = session?.role || null;
-  const redirectTo = role === 'admin' ? '/admin' : role === 'provider' ? '/providers' : '/login';
+  let redirectTo = '/login';
+  if (hasDashboardAccess(role)) {
+    // Redirect all dashboard-capable roles to the shared admin entry
+    redirectTo = '/admin';
+  } else if (role === 'provider') {
+    redirectTo = '/providers';
+  }
 
   try {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;

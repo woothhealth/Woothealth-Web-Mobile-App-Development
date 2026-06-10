@@ -15,28 +15,47 @@ import PendingComponent from '../PendingComponent';
 import TrackingComponent from '../TrackingComponent';
 import { TiClipboard } from 'react-icons/ti';
 import { HiOutlineVideoCamera } from 'react-icons/hi';
+import { useAdminEnrollees } from '@/Components/AdminEnrolleesContext';
+import { useAdminClaimsContext } from '@/Components/AdminClaimsContext';
+import { useAdminClientContext } from '@/Components/AdminClientContext';
 
 const formatNumber = (value?: number, loading?: boolean) => {
   if (loading) return '...';
   return value != null ? value.toLocaleString() : '—';
 };
 
+const formatCurrency = (value?: number, loading?: boolean) => {
+  if (loading) return '...';
+  return value != null ? `₦${value.toLocaleString()}` : '—';
+}
+
 export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
+  const { enrollees, loading: enrolleesLoading } = useAdminEnrollees();
+  const { claimsPrice, loading: claimsLoading } = useAdminClaimsContext();
+  const { clients, loading: clientsLoading } = useAdminClientContext();
+
+  const totalEnrolleesValue = enrollees?.total ?? overview?.totalEnrollees;
+  const totalEnrolleesLoading = loading || enrolleesLoading;
+
+  const activeClientsValue = Array.isArray(clients)
+    ? clients.filter((c: any) => c?.status === 'active').length
+    : overview?.activeClients;
+  const activeClientsLoading = loading || clientsLoading;
 
   return (
     <div className="flex gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
       <div>
-      <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(overview?.totalEnrollees, loading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+      <MetricCard label='Total Enrollees' icon={<FaRegUser />} value={formatNumber(totalEnrolleesValue, totalEnrolleesLoading)} description='Active Plan Members' iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
       </div>
       <div>
-      <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.activeClients, loading)} description='Last 30 Days' iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
+      <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(activeClientsValue, activeClientsLoading)} description='Last 30 Days' iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
       </div>
       <div>
       <MetricCard label='Telemedicine requests' icon={<HiOutlineVideoCamera />} value={formatNumber(overview?.telemedicineRequests, loading)} description='Registered Accounts' iconBgColor='[#FFEDD5]' iconTextColor='[#F97316]' />
       </div>
       <div>
-      <MetricCard label='Claims Wallet' icon={<IoWalletOutline />} value={formatNumber(overview?.totalUsers, loading)} description='Wallet Balance' iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
+      <MetricCard label='Claims Wallet' icon={<IoWalletOutline />} value={formatCurrency(claimsPrice, claimsLoading)} description='Wallet Balance' iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
       </div>
     </div>
   );

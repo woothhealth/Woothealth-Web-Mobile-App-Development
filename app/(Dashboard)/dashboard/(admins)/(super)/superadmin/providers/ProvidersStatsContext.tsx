@@ -9,6 +9,8 @@ type Provider = {
 };
 
 interface ProviderStats {
+  suspended: number;
+  total: number;
   active: number;
   inactive: number;
 }
@@ -59,12 +61,13 @@ export const ProvidersStatsProvider: React.FC<{ children: React.ReactNode }> = (
         const normalized = parseProviders(providers);
         const activeCount = normalized.filter((provider) => provider.status === 'Active').length;
         const inactiveCount = normalized.filter((provider) => provider.status === 'Inactive').length;
+        const suspendedCount = normalized.filter((provider) => provider.status === 'Suspended').length;
 
-        setStats({ active: activeCount, inactive: inactiveCount });
+        setStats({ total: normalized.length, active: activeCount, inactive: inactiveCount, suspended: suspendedCount });
       } catch (err) {
         console.error(err);
         setError('Failed to load provider stats');
-        setStats({ active: 0, inactive: 0 });
+        setStats({ total: 0, active: 0, inactive: 0, suspended: 0 });
       } finally {
         setLoading(false);
       }

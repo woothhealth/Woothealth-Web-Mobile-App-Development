@@ -8,7 +8,7 @@ import { createProviderPA } from '@/lib/providerPA';
 
 export interface TreatmentItem {
   id: string;
-  itemCode: string;
+  item: string;
   quantity: number;
   unitPrice: number;
   amount: number;
@@ -71,7 +71,7 @@ const PaCodeCreationPage = () => {
 
       // Check if all treatment items are valid
       const invalidItems = formData.treatmentItems.filter(
-        item => !item.itemCode.trim() || item.quantity <= 0 || item.unitPrice <= 0
+        item => !item.item.trim() || item.quantity <= 0 || item.unitPrice <= 0
       );
 
       if (invalidItems.length > 0) {
@@ -80,16 +80,28 @@ const PaCodeCreationPage = () => {
         return;
       }
 
-      // Build payload expected by backend
-      const total = formData.treatmentItems.reduce((s, it) => s + it.amount, 0);
+      // Build payload expected by backend, include treatment items and totals
+      const total = (formData.treatmentItems || []).reduce((s, it) => s + (Number(it.amount) || 0), 0);
+      const backendTreatmentItems = (formData.treatmentItems || []).map(it => ({
+        item: it.item || '',
+        description: it.item || '',
+        quantity: it.quantity || 1,
+        unitPrice: Number(it.unitPrice) || 0,
+        Amount: Number(it.amount) || ((it.quantity || 1) * (Number(it.unitPrice) || 0)),
+      }));
+
       const payload = {
         patientId: formData.hmoid,
         diagnosis: formData.diagnosis,
-        tariffCode: formData.treatmentItems[0]?.itemCode || '',
+        tariffCode: backendTreatmentItems[0]?.item || '',
         tier: formData.careType,
         price: total.toFixed(2).toString(),
         bookingId: '',
+        totalAmount: total,
+        treatmentItems: backendTreatmentItems,
       };
+
+      console.log('[page] createProviderPA payload', payload);
 
       try {
         await createProviderPA(payload);

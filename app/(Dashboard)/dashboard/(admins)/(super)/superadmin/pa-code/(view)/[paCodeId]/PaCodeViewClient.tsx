@@ -13,6 +13,8 @@ type PaCode = PaCodeDetail & {
   userId?: string;
   hmoId?: string;
   status?: 'approved' | 'declined' | 'under review' | 'pending';
+  treatmentItems?: any[];
+  rawDisplayDiagnosis?: string;
 };
 
 interface PaCodeViewClientProps {
@@ -55,6 +57,57 @@ async function getPaCode(paCodeId: string): Promise<PaCode | null> {
       }
 
       if (paCode) {
+        // Normalize backend variations: some responses use `treatmentItems` while mocks use `treatment`.
+        if (paCode.treatmentItems && !paCode.treatment) {
+          paCode.treatment = paCode.treatmentItems;
+        }
+        // Normalize per-item fields so the view can display unitPrice and Amount consistently.
+        if (Array.isArray(paCode.treatment)) {
+          paCode.treatment = paCode.treatment.map((it: any) => {
+            const item: any = { ...(it || {}) };
+            const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
+            const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
+            // ensure unitPrice present
+            item.unitPrice = price;
+            // ensure Amount (capital A) present for UI and totals; compute if missing or zero
+            const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
+            if (!existingAmount && price && qty) {
+              item.Amount = price * qty;
+            } else {
+              item.Amount = existingAmount;
+            }
+            return item;
+          });
+        }
+        // Derive a display-friendly diagnosis: keep only text before the authorization block
+        try {
+          const rawDiag = paCode.diagnosis ?? paCode.Diagnosis ?? '';
+          if (typeof rawDiag === 'string') {
+            const m = rawDiag.match(/\[AUTHORIZATION/i);
+            if (m && m.index != null) {
+              paCode.rawDisplayDiagnosis = rawDiag.slice(0, m.index).trim();
+            } else {
+              paCode.rawDisplayDiagnosis = rawDiag.trim();
+            }
+          } else if (Array.isArray(rawDiag)) {
+            const joined = rawDiag.join('\n');
+            const m = joined.match(/\[AUTHORIZATION/i);
+            paCode.rawDisplayDiagnosis = m && m.index != null ? joined.slice(0, m.index).trim() : joined.trim();
+          } else {
+            paCode.rawDisplayDiagnosis = '';
+          }
+        } catch (e) {
+          paCode.rawDisplayDiagnosis = paCode.diagnosis || '';
+        }
+        // Ensure totalAmount exists
+        if ((paCode.totalAmount == null || paCode.totalAmount === 0) && Array.isArray(paCode.treatment)) {
+          try {
+            paCode.totalAmount = paCode.treatment.reduce((s: number, it: any) => s + (Number(it.Amount || it.amount || 0) || 0), 0);
+          } catch (e) {
+            // ignore
+          }
+        }
+
         console.debug('Resolved PA code object:', paCode);
         return paCode;
       }
@@ -395,11 +448,10 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-6">
               <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-              <p className="text-amber-800 whitespace-pre-line">{paCode.diagnosis || 'N/A'}</p>
+              <p className="text-amber-800 whitespace-pre-line">{paCode.rawDisplayDiagnosis || paCode.diagnosis || 'N/A'}</p>
             </div>
 
             {/* Treatment Description & Services Rendered */}
-            
             <div className="px-6 py-4">
               <div className="mb-4">
                 <h3 className="text-[17px] font-semibold text-gray-900 mb-4">Treatment Description & Services Rendered</h3>

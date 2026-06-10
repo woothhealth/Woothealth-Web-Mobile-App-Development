@@ -33,12 +33,21 @@ export async function GET(req: Request) {
 
           if (backendRes.ok) {
             const data = await backendRes.json();
-            console.log('[route] backend response for paCodeId', paCodeId, data);
+            try {
+              // console.log('[route] backend response for paCodeId', paCodeId, JSON.stringify(data, null, 2));
+            } catch (e) {
+              // console.log('[route] backend response for paCodeId (inspect fallback)', paCodeId, data);
+            }
+            try {
+              // console.log('[route] responding GET paCode', JSON.stringify({ paCodeId, responseData: data }, null, 2));
+            } catch (e) {
+              // console.log('[route] responding GET paCode', { paCodeId, responseData: data });
+            }
             return NextResponse.json(data);
           }
         } else {
           const backendUrl = BACKEND_URL + `/admin/pa-codes/?page=${page}&limit=${limit}`;
-          console.log('[route] forwarding GET to backend', { backendUrl });
+          // console.log('[route] forwarding GET to backend', { backendUrl });
           const backendRes = await fetch(backendUrl, {
             headers: {
               ...getAdminHeaders(cookieHeader),
@@ -49,12 +58,16 @@ export async function GET(req: Request) {
 
           if (backendRes.ok) {
             const data = await backendRes.json();
-            console.log('[route] backend response for list', { page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined });
+            try {
+              // console.log('[route] backend response for list', JSON.stringify({ page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined, dataPreview: Array.isArray(data?.data) ? data.data.slice(0, 10) : undefined, data }, null, 2));
+            } catch (e) {
+              // console.log('[route] backend response for list', { page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined });
+            }
             return NextResponse.json(data);
           }
         }
       } catch (backendError) {
-        console.error('[route] backend request failed, falling back to mock', backendError);
+        // console.error('[route] backend request failed, falling back to mock', backendError);
       }
     }
 
@@ -65,7 +78,11 @@ export async function GET(req: Request) {
         console.log('[route] mock PA code not found for id', paCodeId);
         return NextResponse.json({ error: "PA Code not found" }, { status: 404 });
       }
-      console.log('[route] returning mock PA code for id', paCodeId, paCode);
+      try {
+        console.log('[route] returning mock PA code for id', paCodeId, JSON.stringify(paCode, null, 2));
+      } catch (e) {
+        console.log('[route] returning mock PA code for id', paCodeId, paCode);
+      }
       return NextResponse.json({
         success: true,
         data: paCode,
@@ -83,7 +100,7 @@ export async function GET(req: Request) {
       message: "PA Codes list retrieved"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching pa-codes:", error);
+    // console.error("Error fetching pa-codes:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -118,16 +135,16 @@ export async function POST(req: Request) {
           return NextResponse.json(data);
         } else {
           const respText = await backendRes.text().catch(() => null);
-          console.error("Backend POST returned non-OK", {
-            url: BACKEND_URL + "/admin/pa-codes/",
-            status: backendRes.status,
-            statusText: backendRes.statusText,
-            response: respText,
-            requestBodySample: JSON.stringify(body).slice(0, 1000),
-          });
+          // console.error("Backend POST returned non-OK", {
+          //   url: BACKEND_URL + "/admin/pa-codes/",
+          //   status: backendRes.status,
+          //   statusText: backendRes.statusText,
+          //   response: respText,
+          //   requestBodySample: JSON.stringify(body).slice(0, 1000),
+          // });
         }
       } catch (backendError) {
-        console.error("Backend POST request error", backendError);
+        // console.error("Backend POST request error", backendError);
         // Backend request failed, will fall back to mock
       }
     }
@@ -147,7 +164,7 @@ export async function POST(req: Request) {
       message: "PA Code created successfully (mock)"
     }, { status: 201 });
   } catch (error) {
-    console.error("Error creating pa-code:", error);
+    // console.error("Error creating pa-code:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -187,13 +204,14 @@ export async function PUT(req: Request) {
         try { parsed = respText ? JSON.parse(respText) : null; } catch (e) { /* keep text */ }
         return NextResponse.json(parsed, { status: backendRes.status });
       } catch (backendError) {
+        // return backend failure
         return NextResponse.json({ error: 'Backend PUT request failed' }, { status: 502 });
       }
     }
     // No BACKEND_URL configured — cannot proceed
     return NextResponse.json({ error: 'Backend not configured for PUT /admin/pa-codes' }, { status: 500 });
   } catch (error) {
-    console.error("Error updating pa-code:", error);
+    // console.error("Error updating pa-code:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -246,7 +264,7 @@ export async function DELETE(req: Request) {
       message: "PA Code deleted successfully (mock)"
     }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting pa-code:", error);
+    // console.error("Error deleting pa-code:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

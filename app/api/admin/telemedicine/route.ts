@@ -60,7 +60,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin telemedicine GET error:', error?.message || error);
+    // console.error('Admin telemedicine GET error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to fetch telemedicine' }, { status: 500 });
   }
 }
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin telemedicine POST error:', error?.message || error);
+    // console.error('Admin telemedicine POST error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to create telemedicine' }, { status: 500 });
   }
 }
@@ -128,7 +128,7 @@ export async function PUT(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin telemedicine PUT error:', error?.message || error);
+    // console.error('Admin telemedicine PUT error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to update telemedicine' }, { status: 500 });
   }
 }
@@ -162,7 +162,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    console.error('Admin telemedicine DELETE error:', error?.message || error);
+    // console.error('Admin telemedicine DELETE error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to delete telemedicine' }, { status: 500 });
   }
 }

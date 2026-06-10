@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import diagnosisData from '@/data/diagnosis-data.json';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import type { PaCodeFormData, TreatmentItem } from './page';
+import { useProviderProfiles } from '@/lib/providerUserProfile';
 
 interface PaCodeFormProps {
   onSubmit: (formData: PaCodeFormData) => void;
@@ -21,7 +22,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
     treatmentItems: [
       {
         id: '1',
-        itemCode: '',
+        item: '',
         quantity: 1,
         unitPrice: 0,
         amount: 0,
@@ -38,9 +39,12 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [tariffs, setTariffs] = useState<any[]>([]);
   const [tariffsLoading, setTariffsLoading] = useState(false);
+  const { data: providerProfileResp, isLoading: providerProfileLoading } = useProviderProfiles();
+  const providerProfile = providerProfileResp?.data || providerProfileResp;
   const [itemSearchMap, setItemSearchMap] = useState<Record<string, string>>({});
   const [itemSuggestionsMap, setItemSuggestionsMap] = useState<Record<string, any[]>>({});
   const [showItemSuggestionsMap, setShowItemSuggestionsMap] = useState<Record<string, boolean>>({});
+  const [itemSuggestionsLoadingMap, setItemSuggestionsLoadingMap] = useState<Record<string, boolean>>({});
 
   // Calculate total amount whenever treatment items change
   useEffect(() => {
@@ -66,50 +70,67 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
           ? data.data
           : [];
 
-        const providerTypeNormalized = (providerType || '').toString().trim().toLowerCase();
-        const providerTierRaw : string = (providerTier || '').toString().trim();
-        const providerTier = providerTierRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '');
+          const resolvedProviderType = (providerType || providerProfile?.type || providerProfile?.providerType || '').toString().trim().toLowerCase();
+          const tierSourceRaw = (providerTier || providerProfile?.tier || providerProfile?.planTier || '').toString().trim();
+          const resolvedTier = tierSourceRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '').replace(/\s+/g, '').replace(/\+/g, 'Plus');
 
-        const tierCandidates = [
-          `tier${providerTier}`,
-          `tier${providerTier.toLowerCase()}`,
-          `tier${providerTier.toUpperCase()}`,
-          `price${providerTier}`,
-          `price${providerTier.toLowerCase()}`,
-          `price${providerTier.toUpperCase()}`,
-          providerTier,
-          providerTier.toLowerCase(),
-          providerTier.toUpperCase(),
-        ].filter(Boolean);
+        const buildTierKeys = (t: string) => {
+          if (!t) return [] as string[];
+          const keys = new Set<string>();
+          keys.add(t);
+          keys.add(t.toLowerCase());
+          keys.add(t.toUpperCase());
+          keys.add(`tier${t}`);
+          keys.add(`tier${t.toLowerCase()}`);
+          keys.add(`tier${t.toUpperCase()}`);
+          keys.add(`price${t}`);
+          keys.add(`price${t.toLowerCase()}`);
+          keys.add(`price${t.toUpperCase()}`);
+          return Array.from(keys).filter(Boolean);
+        };
 
-        const extractAmount = (t: any) => {
+        const tierCandidates = buildTierKeys(resolvedTier);
+        const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
+
+        const findAmount = (t: any) => {
           if (!t) return null;
           for (const k of tierCandidates) {
             if (t[k] != null) return t[k];
           }
-          const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
           for (const nk of nestedKeys) {
             const obj = t[nk];
             if (obj && typeof obj === 'object') {
               for (const k of tierCandidates) {
                 if (obj[k] != null) return obj[k];
               }
+              if (resolvedTier && obj[resolvedTier] != null) return obj[resolvedTier];
               const vals = Object.values(obj).filter((v) => v != null && (typeof v === 'number' || !Number.isNaN(Number(v))));
               if (vals.length > 0) return vals[0];
             }
           }
           if (t.amount != null) return t.amount;
           if (t.price != null) return t.price;
+          const vals = Object.values(t).filter((v) => v != null && (typeof v === 'number' || !Number.isNaN(Number(v))));
+          if (vals.length > 0) return vals[0];
           return null;
         };
 
         const items: any[] = rawList.map((t) => {
-          const name = t.itemName || t.name || t.item_name || t.description || t.service || '';
-          const amount = extractAmount(t);
-          return { name, amount, raw: t };
+          const name = t.serviceName || t.service_name || t.procedureName || t.procedure_name || t.itemName || t.name || t.item_name || t.description || t.service || '';
+          const code = t.code || t.item || t.serviceCode || t.procedureCode || '';
+          const amount = findAmount(t);
+          const searchText = `${(name || '')} ${(code || '')}`.toString().toLowerCase();
+          return { name, code, amount, raw: t, searchText };
         }).filter(i => i.name);
 
-        if (mounted) setTariffs(items);
+        // Filter by provider type (if available) and ensure amount exists
+        const filtered = items.filter((i) => {
+          const t = i.raw || {};
+          const tProviderType = ((t.providerType || t.provider_type || t.type) || '').toString().trim().toLowerCase();
+          if (resolvedProviderType && tProviderType && tProviderType !== resolvedProviderType) return false;
+          return i.amount != null;
+        });
+        if (mounted) setTariffs(filtered);
       } catch (err) {
         if (!mounted) return;
         setTariffs([]);
@@ -120,7 +141,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
 
     fetchTariffs();
     return () => { mounted = false; };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [providerType, providerTier, providerProfileResp]); // include provider meta as deps
 
   // update diagnosis suggestions when user types
   useEffect(() => {
@@ -219,22 +240,75 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
 
   const handleItemSearchChange = (id: string, value: string) => {
     setItemSearchMap(prev => ({ ...prev, [id]: value }));
-    // update itemCode live for display
+    // update item live for display
     setFormData(prev => ({
       ...prev,
-      treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, itemCode: value } : item)
+      treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: value } : item)
     }));
 
     if (!value || value.trim().length === 0) {
       setItemSuggestionsMap(prev => ({ ...prev, [id]: [] }));
+      setShowItemSuggestionsMap(prev => ({ ...prev, [id]: false }));
+      setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
       return;
     }
 
+    // mark this row as loading suggestions
+    setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: true }));
+
     const q = value.toLowerCase();
-    const matches = tariffs.filter(t => t.name.toLowerCase().includes(q)).slice(0, 8);
+    if (tariffsLoading) {
+      // wait for tariffs to load; suggestions will be populated in effect below
+      setItemSuggestionsMap(prev => ({ ...prev, [id]: [] }));
+      setShowItemSuggestionsMap(prev => ({ ...prev, [id]: true }));
+      return;
+    }
+
+    const matches = tariffs.filter(t => (t.searchText || t.name || '').toString().toLowerCase().includes(q)).slice(0, 8);
     setItemSuggestionsMap(prev => ({ ...prev, [id]: matches }));
     setShowItemSuggestionsMap(prev => ({ ...prev, [id]: true }));
+    setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
   };
+
+  // When tariffs finish loading or change, recompute suggestions for any active search rows
+  useEffect(() => {
+    if (tariffsLoading) return;
+    const activeIds = Object.keys(itemSearchMap || {});
+    activeIds.forEach((id) => {
+      const q = (itemSearchMap[id] || '').toString().trim().toLowerCase();
+      if (!q) {
+        setItemSuggestionsMap(prev => ({ ...prev, [id]: [] }));
+        setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
+        return;
+      }
+      const matches = tariffs.filter(t => (t.searchText || t.name || '').toString().toLowerCase().includes(q)).slice(0, 8);
+      setItemSuggestionsMap(prev => ({ ...prev, [id]: matches }));
+      setShowItemSuggestionsMap(prev => ({ ...prev, [id]: true }));
+
+      // Autofill logic: exact name/code match or unique match
+      const exact = matches.find(m => (m.name || '').toString().toLowerCase() === q || (m.code || '').toString().toLowerCase() === q);
+      if (exact) {
+        const price = Number(exact.amount) || 0;
+        setFormData(prev => ({
+          ...prev,
+          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, unitPrice: price, amount: (item.quantity || 1) * price } : item)
+        }));
+        setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
+        return;
+      }
+
+      if (matches.length === 1) {
+        const single = matches[0];
+        const price = Number(single.amount) || 0;
+        setFormData(prev => ({
+          ...prev,
+          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, unitPrice: price, amount: (item.quantity || 1) * price } : item)
+        }));
+      }
+
+      setItemSuggestionsLoadingMap(prev => ({ ...prev, [id]: false }));
+    });
+  }, [tariffs, tariffsLoading]);
 
   const selectItemSuggestion = (id: string, suggestion: any) => {
     setFormData(prev => ({
@@ -243,7 +317,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         if (item.id !== id) return item;
         const qty = item.quantity || 1;
         const unitPrice = Number(suggestion.amount) || 0;
-        return { ...item, itemCode: suggestion.name, unitPrice, amount: unitPrice * qty };
+        return { ...item, item: suggestion.name, unitPrice, amount: unitPrice * qty };
       })
     }));
     setItemSearchMap(prev => ({ ...prev, [id]: '' }));
@@ -293,7 +367,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
   const addTreatmentItem = () => {
     const newItem: TreatmentItem = {
       id: Date.now().toString(),
-      itemCode: '',
+      item: '',
       quantity: 1,
       unitPrice: 0,
       amount: 0,
@@ -318,6 +392,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
     return formData.treatmentItems.reduce((sum, item) => sum + item.amount, 0);
   };
 
+  const formatUnitPrice = (price: number) => {
+    return price > 0 ? `₦${price.toLocaleString()}` : '';
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -327,7 +405,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
 
     // Check treatment items
     const invalidItems = formData.treatmentItems.filter(
-      item => !item.itemCode.trim() || item.quantity <= 0 || item.unitPrice <= 0
+      item => !item.item.trim() || item.quantity <= 0 || item.unitPrice <= 0
     );
 
     if (invalidItems.length > 0) {
@@ -342,7 +420,52 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
 
     // If no errors, submit
     if (Object.keys(errors).length === 0 && invalidItems.length === 0) {
-      onSubmit(formData);
+      // Build backend-shaped payload
+      const total = calculateTotalAmount();
+      const treatmentItemsPayload = formData.treatmentItems.map((item) => ({
+        id: item.id,
+        item: item.item || '',
+        description: item.item || '',
+        quantity: item.quantity || 1,
+        unitPrice: Number(item.unitPrice) || 0,
+        amount: Number(item.amount) || ((item.quantity || 1) * (Number(item.unitPrice) || 0)),
+      }));
+
+      const tariffCode = (treatmentItemsPayload[0]?.item) || '';
+      const tierSourceRaw = (providerTier || providerProfile?.tier || providerProfile?.planTier || '').toString().trim();
+      const resolvedTier = tierSourceRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '').replace(/\s+/g, '').replace(/\+/g, 'Plus') || '';
+      const priceSample = (treatmentItemsPayload[0]?.unitPrice) || total || 0;
+
+      const diagnosisField = `${formData.diagnosis || ''}\n\n[AUTHORIZATION REQUEST DETAILS]\nTariff Code: ${tariffCode}\nTier: ${resolvedTier}\nPrice: ${Number(priceSample).toFixed(2)}`;
+
+      const payload = {
+        authorizationCode: '',
+        policyNumber: '',
+        diagnosis: diagnosisField,
+        providerName: providerProfile?.data?.name || providerProfile?.name || providerProfile?.providerName || '',
+        createdDate: new Date().toISOString(),
+        source: 'provider',
+        patientId: formData.hmoid || '',
+        providerId: providerProfile?.data?.providerId || providerProfile?.providerId || providerProfile?.id || '',
+        providerTier: resolvedTier || providerTier || providerProfile?.tier || '',
+        patientPlan: '',
+        patientsBenefits: [],
+        status: 'pending',
+        bookingId: '',
+        assignedAgent: formData.requestedBy || '',
+        totalAmount: total,
+        treatmentItems: treatmentItemsPayload,
+        careType: formData.careType || null,
+      };
+
+      const finalPayload = {
+        ...formData,
+        // backend-oriented fields
+        ...payload,
+      };
+
+      console.log('[PaCodeForm] submitting payload', finalPayload);
+      onSubmit(finalPayload as PaCodeFormData);
     }
   };
 
@@ -422,7 +545,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
             Diagnosis *
           </label>
           <div
-            className={`w-full min-h-[84px] px-3 py-2 border rounded-lg focus-within:ring-1 focus-within:ring-[#49A5EF] text-sm ${
+            className={`w-full min-h-21 px-3 py-2 border rounded-lg focus-within:ring-1 focus-within:ring-[#49A5EF] text-sm ${
               errors.diagnosis ? 'border-red-500' : 'border-gray-300'
             } bg-white`}
             onClick={() => inputRef.current?.focus()}
@@ -430,7 +553,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
             <div className="flex flex-wrap items-center gap-2">
               {diagnosisList.map((d) => (
                 <span key={d} className="inline-flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-full text-sm">
-                  <span title={d} className="capitalize max-w-[220px] truncate block">{d}</span>
+                  <span title={d} className="capitalize max-w-55 truncate block">{d}</span>
                   <button type="button" onClick={() => removeDiagnosis(d)} className="text-red-500">×</button>
                 </span>
               ))}
@@ -451,7 +574,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
                   }
                 }}
                 disabled={isSubmitting}
-                className="flex-1 min-w-[120px] px-1 py-2 outline-none text-sm"
+                className="flex-1 min-w-30 px-1 py-2 outline-none text-sm"
                 placeholder="Type to search diagnosis"
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
                 onFocus={() => { if ((diagnosisSearch || '').length >= 1) setShowSuggestions(true); }}
@@ -485,8 +608,15 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
           <h2 className="text-lg font-semibold">Treatment Description & Services Rendered</h2>
         </div>
 
-        <div className="overflow-auto p-4 space-y-2 max-h-90 custom-scrollbar">
+        <div className="overflow-auto p-4 space-y-2 h-fit custom-scrollbar">
           <table className="w-full border-collapse">
+            <colgroup>
+              <col style={{ width: '40%' }} />
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '10%' }} />
+            </colgroup>
             <thead>
               <tr className="border-b border-[#D9D9D9]">
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Item</th>
@@ -502,26 +632,34 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
                   <td className="px-4 py-3 relative">
                     <input
                       type="text"
-                      value={item.itemCode}
+                      value={item.item}
                       onChange={(e) => handleItemSearchChange(item.id, e.target.value)}
                       onBlur={() => setTimeout(() => setShowItemSuggestionsMap(prev => ({ ...prev, [item.id]: false })), 120)}
-                      onFocus={() => { if ((itemSearchMap[item.id] || item.itemCode || '').toString().length >= 1) setShowItemSuggestionsMap(prev => ({ ...prev, [item.id]: true })); }}
+                      onFocus={() => { if ((itemSearchMap[item.id] || item.item || '').toString().length >= 1) setShowItemSuggestionsMap(prev => ({ ...prev, [item.id]: true })); }}
                       disabled={isSubmitting}
                       className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#49A5EF] disabled:bg-gray-100"
                       placeholder="Enter item"
                     />
-                    {showItemSuggestionsMap[item.id] && Array.isArray(itemSuggestionsMap[item.id]) && itemSuggestionsMap[item.id].length > 0 && (
-                      <div className="absolute left-0 right-0 mt-1 z-50 max-h-48 overflow-auto bg-white border border-gray-200 rounded shadow">
-                        {itemSuggestionsMap[item.id].map((s) => (
-                          <div
-                            key={s.name}
-                            onMouseDown={(e) => { e.preventDefault(); selectItemSuggestion(item.id, s); }}
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-                          >
-                            <div className="font-medium">{s.name}</div>
-                            <div className="text-xs text-gray-500">{s.amount != null ? `₦${Number(s.amount).toLocaleString()}` : 'Amount N/A'}</div>
+                    {showItemSuggestionsMap[item.id] && (itemSuggestionsLoadingMap[item.id] || (Array.isArray(itemSuggestionsMap[item.id]) && itemSuggestionsMap[item.id].length > 0)) && (
+                      <div className="absolute left-0 right-0 mt-1 z-50 max-h-48 w-full overflow-auto bg-white border border-gray-200 rounded shadow">
+                        {itemSuggestionsLoadingMap[item.id] ? (
+                          <div className="px-3 py-2 text-sm text-gray-600 flex items-center gap-2">
+                            <span className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                            Loading...
                           </div>
-                        ))}
+                        ) : (Array.isArray(itemSuggestionsMap[item.id]) && itemSuggestionsMap[item.id].length > 0) ? (
+                          itemSuggestionsMap[item.id].map((s) => (
+                            <div
+                              key={s.name + (s.code || '')}
+                              onMouseDown={(e) => { e.preventDefault(); selectItemSuggestion(item.id, s); }}
+                              className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                            >
+                              <div className="font-medium">{s.name}</div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-gray-600">No matches</div>
+                        )}
                       </div>
                     )}
                   </td>

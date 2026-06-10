@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const cookieHeader = req.headers.get('cookie') || '';
     const guard = requireAdminRole(cookieHeader);
     if (guard) {
-      console.error('Admin notifications GET guard failed: missing/invalid session or role');
+      // console.error('Admin notifications GET guard failed: missing/invalid session or role');
       return guard;
     }
 
@@ -30,7 +30,9 @@ export async function GET(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend notifications GET failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend notifications GET failed', backendRes.status, String(raw).slice(0, 1000));
+    }
 
     // Normalize/transform notifications for admin consumers while preserving original payload
     const makeAdminTitle = (n: any) => {
@@ -52,7 +54,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Admin notifications GET error', err?.message || err);
+    // console.error('Admin notifications GET error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }
@@ -62,7 +64,7 @@ export async function POST(req: Request) {
     const cookieHeader = req.headers.get('cookie') || '';
     const guard = requireAdminRole(cookieHeader);
     if (guard) {
-      console.error('Admin notifications POST guard failed: missing/invalid session or role');
+      // console.error('Admin notifications POST guard failed: missing/invalid session or role');
       return guard;
     }
 
@@ -79,10 +81,12 @@ export async function POST(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend notifications POST failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend notifications POST failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Admin notifications POST error', err?.message || err);
+    // console.error('Admin notifications POST error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to create notification' }, { status: 500 });
   }
 }
@@ -92,7 +96,7 @@ export async function PUT(req: Request) {
     const cookieHeader = req.headers.get('cookie') || '';
     const guard = requireAdminRole(cookieHeader);
     if (guard) {
-      console.error('Admin notifications PUT guard failed: missing/invalid session or role');
+      // console.error('Admin notifications PUT guard failed: missing/invalid session or role');
       return guard;
     }
 
@@ -114,10 +118,12 @@ export async function PUT(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend notifications PUT failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend notifications PUT failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Admin notifications PUT error', err?.message || err);
+    // console.error('Admin notifications PUT error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to update notification' }, { status: 500 });
   }
 }
@@ -127,7 +133,7 @@ export async function DELETE(req: Request) {
     const cookieHeader = req.headers.get('cookie') || '';
     const guard = requireAdminRole(cookieHeader);
     if (guard) {
-      console.error('Admin notifications DELETE guard failed: missing/invalid session or role');
+      // console.error('Admin notifications DELETE guard failed: missing/invalid session or role');
       return guard;
     }
 
@@ -146,10 +152,12 @@ export async function DELETE(req: Request) {
     const raw = await backendRes.text();
     let data: any;
     try { data = JSON.parse(raw); } catch { data = raw; }
-    if (!backendRes.ok) console.error('Backend notifications DELETE failed', backendRes.status, String(raw).slice(0, 1000));
+    if (!backendRes.ok) {
+      // console.error('Backend notifications DELETE failed', backendRes.status, String(raw).slice(0, 1000));
+    }
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Admin notifications DELETE error', err?.message || err);
+    // console.error('Admin notifications DELETE error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to delete notification' }, { status: 500 });
   }
 }

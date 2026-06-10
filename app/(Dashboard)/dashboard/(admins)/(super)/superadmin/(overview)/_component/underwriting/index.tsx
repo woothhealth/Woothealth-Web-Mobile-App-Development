@@ -17,7 +17,7 @@ const SuperadminOverview = () => {
           <div className="border border-[#D9D9D9] rounded-[10px]">
             <PendingPage />
           </div>
-          <Link href="superadmin/tariff" className='w-full py-3 bg-primary text-white rounded-[10px] hover:bg-primary/90 transition-colors duration-300 flex justify-between items-center px-4'>
+          <Link href="/dashboard/superadmin/benefits" className='w-full py-3 bg-primary text-white rounded-[10px] hover:bg-primary/90 transition-colors duration-300 flex justify-between items-center px-4'>
             Customize Plans
             <FaArrowRight className='' />
           </Link>

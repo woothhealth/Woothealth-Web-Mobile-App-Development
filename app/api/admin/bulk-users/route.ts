@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const contentType = req.headers.get('content-type') || '';
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL for bulk-users');
+      // console.error('Missing BACKEND_URL for bulk-users');
       return NextResponse.json({ success: true, message: 'Bulk upload accepted (mock)' }, { status: 201 });
     }
 
@@ -33,13 +33,13 @@ export async function POST(req: Request) {
     try { data = JSON.parse(text); } catch (e) { /* not JSON */ }
 
     if (!backendRes.ok) {
-      console.error(`Backend bulk-users returned ${backendRes.status}`, text);
+      // console.error(`Backend bulk-users returned ${backendRes.status}`, text);
       return NextResponse.json({ success: false, error: 'Backend bulk upload failed', details: data }, { status: 500 });
     }
 
     return NextResponse.json(data || { success: true, message: 'Bulk upload successful' }, { status: backendRes.status || 200 });
   } catch (error: any) {
-    console.error('Admin bulk-users POST error:', error?.message || error);
+    // console.error('Admin bulk-users POST error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to process bulk upload' }, { status: 500 });
   }
 }

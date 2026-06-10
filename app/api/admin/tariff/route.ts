@@ -10,9 +10,9 @@ export async function GET(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL for admin tariff GET');
+      // console.error('Missing BACKEND_URL for admin tariff GET');
       const mock: any[] = [];
-      console.log('Admin tariff GET (mock) - first 10 items:', mock.slice(0, 10));
+      // console.log('Admin tariff GET (mock) - first 10 items:', mock.slice(0, 10));
       return NextResponse.json({ success: true, data: mock }, { status: 200 });
     }
 
@@ -38,16 +38,16 @@ export async function GET(req: Request) {
     if (Array.isArray(data)) items = data;
     else if (data && Array.isArray((data as any).data)) items = (data as any).data;
 
-    console.log('Admin tariff GET - first 10 items:', items.slice(0, 10));
+    // console.log('Admin tariff GET - first 10 items:', items.slice(0, 10));
 
     if (!backendRes.ok) {
-      console.error('Backend admin/tariffs GET failed', backendRes.status, data);
+      // console.error('Backend admin/tariffs GET failed', backendRes.status, data);
       return NextResponse.json({ success: false, error: data }, { status: 500 });
     }
 
     return NextResponse.json(data || { success: true }, { status: backendRes.status || 200 });
   } catch (error: any) {
-    console.error('Admin tariff GET error:', error?.message || error);
+    // console.error('Admin tariff GET error:', error?.message || error);
     return NextResponse.json({ success: false, error: 'Failed to fetch tariffs' }, { status: 500 });
   }
 }

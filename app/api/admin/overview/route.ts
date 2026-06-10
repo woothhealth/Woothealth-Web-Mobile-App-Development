@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       // Return mock data for development
       return NextResponse.json({
         totalUsers: 16,
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     );
 
     if (!backendRes.ok) {
-      console.warn(`Backend returned ${backendRes.status} for admin overview`);
+      // console.warn(`Backend returned ${backendRes.status} for admin overview`);
       // Return mock data if backend fails
       return NextResponse.json({
         totalUsers: 16,
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(data || {}, { status: 200 });
   } catch (error: any) {
-    console.error('Admin overview GET error:', error?.message || error);
+    // console.error('Admin overview GET error:', error?.message || error);
     return NextResponse.json(
       { error: 'Failed to fetch admin overview' },
       { status: 500 }
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
-      console.error('Missing BACKEND_URL environment variable');
+      // console.error('Missing BACKEND_URL environment variable');
       return NextResponse.json({ error: 'Backend URL not configured' }, { status: 500 });
     }
 
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
     );
 
     if (!backendRes.ok) {
-      console.warn(`Backend returned ${backendRes.status} for admin overview POST`);
+      // console.warn(`Backend returned ${backendRes.status} for admin overview POST`);
     }
 
     const data = await backendRes.json();
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data || {}, { status: 200 });
   } catch (error: any) {
-    console.error('Admin overview POST error:', error?.message || error);
+    // console.error('Admin overview POST error:', error?.message || error);
     return NextResponse.json(
       { error: 'Failed to update admin overview' },
       { status: 500 }

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (cookieHeader) headers['Cookie'] = cookieHeader;
 
-    const target = `${BACKEND_URL}/provider/pa_request`;
+    const target = `${BACKEND_URL}/provider/pa-codes`;
 
     const backendRes = await fetch(target, {
       method: 'POST',
@@ -45,19 +45,29 @@ export async function GET(req: Request) {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (cookieHeader) headers['Cookie'] = cookieHeader;
 
-    const target = `${BACKEND_URL}/provider/pa_request`;
+    const target = `${BACKEND_URL}/provider/pa-codes`;
+    console.log('[route] forwarding GET to backend', { target });
 
     const backendRes = await fetch(target, {
       method: 'GET',
       headers,
       credentials: 'include',
     });
-
     const text = await backendRes.text();
     try {
       const json = JSON.parse(text);
+      try {
+        console.log('[route] backend response for pr/pa-codes GET', JSON.stringify(json, null, 2));
+      } catch (e) {
+        console.log('[route] backend response for pr/pa-codes GET (inspect fallback)', json);
+      }
       return NextResponse.json(json, { status: backendRes.status });
     } catch {
+      try {
+        console.log('[route] backend response for pr/pa-codes GET (text)', text);
+      } catch (e) {
+        console.log('[route] backend response for pr/pa-codes GET (text fallback)');
+      }
       return NextResponse.json({ data: text }, { status: backendRes.status });
     }
   } catch (err: any) {

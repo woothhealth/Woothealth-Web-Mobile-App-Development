@@ -17,6 +17,8 @@ import { TiClipboard } from 'react-icons/ti';
 import { CiFileOn } from "react-icons/ci";
 import { MdOutlineShield } from "react-icons/md";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { useAdminClientContext } from '@/Components/AdminClientContext';
+import { useBenefitsStatsContext } from '../../../benefits/BenefitsStatsContext';
 
 const formatNumber = (value?: number, loading?: boolean) => {
   if (loading) return '...';
@@ -25,20 +27,28 @@ const formatNumber = (value?: number, loading?: boolean) => {
 
 export const Widget1 = () => {
   const { overview, loading } = useAdminOverview();
+  const { clients, loading: clientsLoading } = useAdminClientContext();
+  const { stats, loading: benefitsLoading } = useBenefitsStatsContext();
+  const totalCount = stats?.total || 0;
+
+  const activeClientsValue = Array.isArray(clients)
+    ? clients.filter((c: any) => c?.status === 'active').length
+    : overview?.activeClients;
+  const activeClientsLoading = loading || clientsLoading;
 
   return (
     <div className="block gap-2 md:grid md:grid-cols-4 lg:gap-1 lg:ml-4 lg:mt-4 mx-auto overflow-x-auto w-[96%] formDiv">
       <div>
-        <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(overview?.activeClients, loading)} iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
+        <MetricCard label='Active clients' icon={<TbActivityHeartbeat />} value={formatNumber(activeClientsValue, activeClientsLoading)} iconBgColor='[#D1FAE5]' iconTextColor='[#10B981]' />
       </div>
       <div>
-        <MetricCard label='Total Plan created' icon={<CiFileOn />} value={formatNumber(overview?.totalUsers, loading)} iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
+        <MetricCard label='Total Plan created' icon={<CiFileOn />} value={formatNumber(totalCount, benefitsLoading)} iconBgColor='[#8063E81A]' iconTextColor='[#8063E8]' />
       </div>
       <div>
-        <MetricCard label='Total Active Policies' icon={<MdOutlineShield />} value={formatNumber(overview?.totalEnrollees, loading)} iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
+        <MetricCard label='Total Active Policies' icon={<MdOutlineShield />} value={formatNumber(0, loading)} iconBgColor='[#49A5EF1A]' iconTextColor='[#49A5EF]' />
       </div>
       <div>
-        <MetricCard label='Total Inactive Policies' icon={<RiErrorWarningLine />} value={formatNumber(overview?.telemedicineRequests, loading)} iconBgColor='[#EF44441A]' iconTextColor='[#EF4444]' />
+        <MetricCard label='Total Inactive Policies' icon={<RiErrorWarningLine />} value={formatNumber(0, loading)} iconBgColor='[#EF44441A]' iconTextColor='[#EF4444]' />
       </div>
     </div>
   );

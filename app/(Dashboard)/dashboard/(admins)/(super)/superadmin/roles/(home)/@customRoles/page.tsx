@@ -25,7 +25,7 @@ export default function CustomRolesCard() {
     <div className="w-44 md:w-full rounded-[10px] bg-[#F59E0B1A] border border-[#F59E0B] px-4 py-6 shadow-sm">
       <p className="text-base font-medium mb-2">Custom Roles</p>
       <h3 className="text-3xl font-bold text-[#F59E0B]">{loading ? '—' : count.toLocaleString()}</h3>
-      <p className="text-xs text-slate-500">Defined roles</p>
+      <p className="text-xs md:text-sm mt-1 text-slate-500">Defined roles</p>
     </div>
   );
 }

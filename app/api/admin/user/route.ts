@@ -63,7 +63,7 @@ export async function GET(req: Request) {
               const payload = data?.data ?? data;
               const sample = Array.isArray(payload) ? payload.slice(0, 10) : [payload];
             } catch (e) {
-              console.debug("admin/user GET backend returned non-iterable data", { page, limit, data });
+              // console.debug("admin/user GET backend returned non-iterable data", { page, limit, data });
             }
             return NextResponse.json(data);
           }
@@ -82,9 +82,9 @@ export async function GET(req: Request) {
             try {
               const payload = data?.data ?? data;
               const sample = Array.isArray(payload) ? payload.slice(0, 10) : [payload];
-              console.debug("admin/user GET backend returned users", { page, limit, sample });
+              // console.debug("admin/user GET backend returned users", { page, limit, sample });
             } catch (e) {
-              console.debug("admin/user GET backend returned non-iterable data", { page, limit, data });
+              // console.debug("admin/user GET backend returned non-iterable data", { page, limit, data });
             }
             return NextResponse.json(data);
           }
@@ -115,14 +115,14 @@ export async function GET(req: Request) {
     const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
     try {
       const sample = paginatedUsers.slice(0, 10);
-      console.debug("admin/user GET mock returning users", { page, limit, sample });
+      // console.debug("admin/user GET mock returning users", { page, limit, sample });
     } catch (e) {
-      console.debug("admin/user GET mock returning data", { page, limit, paginatedUsers });
+      // console.debug("admin/user GET mock returning data", { page, limit, paginatedUsers });
     }
 
     return NextResponse.json({ success: true, data: paginatedUsers, total: filteredUsers.length, message: "Users list retrieved (mock)" }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    // console.error("Error fetching users:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
     mockUsers.push(newUser as any);
     return NextResponse.json({ success: true, data: newUser, message: "User created successfully (mock)" }, { status: 201 });
   } catch (error) {
-    console.error("Error creating user:", error);
+    // console.error("Error creating user:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -204,7 +204,7 @@ export async function PUT(req: Request) {
     mockUsers[index] = { ...mockUsers[index], ...body, $updatedAt: new Date().toISOString() };
     return NextResponse.json({ success: true, data: mockUsers[index], message: "User updated successfully (mock)" }, { status: 200 });
   } catch (error) {
-    console.error("Error updating user:", error);
+    // console.error("Error updating user:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -243,7 +243,7 @@ export async function DELETE(req: Request) {
     mockUsers.splice(index, 1);
     return NextResponse.json({ success: true, message: "User deleted successfully (mock)" }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting user:", error);
+    // console.error("Error deleting user:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

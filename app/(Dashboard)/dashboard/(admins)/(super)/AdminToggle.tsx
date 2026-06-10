@@ -172,7 +172,7 @@ const AdminToggle = ({ isOpen, onClose }: { isOpen: boolean; onClose?: () => voi
                 const isActive = pathname === item.url || (pathname.startsWith(item.url) && item.url !== "/dashboard/superadmin")
                 return (
                     <Link key={index} href={item.url} onClick={() => handleItemClick(item.url)}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-gray-100 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl hover:bg-primary/70 pl-5 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {item.icon}
                             </div>
@@ -186,7 +186,7 @@ const AdminToggle = ({ isOpen, onClose }: { isOpen: boolean; onClose?: () => voi
                 const isActive = pathname === item.url || (pathname.startsWith(item.url) && item.url !== "/dashboard/superadmin")
                 return (
                     <Link key={index} href={item.url} onClick={() => handleItemClick(item.url)}>
-                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-gray-100 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
+                        <div className={`flex gap-4 py-3 items-center text-[#00000077] font-semibold rounded-2xl pl-5 hover:bg-primary/70 ${isActive ? 'bg-[#49A5EF] text-[#FFFFFF] font-semibold' : ''}`}>
                             <div className='text-xl'>
                                 {item.icon}
                             </div>

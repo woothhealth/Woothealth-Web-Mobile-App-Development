@@ -153,22 +153,22 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#D9D9D9] text-[18px]">
-              <th className="px-6 py-4 text-left font-semibold">
+              <th className="px-6 py-3 text-left font-semibold">
                 Date of Service
               </th>
-              <th className="px-6 py-4 text-left font-semibold">
+              <th className="px-6 py-3 text-left font-semibold">
                 HMOID
               </th>
-              <th className="px-6 py-4 text-left font-semibold">
+              <th className="px-6 py-3 text-left font-semibold">
                 PA Code
               </th>
-              <th className="px-6 py-4 text-left font-semibold">
+              <th className="px-6 py-3 text-left font-semibold">
                 Care Type
               </th>
-              <th className="px-6 py-4 text-center font-semibold">
+              <th className="px-6 py-3 text-center font-semibold">
                 Status
               </th>
-              <th className="px-6 py-4 text-center font-semibold">
+              <th className="px-6 py-3 text-center font-semibold">
                 Action
               </th>
             </tr>
@@ -197,19 +197,19 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
                   key={paCode.id || paCode.authorizationCode}
                   className="border-b border-gray-200 hover:bg-gray-50 transition-colors text-[15px]"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-3">
                     {paCode.dateOfService ? formatDate(paCode.dateOfService) : ''}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-3 uppercase">
                     {paCode.hmoid || paCode.patientName || '-'}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-3">
                     {paCode.authorizationCode}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-3">
                     {paCode.careType || '-'}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-6 py-3 text-center">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
                         paCode.status
@@ -220,7 +220,7 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
                         : 'Unknown')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-6 py-3 text-center">
                     <div className="relative inline-block">
                       <button
                         onClick={() =>
@@ -237,10 +237,18 @@ const PaCodeTrackingTable: React.FC<PaCodeTrackingTableProps> = ({ onViewDetails
                       {openMenuId === paCode.id && (
                         <div className="absolute right-0 mt-2 w-38 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
                           <button
-                            onClick={() => {
-                              onViewDetails(paCode);
-                              setOpenMenuId(null);
-                            }}
+                                onClick={() => {
+                                  // Try to find the original raw object from paData so modal has full fields
+                                  const rawArray = getPaArray(paData);
+                                  const raw = rawArray.find((r: any) =>
+                                    (r.$id && r.$id === paCode.id) || (r.id && r.id === paCode.id) ||
+                                    (r.authorizationCode && r.authorizationCode === paCode.authorizationCode) ||
+                                    (r.authorization_code && r.authorization_code === paCode.authorizationCode)
+                                  ) || paCode;
+
+                                  onViewDetails(raw);
+                                  setOpenMenuId(null);
+                                }}
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors first:rounded-t-lg"
                           >
                             <FaEye className="inline-block mr-2" />

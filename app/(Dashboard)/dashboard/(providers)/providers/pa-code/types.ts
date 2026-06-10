@@ -4,13 +4,14 @@ export interface PaCode {
   dateOfService: string;
   hmoid: string;
   patientName: string;
+  patientId: string;
   careType: string;
-  status: 'approved' | 'under review' | 'declined';
+  status: 'approved' | 'under review' | 'declined' | 'pending' | string;
   diagnosis: string;
   providerName: string;
   requestedBy: string;
   totalAmount: number;
-  treatment: Array<{
+  treatmentItems: Array<{
     itemCode: string;
     description: string;
     quantity: number;

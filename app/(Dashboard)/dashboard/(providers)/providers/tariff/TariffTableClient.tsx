@@ -36,8 +36,11 @@ export default function TariffTableClient() {
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [currentPage, setCurrentPage] = useState(1);
   const { data: providerProfileResp } = useProviderProfiles();
-  const providerProfile = providerProfileResp?.data || providerProfileResp;
+  // normalize provider profile response which may be wrapped or an array
+  let providerProfile: any = providerProfileResp?.data || providerProfileResp;
+  if (Array.isArray(providerProfile)) providerProfile = providerProfile[0] || null;
   const resolvedProviderTier = (providerProfile?.tier || providerProfile?.planTier || '').toString().trim();
+  const resolvedProviderType = (providerProfile?.providerType || providerProfile?.type || providerProfile?.provider_type || providerProfile?.provider_type_id || '').toString().trim().toLowerCase();
 
   const fetchTariffs = async () => {
     setLoading(true);
@@ -116,7 +119,19 @@ export default function TariffTableClient() {
         return rec as TariffRow;
       });
 
-      setRows(mapped);
+      // If we have provider profile details, restrict displayed tariffs to the provider's type and tier prices
+      if (resolvedProviderTier && resolvedProviderType) {
+        const filteredForProvider = mapped.filter((rec) => {
+          const recType = (rec._providerType || '').toString().trim().toLowerCase();
+          const hasTypeMatch = recType === resolvedProviderType;
+          const hasPrice = rec._resolvedPrice != null;
+          return hasTypeMatch && hasPrice;
+        });
+        setRows(filteredForProvider);
+      } else {
+        // No provider profile yet — don't show generic tariff list
+        setRows([]);
+      }
     } catch (err: any) {
       setError(err?.message || "Unable to fetch tariff data.");
       toast.error(err?.message || "Unable to fetch tariff data.");
@@ -127,7 +142,7 @@ export default function TariffTableClient() {
 
   useEffect(() => {
     fetchTariffs();
-  }, []);
+  }, [providerProfileResp]);
 
   const uniqueTypes = useMemo(() => {
     const s = new Set<string>();
@@ -203,7 +218,7 @@ export default function TariffTableClient() {
       </div>
 
       <div className="rounded-[15px] bg-white p-4 shadow-sm">
-        <div className="overflow-x-auto h-90 custom-scrollbar">
+        <div className="overflow-x-auto h-120 custom-scrollbar">
           <table className="min-w-full divide-y divide-border text-sm border rounded-[10px] border-border">
             <thead className="text-left text-sm font-semibold divide divide-border">
               <tr>

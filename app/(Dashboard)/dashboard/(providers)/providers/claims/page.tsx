@@ -94,19 +94,9 @@ const ClaimsPage = () => {
     setIsSubmitting(true);
     try {
       const payload = {
+        // Only send the required fields to the backend per API: hmoId and authorizationCode
         hmoId: hmoId.trim(),
         authorizationCode: authorizationCode.trim(),
-        dateOfService: new Date().toISOString(),
-        notes: 'Submitted from provider UI',
-        treatment: [
-          {
-            itemCode: 'TREAT-001',
-            description: 'Consultation',
-            quantity: 1,
-            unitPrice: 120000,
-            amount: 120000,
-          }
-        ],
       };
 
       await createProviderClaim(payload);

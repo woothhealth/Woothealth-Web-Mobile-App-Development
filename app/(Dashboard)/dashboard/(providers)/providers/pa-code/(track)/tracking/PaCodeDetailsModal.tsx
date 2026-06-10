@@ -17,11 +17,77 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  // Normalize incoming PA code to match the view logic used elsewhere (PaCodeViewClient)
+  const normPa: any = (() => {
+    const p: any = { ...(paCode || {}) };
+
+    // unify treatment array
+    if (p.treatmentItems && !p.treatment) p.treatment = p.treatmentItems;
+
+    if (Array.isArray(p.treatment)) {
+      p.treatment = p.treatment.map((it: any) => {
+        const item: any = { ...(it || {}) };
+        const qty = Number(item.quantity ?? item.Quantity ?? 0) || 0;
+        const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
+        item.unitPrice = price;
+        const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
+        if (!existingAmount && price && qty) {
+          item.Amount = price * qty;
+        } else {
+          item.Amount = existingAmount;
+        }
+        return item;
+      });
+    } else {
+      p.treatment = [];
+    }
+
+    // derive display-friendly diagnosis (strip authorization block)
+    try {
+      const rawDiag = p.diagnosis ?? p.Diagnosis ?? '';
+      if (typeof rawDiag === 'string') {
+        const m = rawDiag.match(/\[AUTHORIZATION/i);
+        p.rawDisplayDiagnosis = m && m.index != null ? rawDiag.slice(0, m.index).trim() : rawDiag.trim();
+      } else if (Array.isArray(rawDiag)) {
+        const joined = rawDiag.join('\n');
+        const m = joined.match(/\[AUTHORIZATION/i);
+        p.rawDisplayDiagnosis = m && m.index != null ? joined.slice(0, m.index).trim() : joined.trim();
+      } else {
+        p.rawDisplayDiagnosis = '';
+      }
+    } catch (e) {
+      p.rawDisplayDiagnosis = p.diagnosis || '';
+    }
+
+    // ensure totalAmount
+    if ((p.totalAmount == null || p.totalAmount === 0) && Array.isArray(p.treatment)) {
+      try {
+        p.totalAmount = p.treatment.reduce((s: number, it: any) => s + (Number(it.Amount || it.amount || 0) || 0), 0);
+      } catch (e) {
+        p.totalAmount = p.totalAmount ?? 0;
+      }
+    }
+
+    // normalize date field preferences
+    p.dateOfService = p.dateOfService || p.createdDate || p.$createdAt || '';
+
+    // normalize id/auth code
+    p.authorizationCode = p.authorizationCode || p.authorization_code || p.id || p.$id || '';
+
+    // normalize status
+    p.status = (p.status || '').toString();
+
+    return p;
+  })();
+
   // Get initials from patient name
-  const initials = paCode.patientName
+  const displayName = (paCode.patientName || paCode.hmoid || paCode.patientId || 'Unknown Patient').toString();
+  const initials = displayName
     .split(' ')
+    .filter(Boolean)
     .map(name => name[0])
     .join('')
+    .slice(0, 2)
     .toUpperCase();
 
   // Get background color based on status
@@ -31,6 +97,8 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
         return 'bg-[#10B9811A] text-[#10B981]';
       case 'under review':
         return 'bg-[#F59E0B1A] text-[#F59E0B]';
+      case 'pending':
+        return 'bg-[#F59E0B1A] text-[#F59E0B]';
       case 'declined':
         return 'bg-[#EF44441A] text-[#EF4444]';
       default:
@@ -39,12 +107,19 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return 'N/A';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
   };
+
+  // use normalized values
+  const treatmentList: any[] = Array.isArray(normPa.treatment) ? normPa.treatment : [];
+  const displayedTotal = Number(normPa.totalAmount ?? 0) || treatmentList.reduce((s, it) => s + (Number(it.Amount || 0) || 0), 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -55,7 +130,7 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-2xl md:w-3xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-300 px-4 py-4">
+      <div className="relative bg-white rounded-xl shadow-2xl md:w-2xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-300 px-4 py-4">
         {/* Close Button */}
         <div className='flex justify-end w-full mb-4'>
         <button
@@ -71,8 +146,8 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
           <div className="space-y-4 border border-[#D9D9D9] rounded-[10px]">
             <div className="flex justify-between items-center border-b border-[#D9D9D9] px-6 py-4">
               <h3 className="text-lg font-semibold text-gray-900">Patient Information</h3>
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(paCode.status)}`}>
-                {paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1)}
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(paCode.status || '')}`}>
+                {paCode.status ? paCode.status.charAt(0).toUpperCase() + paCode.status.slice(1) : 'Unknown'}
               </span>
             </div>
 
@@ -83,11 +158,11 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
               </div>
 
               <div className="flex-1">
-                <h4 className="text-2xl font-semibold text-gray-900">{paCode.patientName}</h4>
+                <h4 className="text-2xl font-semibold text-gray-900">{displayName}</h4>
                 <div className="grid grid-cols-4 gap-4 text-[15px]">
                   <div className='flex flex-col'>
                     <span className="font-medium">HMOID:</span>
-                    <span className="font-semibold">{paCode.hmoid}</span>
+                    <span className="font-semibold">{paCode.hmoid || paCode.patientId || '-'}</span>
                   </div>
                   <div className='flex flex-col col-span-2'>
                     <span className="font-medium">Email:</span>
@@ -112,15 +187,15 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-6 py-4 text-[15px]">
               <div className='flex flex-col'>
                 <span className="font-medium">PA Code:</span>
-                <span className="font-semibold text-primary">{paCode.authorizationCode}</span>
+                <span className="font-semibold text-primary">{paCode.authorizationCode || paCode.id || 'N/A'}</span>
               </div>
               <div className='flex flex-col'>
                 <span className="font-medium">Date of Encounter</span>
-                <span className="font-semibold">{formatDate(paCode.createdDate)}</span>
+                <span className="font-semibold">{formatDate(paCode.dateOfService || paCode.createdDate || '')}</span>
               </div>
               <div className='flex flex-col'>
                 <span className="font-medium">Care Type:</span>
-                <span className="font-semibold">{paCode.careType}</span>
+                <span className="font-semibold">{paCode.careType || 'N/A'}</span>
               </div>
             </div>
           </div>
@@ -132,7 +207,7 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
           {/* Diagnosis */}
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mx-6">
             <h3 className="text-lg font-semibold text-amber-900 mb-3">Diagnosis</h3>
-            <p className="text-amber-800 whitespace-pre-line">{paCode.diagnosis}</p>
+          <p className="text-amber-800 whitespace-pre-line">{normPa.rawDisplayDiagnosis || normPa.diagnosis || 'N/A'}</p>
           </div>
 
           {/* Treatment Description & Services Rendered */}
@@ -150,27 +225,32 @@ const PaCodeDetailsModal: React.FC<PaCodeDetailsModalProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {paCode.treatment.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-200">
-                      <td className="px-4 py-3 text-sm text-primary">{item.itemCode}</td>
-                      <td className="px-4 py-3 text-sm">{item.description}</td>
-                      <td className="px-4 py-3 text-sm text-center">{item.quantity}</td>
-                      <td className="px-4 py-3 text-sm">₦{item.unitPrice.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-sm font-semibold">₦{item.amount.toFixed(2)}</td>
-                    </tr>
-                  ))}
+                    {treatmentList.map((item: any, index: number) => {
+                    const unit = Number(item.unitPrice || 0) || 0;
+                    const qty = Number(item.quantity || 0) || 0;
+                    const amount = Number(item.Amount || item.amount || unit * qty) || 0;
+                    return (
+                      <tr key={index} className="border-b border-gray-200">
+                        <td className="px-4 py-3 text-sm text-primary">{item.itemCode || item.code || item.$id || '-'}</td>
+                        <td className="px-4 py-3 text-sm">{item.description || item.desc || item.description || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-center">{qty}</td>
+                        <td className="px-4 py-3 text-sm">₦{unit.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-sm font-semibold">₦{amount.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr className="bg-gray-50">
                     <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
-                    <td className="px-4 py-3 font-bold text-primary">
-                      ₦{paCode.totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      <td className="px-4 py-3 font-bold text-primary">
+                      ₦{displayedTotal.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-            <p className='py-2 text-[15px]'>Requested by {paCode.requestedBy}</p>
+            <p className='py-2 text-[15px]'>Requested by {normPa.requestedBy || normPa.requested_by || 'N/A'}</p>
           </div>
           </div>
         </div>

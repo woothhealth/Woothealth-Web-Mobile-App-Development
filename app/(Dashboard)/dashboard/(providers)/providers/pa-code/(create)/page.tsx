@@ -12,6 +12,7 @@ export interface TreatmentItem {
   quantity: number;
   unitPrice: number;
   amount: number;
+  itemCode?: string;
 }
 
 export interface PaCodeFormData {
@@ -83,6 +84,7 @@ const PaCodeCreationPage = () => {
       // Build payload expected by backend, include treatment items and totals
       const total = (formData.treatmentItems || []).reduce((s, it) => s + (Number(it.amount) || 0), 0);
       const backendTreatmentItems = (formData.treatmentItems || []).map(it => ({
+        itemCode: it.itemCode,
         item: it.item || '',
         description: it.item || '',
         quantity: it.quantity || 1,

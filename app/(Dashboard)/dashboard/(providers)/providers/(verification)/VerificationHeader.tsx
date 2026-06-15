@@ -16,7 +16,8 @@ const VerificationHeader: React.FC<VerificationHeaderProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onVerify(hmoid);
+    const normalized = hmoid.trim().toUpperCase();
+    onVerify(normalized);
     setHmoid('');
   };
 
@@ -28,7 +29,7 @@ const VerificationHeader: React.FC<VerificationHeaderProps> = ({
             type="text"
             placeholder="Enter HMOID to verify..."
             value={hmoid}
-            onChange={(e) => setHmoid(e.target.value)}
+            onChange={(e) => setHmoid(e.target.value.toUpperCase())}
             disabled={isLoading}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#49A5EF] focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
           />

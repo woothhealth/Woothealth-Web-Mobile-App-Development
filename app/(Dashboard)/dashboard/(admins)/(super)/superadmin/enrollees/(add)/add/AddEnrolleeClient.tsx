@@ -21,7 +21,7 @@ const AddEnrolleeClient = () => {
     phone: '',
     dateOfBirth: '',
     plan: '',
-    residentialAddress: '',
+    address: '',
     enrollmentDate: '',
     gender: '',
     expiryDate: '',
@@ -65,7 +65,7 @@ const AddEnrolleeClient = () => {
     if (!formInput.phone) errors.phone = 'Phone number is required';
     if (!formInput.dateOfBirth) errors.dateOfBirth = 'Date of birth is required';
     if (!formInput.plan) errors.plan = 'Plan is required';
-    if (!formInput.residentialAddress) errors.residentialAddress = 'Residential address is required';
+    if (!formInput.address) errors.address = 'Residential address is required';
     if (!formInput.enrollmentDate) errors.enrollmentDate = 'Enrollment date is required';
     if (!formInput.gender) errors.gender = 'Gender is required';
     if (!formInput.expiryDate) errors.expiryDate = 'Expiry date is required';
@@ -96,7 +96,7 @@ const AddEnrolleeClient = () => {
           phone: '',
           dateOfBirth: '',
           plan: '',
-          residentialAddress: '',
+          address: '',
           enrollmentDate: '',
           gender: '',
           expiryDate: '',
@@ -162,7 +162,7 @@ const AddEnrolleeClient = () => {
                           phone: '',
                           dateOfBirth: '',
                           plan: '',
-                          residentialAddress: '',
+                          address: '',
                           enrollmentDate: '',
                           gender: '',
                           expiryDate: '',
@@ -235,9 +235,9 @@ const AddEnrolleeClient = () => {
                         {fieldErrors.plan && <span className="text-red-500/60 text-sm">{fieldErrors.plan}</span>}
                         </div>
                         <div className='flex flex-col gap-2 w-full'>
-                        <label className='font-semibold' htmlFor="residentialAddress">Residential Address</label>
-                        <textarea name='residentialAddress' placeholder='Enter residential address' className='bg-[#F8F9FA] h-20 border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm resize-none' id="residentialAddress" value={formInput.residentialAddress} onChange={handleChange} rows={3} />
-                        {fieldErrors.residentialAddress && <span className="text-red-500/60 text-sm">{fieldErrors.residentialAddress}</span>}
+                        <label className='font-semibold' htmlFor="address">Residential Address</label>
+                        <textarea name='address' placeholder='Enter residential address' className='bg-[#F8F9FA] h-20 border border-[#E5E7EB] outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm resize-none' id="address" value={formInput.address} onChange={handleChange} rows={3} />
+                        {fieldErrors.address && <span className="text-red-500/60 text-sm">{fieldErrors.address}</span>}
                         </div>
                     </div>
                     <div className='flex flex-col gap-6 md:flex-row w-full'>

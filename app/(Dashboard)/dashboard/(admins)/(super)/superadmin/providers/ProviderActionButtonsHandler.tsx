@@ -310,7 +310,8 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       case 'editProfile':
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-3xl h-fit rounded-[15px] bg-white p-6 shadow-xl overflow-y-auto custom-scrollbar">
+            <div className="inset-0 absolute cursor-pointer" onClick={() => setActivePopup(null)} />
+            <div className="w-full max-w-3xl h-fit max-h-full rounded-[15px] bg-white p-6 shadow-xl overflow-y-auto custom-scrollbar z-20">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold text-slate-900">Edit Provider Profile</h2>
@@ -503,7 +504,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       case 'viewTariff':
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-xl rounded-[15px] bg-white p-6 shadow-xl h-fit">
+            <div className="w-full max-w-xl rounded-[15px] bg-white p-6 shadow-xl h-fit max-h-full overflow-y-auto custom-scrollbar">
               <div className="flex items-start justify-between gap-4">
                 <h2 className="text-2xl font-semibold text-slate-900">View Tariff</h2>
                 <FaX onClick={() => setActivePopup(null)} className="cursor-pointer" size={22} />

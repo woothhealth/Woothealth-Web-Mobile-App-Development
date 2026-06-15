@@ -48,6 +48,17 @@ export async function POST(req: Request) {
     if (guard) return guard;
 
     const body = await req.json();
+    // log incoming request body and basic headers for debugging
+    try {
+      console.debug('Admin tickets POST incoming body:', body);
+      console.debug('Admin tickets POST headers:', {
+        cookie: cookieHeader,
+        referer: req.headers.get('referer') || null,
+        'user-agent': req.headers.get('user-agent') || null,
+      });
+    } catch (e) {
+      console.debug('Admin tickets POST debug failed to log body', e);
+    }
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (!BACKEND_URL) {
@@ -65,10 +76,19 @@ export async function POST(req: Request) {
     });
 
     const data = await parseJson(backendRes);
+    // always log backend response for POST to help debug silent failures
+    console.debug('Admin tickets POST backend response', {
+      status: backendRes.status,
+      statusText: backendRes.statusText,
+      body: data,
+    });
+    if (!backendRes.ok) {
+      console.debug('Admin tickets POST backend error detected');
+    }
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
-    // console.error('Admin tickets POST error:', error?.message || error);
-    return NextResponse.json({ success: false, error: 'Failed to create ticket' }, { status: 500 });
+    console.error('Admin tickets POST exception:', error?.message || error, error?.stack || 'no-stack');
+    return NextResponse.json({ success: false, error: error?.message || 'Failed to create ticket' }, { status: 500 });
   }
 }
 

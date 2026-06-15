@@ -1,2 +1,2 @@
-s/n,tariffCode,serviceName,providerType,tierA,tierAPlus,tierB,tierC,tierD,description
-1,WHT001,Sample Test Name (STN),optical,19920,21600,17040,15360,13440,Sample description for Confrontation Visual Field Test (CVF)
+s/n,tariffCode,serviceName,providerType,amount,description
+1,WHT001,Sample Test Name (STN),optical,19920,Sample description for Confrontation Visual Field Test (CVF)

@@ -37,12 +37,20 @@ export const useAdminTickets = () => {
 };
 
 export async function createAdminTicket(payload: any) {
+  console.debug('createAdminTicket: sending payload to /api/admin/tickets', payload);
   const res = await fetch('/api/admin/tickets', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
     credentials: 'include',
   });
+  let text = null;
+  try {
+    text = await res.clone().text();
+  } catch (e) {
+    console.debug('createAdminTicket: failed to read response text', e);
+  }
+  console.debug('createAdminTicket: response status=', res.status, 'body=', text);
   if (!res.ok) {
     await parseError(res, 'Failed to create ticket');
   }

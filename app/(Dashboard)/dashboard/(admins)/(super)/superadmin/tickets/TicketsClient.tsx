@@ -10,6 +10,7 @@ import {
   updateAdminTicket,
   deleteAdminTicket,
 } from '@/lib/adminTickets';
+import { DASHBOARD_ADMIN_ROLES } from '@/lib/roles';
 
 // Commented out mock data - now using dynamic API calls
 // const mockTickets: Ticket[] = [
@@ -24,7 +25,7 @@ import {
 //   ...more mock data
 // ];
 
-const departments = ['IT', 'Finance', 'HR', 'Marketing', 'Operations'];
+const departments = DASHBOARD_ADMIN_ROLES || ['IT', 'Finance', 'HR', 'Marketing', 'Operations'];
 const assignees = ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Brown', 'Charlie Wilson'];
 
 export default function TicketsClient() {

@@ -134,6 +134,7 @@ export async function POST(req: Request) {
     if (guard) return guard;
 
     const body = await req.json();
+    // console.debug('API /api/admin/user (POST) payload=', body);
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
 
     if (BACKEND_URL) {

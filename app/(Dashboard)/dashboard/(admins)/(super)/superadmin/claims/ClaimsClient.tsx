@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import { FaEllipsisV, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import DeleteConfirmModal from '../DeleteConfirmModal';
+import AddClaimModal from './AddClaimModal';
 import { useAdminClaimsContext } from '@/Components/AdminClaimsContext';
 
 type Claim = {
@@ -23,13 +24,14 @@ const ITEMS_PER_PAGE = 20;
 
 export default function ClaimsClient() {
   const { claims, loading, error } = useAdminClaimsContext();
-  const [localClaims, setLocalClaims] = useState<Claim[]>(claims);
+  const [localClaims, setLocalClaims] = useState<Claim[]>(Array.isArray(claims) ? claims : []);
   const [deleteTarget, setDeleteTarget] = useState<Claim | null>(null);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'userID' | 'provider' | 'status'>('userID');
   const [statusFilter, setStatusFilter] = useState<'all'|'pending'|'approved'|'rejected'|'paid'>('all');
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
   const tableRef = useRef<HTMLDivElement | null>(null);
 
   const categories = [
@@ -80,7 +82,15 @@ export default function ClaimsClient() {
   }, []);
 
   useEffect(() => {
-    setLocalClaims(claims);
+    setLocalClaims((prev) => {
+      if (!Array.isArray(claims)) return prev;
+      if (prev.length !== claims.length) return claims;
+      // quick id-based equality check
+      const prevIds = prev.map((c) => c.id).join(',');
+      const newIds = claims.map((c) => c.id).join(',');
+      if (prevIds === newIds) return prev;
+      return claims;
+    });
   }, [claims]);
 
   const handleDeleteClaim = (id: string) => {
@@ -132,7 +142,7 @@ export default function ClaimsClient() {
     <div className="space-y-4 py-4 w-full">
       {/* Search and Filter */}
       <div className="flex flex-col md:flex-row md:items-center justify-center w-full">
-        <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center md:w-[70%] w-full mx-auto">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center md:w-[80%] w-full mx-auto">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value as any)}
@@ -160,6 +170,13 @@ export default function ClaimsClient() {
               <option key={s.value} value={s.value}>{s.label}</option>
             ))}
           </select>
+
+          <button
+            className="px-4 py-2 bg-[#49A5EF] text-white rounded-md hover:bg-[#3a8bcf] focus:outline-none focus:ring-1 focus:ring-[#49A5EF] text-sm md:w-50"
+            onClick={() => setShowAddModal(true)}
+          >
+            Add Claims
+          </button>
         </div>
       </div>
 
@@ -214,30 +231,34 @@ export default function ClaimsClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedClaims.map((claim: Claim) => (
-                    <tr key={claim.id} className="hover:bg-gray-50 text-[15px] md:text-base">
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatDate(claim.dateOfService)}</td>
-                      {/* <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.userName || 'N/A'}</td> */}
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hmoId || 'N/A'}</td>
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hospitalProvider}</td>
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatCurrency(claim.amount)}</td>
-                      <td className="px-4 py-3 border-b border-[#E5E7EB]">
-                        <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(claim.status)}`}>
-                          {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 border-b border-[#E5E7EB] relative">
-                        <Link
-                          href={`/dashboard/superadmin/claims/${claim.id}`}
-                          rel="noreferrer"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                          onClick={() => setOpenMenuId(null)}
-                        >
-                          <FaEye /> View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                  {paginatedClaims.map((claim: Claim) => {
+                    const status = claim.status ?? 'unknown';
+                    const statusColor = getStatusColor(status);
+                    const displayStatus = status.charAt(0).toUpperCase() + status.slice(1);
+                    return (
+                      <tr key={claim.id} className="hover:bg-gray-50 text-[15px] md:text-base">
+                        <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatDate(claim.dateOfService)}</td>
+                        <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hmoId || 'N/A'}</td>
+                        <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{claim.hospitalProvider}</td>
+                        <td className="px-4 py-3 border-b border-[#E5E7EB] whitespace-nowrap w-fit">{formatCurrency(claim.amount)}</td>
+                        <td className="px-4 py-3 border-b border-[#E5E7EB]">
+                          <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${statusColor}`}>
+                            {displayStatus}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 border-b border-[#E5E7EB] relative">
+                          <Link
+                            href={`/dashboard/superadmin/claims/${claim.id}`}
+                            rel="noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            <FaEye /> View
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -267,29 +288,34 @@ export default function ClaimsClient() {
                   <col style={{width: '10%'}} />
                 </colgroup>
                 <tbody>
-                  {paginatedClaims.map((claim: Claim) => (
-                    <tr key={claim.id} className="hover:bg-gray-50 text-[15px]">
-                      <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatDate(claim.dateOfService)}</td>
-                      {/* <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.userName || 'N/A'}</td> */}
-                      <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hmoId || 'N/A'}</td>
-                      <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hospitalProvider}</td>
-                      <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatCurrency(claim.amount)}</td>
-                      <td className="px-6 py-2 border-b border-[#E5E7EB] text-center">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(claim.status)}`}>
-                          {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-2 border-b border-[#E5E7EB] relative text-center">
-                        <Link
-                          href={`/dashboard/superadmin/claims/${claim.id}`}
-                          rel="noreferrer"
-                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-[#ffffff] w-fit bg-primary/80 rounded-[5px] hover:bg-slate-100"
-                          onClick={() => setOpenMenuId(null)}
-                        >
-                          <FaEye /> View
-                        </Link>                      </td>
-                    </tr>
-                  ))}
+                  {paginatedClaims.map((claim: Claim) => {
+                    const status = claim.status ?? 'unknown';
+                    const statusColor = getStatusColor(status);
+                    const displayStatus = status.charAt(0).toUpperCase() + status.slice(1);
+                    return (
+                      <tr key={claim.id} className="hover:bg-gray-50 text-[15px]">
+                        <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatDate(claim.dateOfService)}</td>
+                        <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hmoId || 'N/A'}</td>
+                        <td className="px-6 py-2 border-b border-[#E5E7EB]">{claim.hospitalProvider}</td>
+                        <td className="px-6 py-2 border-b border-[#E5E7EB]">{formatCurrency(claim.amount)}</td>
+                        <td className="px-6 py-2 border-b border-[#E5E7EB] text-center">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColor}`}>
+                            {displayStatus}
+                          </span>
+                        </td>
+                        <td className="px-6 py-2 border-b border-[#E5E7EB] relative text-center">
+                          <Link
+                            href={`/dashboard/superadmin/claims/${claim.id}`}
+                            rel="noreferrer"
+                            className="flex items-center gap-1 px-2 py-0.5 text-xs text-[#ffffff] w-fit bg-primary/80 rounded-[5px] hover:bg-slate-100"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            <FaEye /> View
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -310,6 +336,17 @@ export default function ClaimsClient() {
           onConfirm={() => handleDeleteClaim(deleteTarget.id)}
         />
       )}
+
+      <AddClaimModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={(createdClaim) => {
+          // Prepend new claim to local list if available
+          if (createdClaim) {
+            setLocalClaims((c) => [createdClaim, ...c]);
+          }
+        }}
+      />
 
       {totalPages > 1 && (
         <div className="flex justify-center mt-4 lg:p-4 items-center gap-0.5 lg:gap-2 md:w-[90%] mx-auto">

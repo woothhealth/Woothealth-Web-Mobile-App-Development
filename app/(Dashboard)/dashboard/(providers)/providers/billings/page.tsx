@@ -50,11 +50,11 @@ export default function BillingsPage() {
 
       {!isLoading && billings.length === 0 && !error && (
         <div className="mt-6 rounded-md border border-dashed border-slate-200 p-6 text-center">
-          <p className="text-sm text-slate-600 mb-3">No billings found.</p>
+          <p className="text-lg text-slate-600 mb-3">No billings found.</p>
           <button
             type="button"
             onClick={handleRetry}
-            className="rounded-xl bg-primary px-4 py-2 text-white"
+            className="rounded-xl text-sm bg-primary px-4 py-2 text-white"
           >
             Retry
           </button>

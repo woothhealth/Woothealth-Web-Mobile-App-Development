@@ -5,7 +5,8 @@ export type TicketStatus = 'open' | 'In progress' | 'resolved';
 export type Ticket = {
   id: string;
   date: string;
-  title: string;
+  subject: string;
+  description?: string;
   department: string;
   status: TicketStatus;
 };

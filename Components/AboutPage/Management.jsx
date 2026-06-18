@@ -13,12 +13,13 @@ const Management = () => {
         <h2 className='text-start text-3xl lg:text-3xl mb-6 lg:mb-8'>Our Management Team</h2>
         </Reveal>
         <div className='flex flex-col gap-10'>
+
             <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
+                <div className='flex lg:hidden'>
                 <Reveal>
-                <div className=''>
                     <Image src='/CEO.jpg' height={100} width={500} className='h-70 lg:h-112 rounded-tl-[80px] rounded-br-[80px] object-cover' alt='Team Picture' />
-                </div>
                 </Reveal>
+                </div>
                 <div className='flex flex-col gap-3'>
                     <div className='text-[#120052]'>
                         <Reveal>
@@ -45,80 +46,9 @@ const Management = () => {
                         </Reveal>
                     </div>
                 </div>
-            </div>
-
-            {/* <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className='flex lg:hidden'>
-                <Reveal>
-                    <Image src='/Team_2.webp' height={100} width={400} className='h-70' alt='Team Picture' />
-                </Reveal>
-                </div>
-
-                <div className='flex flex-col gap-3'>
-                    <div className='text-[#120052]'>
-                        <Reveal>
-                        <h3 className='text-2xl font-semibold'>Adediwin Olugbenga</h3>
-                        </Reveal>
-                        <Reveal>
-                        <p className='text-lg'>Co-Founder</p>
-                        </Reveal>
-                    </div>
-                    <div className='flex flex-col gap-3 lg:text-justify'>
-                        <Reveal>
-                        <p>
-                            Mr. Olugbenga Adediwin is a 2001 graduate of Political Science from the University of Jos, Plateau state, Nigeria. He also has an MBA from the University of Hull, United Kingdom in 2007. He began his professional career with Industrial and General Insurance Company Limited in 2002.
-                        </p>
-                        </Reveal>
-                        <Reveal>
-                        <p>
-                            Mr. Adediwin has worked with companies that are major players in the downstream subsector of the Nigerian oil and gas sector of Nigeria. He began his career in oil and gas at Chevron Oil Nigeria Plc, he later worked with MRS Oil Nigeria Plc, Eterna Plc and KATA TMS Ltd. He is currently the Managing Director, Chief Executive Officer of Energyswitch Allied Oil Services Limited. Mr. Adediwin is married with children.
-                        </p>
-                        </Reveal>
-                    </div>
-                </div> 
                 <div className='hidden lg:flex justify-end'>
                 <Reveal>
-                    <Image src='/Team_2.webp' height={100} width={500} className='h-112' alt='Team Picture' />
-                </Reveal>
-                </div>
-            </div> */}
-
-            <div className='grid grid-col-1 md:grid-cols-2 space-y-4'>
-                <div className='flex lg:hidden'>
-                <Reveal>
-                    <Image src='/Team_3.webp' height={100} width={500} className='h-74 lg:h-112' alt='Team Picture' />
-                </Reveal>
-                </div>
-                <div className='flex flex-col gap-3'>
-                    <div className='text-[#120052]'>
-                        <Reveal>
-                        <h3 className='text-2xl font-semibold'>Deborah Thompson</h3>
-                        </Reveal>
-                        <Reveal>
-                        <p className='text-lg'>Product Lead</p>
-                        </Reveal>
-                    </div>
-                    <div className='flex flex-col gap-3 lg:text-justify'>
-                        <Reveal>
-                        <p>
-                            Deborah is a product leader with a knack for turning complex healthcare challenges into simple, human-centered solutions. She began her journey in customer support, where she mastered the art of listening deeply, understanding user pain points, and translating them into products that truly serve people.
-                        </p>
-                        </Reveal>
-                        <Reveal>
-                        <p>
-                            Since transitioning into tech a few years ago, she has led product initiatives that improve care access, streamline provider interactions, and enhance the everyday health experience for thousands of users. At Woot Health, Deborah combines empathy, data-driven thinking, and strategic execution to build products that don’t just work they work beautifully.
-                        </p>
-                        </Reveal>
-                        <Reveal>
-                        <p>
-                            Whether she’s shaping product vision, simplifying claims workflows, or advocating for better user experiences, Deborah brings clarity, creativity, and a relentless focus on impact to the table.
-                        </p>
-                        </Reveal>
-                    </div>
-                </div>
-                <div className='hidden lg:flex justify-end'>
-                <Reveal>
-                    <Image src='/Team_3.webp' height={100} width={500} className='h-74 md:h-112' alt='Team Picture' />
+                    <Image src='/CEO.jpg' height={100} width={500} className='h-70 lg:h-112 rounded-tl-[80px] rounded-br-[80px] object-cover' alt='Team Picture' />
                 </Reveal>
                 </div>
             </div>
@@ -136,7 +66,7 @@ const Management = () => {
                         <h3 className='text-2xl font-semibold'>Dr. Tracy Isimemhen</h3>
                         </Reveal>
                         <Reveal>
-                        <p className='text-lg'>Operations Manager</p>
+                        <p className='text-lg'>Co-Founder</p>
                         </Reveal>
                     </div>
                     <div className='flex flex-col gap-3 lg:text-justify'>

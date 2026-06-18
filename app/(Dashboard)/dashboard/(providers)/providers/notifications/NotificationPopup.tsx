@@ -1,11 +1,10 @@
-'use client';
+ 'use client';
 
 import React from 'react';
 import { MdClose } from 'react-icons/md';
-import type { Notification } from './mockNotifications';
 
 interface NotificationPopupProps {
-  notification: Notification | null;
+  notification: any | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,7 +24,7 @@ const statusColors = {
 const NotificationPopup: React.FC<NotificationPopupProps> = ({ notification, isOpen, onClose }) => {
   if (!isOpen || !notification) return null;
 
-  const notificationStatusClass = statusColors[notification.status] || 'bg-gray-100 text-gray-800';
+  const notificationStatusClass = statusColors[notification.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">

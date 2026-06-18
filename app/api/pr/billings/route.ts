@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     )
 
     if (!backendRes.ok) {
-      console.warn(`Backend returned ${backendRes.status} for provider billings`)
+      // console.warn(`Backend returned ${backendRes.status} for provider billings`)
       // fallback mock data
       const mockBillings = [
         {
@@ -58,7 +58,7 @@ export async function GET(req: Request) {
     }
     return NextResponse.json(data || [], { status: 200 })
   } catch (err: any) {
-    console.error('Provider billings GET error:', err?.message || err)
+    // console.error('Provider billings GET error:', err?.message || err)
     return NextResponse.json({ error: 'Failed to fetch billings' }, { status: 500 })
   }
 }

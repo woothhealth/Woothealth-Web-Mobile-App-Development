@@ -11,7 +11,7 @@ export default function NotificationsLayout({
       <div className="sticky top-0 z-20">
          <ProviderHeader title="Notifications" />
       </div>
-      <div className="md:px-4">{children}</div>
+      <div className="px-2 md:px-4">{children}</div>
     </div>
     </>
   );

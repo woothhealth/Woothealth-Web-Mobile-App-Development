@@ -14,7 +14,7 @@ export default function ProfileLayout({
          <ProviderHeader title="Profile" />
       </div>
       <div className="p-4">{children}</div>
-      <div className="px-4 mb-4">{accountDetails}</div>
+      <div className="px-4 md:px-8 mb-4">{accountDetails}</div>
     </div>
     </>
   );

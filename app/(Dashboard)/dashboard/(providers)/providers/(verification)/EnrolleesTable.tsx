@@ -66,7 +66,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
     <div className="overflow-hidden space-y-4">
       {/* Header with Search and Filter */}
       <div className="">
-        <div className="flex justify-between items-center gap-4 w-[90%] mx-auto">
+        <div className="flex justify-between items-center gap-4 md:w-[90%] mx-auto">
           {/* Search Input */}
           <div className="flex-1 relative my-1">
             <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
@@ -84,7 +84,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] focus:border-transparent transition-all"
+              className="w-full px-2 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] focus:border-transparent transition-all"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -96,7 +96,7 @@ const EnrolleesTable: React.FC<EnrolleesTableProps> = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-[#ffffff] rounded-[15px] shadow-sm">
+      <div className="overflow-x-auto bg-[#ffffff] rounded-[15px] shadow-sm custom-scrollbar">
         <table className="w-full">
           <thead>
             <tr className='border-b border-[#D9D9D9] text-base'>

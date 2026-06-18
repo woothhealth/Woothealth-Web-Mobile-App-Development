@@ -17,7 +17,7 @@ import { DASHBOARD_ADMIN_ROLES } from '@/lib/roles';
 //   {
 //     id: '1',
 //     date: '15/04/26',
-//     title: 'Login Issue',
+//     subject: 'Login Issue',
 //     department: 'IT',
 //     assignedTo: 'John Doe',
 //     status: 'open',
@@ -32,7 +32,7 @@ export default function TicketsClient() {
   const { data, isLoading, error, refetch } = useAdminTickets();
   const tickets = data?.data ?? [];
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'title' | 'date' | 'department'>('title');
+  const [selectedCategory, setSelectedCategory] = useState<'subject' | 'date' | 'description' | 'department'>('subject');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function TicketsClient() {
   const filteredTickets = useMemo(() => {
     const q = search.toLowerCase();
     return tickets.filter((ticket: Ticket) => {
-      if (selectedCategory === 'title') return ticket.title.toLowerCase().includes(q);
+      if (selectedCategory === 'subject') return ticket.subject.toLowerCase().includes(q);
       if (selectedCategory === 'date') return ticket.date.toLowerCase().includes(q);
       if (selectedCategory === 'department') return ticket.department.toLowerCase().includes(q);
       return true;
@@ -71,7 +71,7 @@ export default function TicketsClient() {
     if (!deleteTarget) return;
     try {
       await deleteAdminTicket(deleteTarget.id);
-      toast.success(`Ticket "${deleteTarget.title}" deleted successfully.`);
+      toast.success(`Ticket "${deleteTarget.subject}" deleted successfully.`);
       setDeleteTarget(null);
       setOpenActionId(null);
       refetch();
@@ -84,10 +84,10 @@ export default function TicketsClient() {
     try {
       if (editingTicket) {
         await updateAdminTicket(editingTicket.id, ticketData);
-        toast.success(`Ticket "${editingTicket.title}" updated successfully.`);
+        toast.success(`Ticket "${editingTicket.subject}" updated successfully.`);
       } else {
         await createAdminTicket(ticketData);
-        toast.success(`Ticket "${ticketData.title}" created successfully.`);
+        toast.success(`Ticket "${ticketData.subject}" created successfully.`);
       }
       setIsModalOpen(false);
       setEditingTicket(null);
@@ -109,7 +109,7 @@ export default function TicketsClient() {
         <div className="flex flex-col md:flex-row w-[90%] gap-4">
           <input
             type="text"
-            placeholder="Search by title, date, department..."
+            placeholder="Search by subject, date, department..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 border border-[#E5E7EB] rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#d7d9df]"
@@ -119,7 +119,7 @@ export default function TicketsClient() {
             onChange={(e) => setSelectedCategory(e.target.value as any)}
             className="border border-[#E5E7EB] rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#d7d9df]"
           >
-            <option value="title">Title</option>
+            <option value="subject">Title</option>
             <option value="date">Date</option>
             <option value="department">Department</option>
           </select>
@@ -152,7 +152,7 @@ export default function TicketsClient() {
             {filteredTickets.map((ticket: Ticket) => (
               <tr key={ticket.id} className="hover:bg-gray-50 text-[15px] divide-y divide-[#D9D9D9]">
                 <td className="px-4 py-2 md:py-4">{ticket.date}</td>
-                <td className="px-4 py-2 md:py-4">{ticket.title}</td>
+                <td className="px-4 py-2 md:py-4">{ticket.subject}</td>
                 <td className="px-4 py-2 md:py-4">{ticket.department}</td>
                 <td className="px-4 py-2 md:py-4">
                   <span className={`px-3 py-1 rounded-full ${statusColors[ticket.status] || 'bg-gray-100 text-gray-800'}`}>
@@ -241,7 +241,7 @@ function ConfirmDeleteModal({ ticket, onCancel, onConfirm }: ConfirmDeleteModalP
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
         <h2 className="text-xl font-semibold text-slate-900">Confirm Delete</h2>
         <p className="mt-3 text-slate-600">
-          Are you sure you want to delete the ticket <strong className="text-slate-900">{ticket.title}</strong>? This cannot be undone.
+          Are you sure you want to delete the ticket <strong className="text-slate-900">{ticket.subject}</strong>? This cannot be undone.
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <button
@@ -270,7 +270,7 @@ interface TicketModalProps {
 
 function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
   const [formData, setFormData] = useState({
-    title: ticket?.title || '',
+    subject: ticket?.subject || '',
     description: '',
     department: ticket?.department || '',
     attachment: null as File | null,
@@ -280,7 +280,7 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.subject.trim()) newErrors.subject = 'Title is required';
     if (!formData.department) newErrors.department = 'Department is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -292,7 +292,8 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
 
     const ticketData: Omit<Ticket, 'id'> = {
       date: new Date().toLocaleDateString('en-GB'), // dd/mm/yy
-      title: formData.title,
+      subject: formData.subject,
+      description: formData.description,
       department: formData.department,
       status: 'open',
     };
@@ -319,11 +320,11 @@ function TicketModal({ ticket, onSave, onClose }: TicketModalProps) {
             <div className='w-full'>
             <input
               type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2"
             />
-            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+            {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
             </div>
           </div>
 

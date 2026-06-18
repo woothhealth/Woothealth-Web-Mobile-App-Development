@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { FiEdit2, FiPlus } from 'react-icons/fi'
+import { FaTimes } from 'react-icons/fa'
 import { toast } from 'sonner'
 
 interface AccountDetails {
@@ -70,7 +71,7 @@ function AccountDetailsModal({ isOpen, onClose, onSave, initialValues, isEditing
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-between border-b border-gray-200 px-6 py-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">{isEditing ? 'Edit Account Details' : 'Add Account Details'}</h2>
             <p className="text-sm text-gray-500">Provide bank and account information for payouts.</p>
@@ -80,7 +81,7 @@ function AccountDetailsModal({ isOpen, onClose, onSave, initialValues, isEditing
             onClick={onClose}
             className="rounded-md px-3 py-2 text-gray-600 hover:bg-gray-100"
           >
-            Close
+            <FaTimes size={18} />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6">
@@ -146,18 +147,10 @@ function AccountDetailsModal({ isOpen, onClose, onSave, initialValues, isEditing
             {errors.accountType && <span className="mt-1 text-red-500 text-xs">{errors.accountType}</span>}
           </label>
 
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
+          <div className="flex md:justify-end mt-2">
             <button
               type="submit"
-              className="rounded-xl bg-[#49A5EF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3a8bcf] disabled:opacity-50"
+              className="rounded-xl w-full md:w-fit bg-[#49A5EF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3a8bcf] disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Add Details'}

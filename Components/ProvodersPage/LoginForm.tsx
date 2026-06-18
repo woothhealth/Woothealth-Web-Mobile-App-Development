@@ -43,15 +43,19 @@ const LoginForm = () => {
 
 
     const validate = (formData: FormData) => {
-        const email = formData.get("email")?.toString() || "";
+        const identifier = formData.get("email")?.toString() || ""; // accepts username or email
         const password = formData.get("password")?.toString() || "";
 
         const newErrors: typeof errors = {};
 
-        if (!email) {
-            newErrors.email = "Email is required";
-        } else if (!email.includes("@")) {
-            newErrors.email = "Enter a valid email address";
+        if (!identifier) {
+            newErrors.email = "Username or email is required";
+        } else if (identifier.includes("@")) {
+            // basic email format check when user supplied an email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(identifier)) {
+                newErrors.email = "Enter a valid email address";
+            }
         }
 
         if (!password) {
@@ -74,13 +78,13 @@ const LoginForm = () => {
 
         startTransition(async () => {
             // ✅ Post to server-side login API
-            const res = await fetch("/api/login", {
+            // Send the input as `username` (provider identifier) per route expectations
+            const res = await fetch("/api/pr/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                email: formData.get("email"),
+                username: formData.get("email"),
                 password: formData.get("password"),
-                mode: "provider",
             }),
             });
 
@@ -114,8 +118,8 @@ const LoginForm = () => {
             <p className='text-sm text-[#333333]/80'>Sign in with your Provider Credentials to continue</p>
         </div>
         <div className='flex flex-col gap-2 w-full'>
-            <label htmlFor='email' className='md:text-lg text-base'>Email</label>
-            <input type='text' placeholder='Enter Your Email address' className='bg-[#F8F9FA] border border-border outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm focus:outline-none focus:ring-1 focus:ring-[#120052]' id='email' name='email' onChange={handleChange}/>
+            <label htmlFor='email' className='md:text-lg text-base'>Username or Email</label>
+            <input type='text' placeholder='Enter username or email' className='bg-[#F8F9FA] border border-border outline-0 rounded-lg px-2.5 py-2 placeholder:text-sm focus:outline-none focus:ring-1 focus:ring-[#120052]' id='email' name='email' onChange={handleChange}/>
             {errors.email && (
                 <p className="text-red-500/60 text-sm">{errors.email}</p>
             )}

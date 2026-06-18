@@ -31,8 +31,13 @@ const ProviderVerificationPage = () => {
   const [enrollees, setEnrollees] = useState<Enrollee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleVerifyEnrollee = async (userId: string) => {
-    console.debug('handleVerifyEnrollee called', { userId, enrolleesLength: enrollees.length });
+  const handleVerifyEnrollee = async (userId: string, explicit = true) => {
+    console.debug('handleVerifyEnrollee called', { userId, enrolleesLength: enrollees.length, explicit });
+    // Only proceed when verification is explicitly triggered by the user
+    if (!explicit) {
+      console.debug('Skipping non-explicit verify call');
+      return;
+    }
     if (!userId || !userId.trim()) {
       toast.error('Please enter an HMOID to verify');
       return;
@@ -187,7 +192,7 @@ const ProviderVerificationPage = () => {
   };
 
   return (
-    <div className=" p-6">
+    <div className="px-4 py-6 md:px-6">
       <div className="w-full mx-auto space-y-8">
         {/* Verification Header */}
         <VerificationHeader

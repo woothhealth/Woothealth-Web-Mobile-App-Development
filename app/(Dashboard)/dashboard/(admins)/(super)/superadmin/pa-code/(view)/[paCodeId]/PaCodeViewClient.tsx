@@ -293,7 +293,13 @@ export default function PaCodeViewClient({ paCodeId }: PaCodeViewClientProps) {
         setPaCode(prev => prev ? { ...prev, status: newStatus } : prev);
         setStatus(newStatus as any);
         toast.success('Status updated');
-        try { router.refresh(); } catch (e) { /* ignore if not available */ }
+        try {
+          // ensure fresh data and then navigate back to PA list
+          try { router.refresh(); } catch (e) { /* ignore */ }
+          router.push('/dashboard/superadmin/pa-code');
+        } catch (e) {
+          /* ignore navigation errors */
+        }
       } else {
         console.error('Failed to update status', { status: res.status, data });
         const message = data?.message || data?.error || `Server returned ${res.status}`;

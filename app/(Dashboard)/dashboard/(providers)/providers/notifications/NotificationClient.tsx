@@ -1,12 +1,24 @@
-'use client';
+ 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { MdErrorOutline, MdAccessTime, MdSearch } from 'react-icons/md';
 import { toast } from 'sonner';
 import { CgSandClock } from "react-icons/cg";
 import NotificationPopup from './NotificationPopup';
-import { MOCK_NOTIFICATIONS, type Notification } from './mockNotifications';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+
+type Notification = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  hmoId?: string;
+  plan?: string;
+  status: 'approved' | 'denied' | 'pending' | string;
+  title?: string;
+  paCode?: string;
+  time?: string;
+  receivedAt?: string;
+}
 
 const getStatusIcon = (status: Notification['status']) => {
   switch (status) {
@@ -25,13 +37,36 @@ const NotificationClient: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch('/api/pr/notification', { credentials: 'include' })
+        if (!res.ok) throw new Error('Failed to load notifications')
+        const data = await res.json().catch(() => [])
+        if (!mounted) return
+        setNotifications(Array.isArray(data) ? data : [])
+      } catch (e: any) {
+        toast.error(e?.message || 'Unable to fetch notifications')
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+    return () => { mounted = false }
+  }, [])
 
   const filteredNotifications = useMemo(() => {
-    return MOCK_NOTIFICATIONS.filter((item) =>
-      [item.firstname, item.lastname, item.hmoId, item.plan, item.status, item.paCode]
-        .some((value) => value.toLowerCase().includes(query.toLowerCase()))
-    );
-  }, [query]);
+    const q = query.trim().toLowerCase()
+    if (!q) return notifications
+    return notifications.filter((item) => [item.firstname, item.lastname, item.hmoId, item.plan, item.status, item.paCode]
+      .some((value) => (value || '').toString().toLowerCase().includes(q))
+    )
+  }, [query, notifications]);
 
   const pageCount = Math.ceil(filteredNotifications.length / pageSize) || 1;
   const paginatedNotifications = filteredNotifications.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -42,9 +77,9 @@ const NotificationClient: React.FC = () => {
       return;
     }
 
-    const result = MOCK_NOTIFICATIONS.find((item) =>
+    const result = notifications.find((item) =>
       [item.firstname, item.lastname, item.hmoId, item.plan, item.status, item.paCode]
-        .some((value) => value.toLowerCase().includes(query.toLowerCase()))
+        .some((value) => (value || '').toString().toLowerCase().includes(query.toLowerCase()))
     );
 
     if (!result) {
@@ -65,13 +100,13 @@ const NotificationClient: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search notifications"
-            className="py-3 flex-1 rounded-[10px] px-4 text-sm text-slate-900 outline-none focus:border-primary border border-border focus:ring-2 focus:ring-blue-100"
+            className="py-2 flex-1 rounded-[10px] px-4 text-sm text-slate-900 outline-none focus:border-primary border border-border focus:ring-2 focus:ring-blue-100"
           />
           <button
             onClick={handleSearch}
-            className="inline-flex h-12 items-center justify-center rounded-[10px] bg-primary px-6 text-white transition hover:bg-blue-700"
+            className="inline-flex py-2 items-center justify-center rounded-[10px] text-sm bg-primary px-4 text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-primary/50"
           >
-            <MdSearch className="mr-2 text-2xl" />
+            <MdSearch className="mr-2 text-lg md:text-2xl" />
             Search
           </button>
         </div>

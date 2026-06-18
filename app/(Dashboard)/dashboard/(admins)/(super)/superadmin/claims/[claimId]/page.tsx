@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io';
 import { toast } from 'sonner';
@@ -21,7 +21,7 @@ interface Claim {
   status: 'pending' | 'approved' | 'rejected';
   patientName?: string;
   hmoId?: string;
-  paCode?: string;
+  authorizationCode?: string;
   claimType: string;
   policyStartDate?: string;
   policyEndDate?: string;
@@ -304,6 +304,8 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
   const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
     const [isQueryOpen, setIsQueryOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isActionLoading, setIsActionLoading] = useState(false);
+    const router = useRouter();
   const [queryMessage, setQueryMessage] = useState('');
   // independent collapse states
   const [collapsedMedical, setCollapsedMedical] = useState(true);
@@ -378,14 +380,14 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
       console.debug('Claim action response:', data);
       if (!res.ok) {
         toast.error('Failed to update claim status');
-        return;
+        return false;
       }
-      // reload to reflect updated status
       toast.success(action === 'approve' ? 'Claim approved' : 'Claim rejected');
-      if (typeof window !== 'undefined') window.location.reload();
+      return true;
     } catch (err) {
       console.error('Failed to perform claim action', err);
       toast.error('Failed to perform action');
+      return false;
     }
   };
 
@@ -407,8 +409,17 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
   const confirmActionNow = async () => {
     if (!confirmAction) return;
     setIsConfirmOpen(false);
-    await performStatusChange(confirmAction);
+    setIsActionLoading(true);
+    const ok = await performStatusChange(confirmAction);
+    setIsActionLoading(false);
     setConfirmAction(null);
+    if (ok) {
+      try {
+        router.refresh();
+      } catch (e) {
+        if (typeof window !== 'undefined') window.location.reload();
+      }
+    }
   };
 
   const submitQuery = async () => {
@@ -556,7 +567,7 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
                     <span>Show PA Code</span>
                     {isShowPaCode && (
                       <span>
-                        {claim.paCode ? claim.paCode : 'N/A'}
+                        {claim.authorizationCode ? claim.authorizationCode : 'N/A'}
                       </span>
                     )}
                   </div>
@@ -715,8 +726,8 @@ const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
             <h3 className="text-lg font-semibold mb-4">Confirm {confirmAction === 'approve' ? 'Approval' : 'Rejection'}</h3>
             <p className="mb-4">Are you sure you want to {confirmAction === 'approve' ? 'approve' : 'reject'} this claim?</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setIsConfirmOpen(false)} className="px-4 py-2 rounded-md border">Cancel</button>
-              <button onClick={confirmActionNow} className="px-4 py-2 rounded-md bg-primary text-white">Confirm</button>
+              <button onClick={() => setIsConfirmOpen(false)} disabled={isActionLoading} className="px-4 py-2 rounded-md border">Cancel</button>
+              <button onClick={confirmActionNow} disabled={isActionLoading} className="px-4 py-2 rounded-md bg-primary text-white">{isActionLoading ? 'Processing...' : 'Confirm'}</button>
             </div>
           </div>
         </div>

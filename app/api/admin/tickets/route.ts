@@ -47,14 +47,25 @@ export async function POST(req: Request) {
     const guard = requireAdminRole(cookieHeader);
     if (guard) return guard;
 
-    const body = await req.json();
-    // log incoming request body and basic headers for debugging
+    // read raw text so we can log even when body isn't strict JSON
+    const rawText = await req.text();
+    let body: any = null;
     try {
-      console.debug('Admin tickets POST incoming body:', body);
+      body = rawText ? JSON.parse(rawText) : null;
+    } catch (e) {
+      body = rawText;
+    }
+
+    // log incoming request raw body and parsed body plus useful headers
+    try {
+      console.debug('Admin tickets POST raw body:', rawText);
+      console.debug('Admin tickets POST parsed body:', body);
       console.debug('Admin tickets POST headers:', {
         cookie: cookieHeader,
         referer: req.headers.get('referer') || null,
         'user-agent': req.headers.get('user-agent') || null,
+        'content-type': req.headers.get('content-type') || null,
+        'content-length': req.headers.get('content-length') || null,
       });
     } catch (e) {
       console.debug('Admin tickets POST debug failed to log body', e);

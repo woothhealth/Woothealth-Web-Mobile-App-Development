@@ -421,7 +421,7 @@ export default function ProvidersClient({ filterStatus }: { filterStatus?: strin
           </div>
         ) : (
           <>
-          <div className="rounded-[10px] bg-white shadow-sm h-96 md:h-120 overflow-y-auto custom-scrollbar">
+          <div className="rounded-[10px] bg-white shadow-sm h-96 md:h-260 overflow-y-auto custom-scrollbar">
             <table className="min-w-full table-fixed divide-y divide-[#D9D9D9] text-[16px]">
               <colgroup>
                 <col style={{ width: '18%' }} />

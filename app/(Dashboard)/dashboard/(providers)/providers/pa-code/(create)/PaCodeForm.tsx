@@ -120,9 +120,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
           const name = t.serviceName || t.service_name || t.procedureName || t.procedure_name || t.itemName || t.name || t.item_name || t.description || t.service || '';
           const code = t.code || t.item || t.serviceCode || t.procedureCode || '';
           const itemCode = t.itemCode || '';
+          const tariffCode = t.tariffCode || t.tariff_code || t.tariff || '';
           const amount = findAmount(t);
-          const searchText = `${(name || '')} ${(code || '')} ${(itemCode || '')}`.toString().toLowerCase();
-          return { name, code, itemCode, amount, raw: t, searchText };
+          const searchText = `${(name || '')} ${(code || '')} ${(itemCode || '')} ${(tariffCode || '')}`.toString().toLowerCase();
+          return { name, code, itemCode, tariffCode, amount, raw: t, searchText };
         }).filter(i => i.name);
 
         // Filter by provider type (if available) and ensure amount exists
@@ -288,7 +289,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
       setShowItemSuggestionsMap(prev => ({ ...prev, [id]: true }));
 
       // Autofill logic: exact name/code match or unique match
-      const exact = matches.find(m => (m.name || '').toString().toLowerCase() === q || (m.code || '').toString().toLowerCase() === q);
+        const exact = matches.find(m => (m.name || '').toString().toLowerCase() === q || (m.code || '').toString().toLowerCase() === q || (m.tariffCode || '').toString().toLowerCase() === q);
       if (exact) {
         const price = Number(exact.amount) || 0;
         setFormData(prev => ({
@@ -304,7 +305,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         const price = Number(single.amount) || 0;
         setFormData(prev => ({
           ...prev,
-          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: single.name || item.item, itemCode: single.itemCode || single.code || item.itemCode || '', unitPrice: price, amount: (item.quantity || 1) * price } : item)
+          treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: single.name || item.item, itemCode: single.tariffCode || single.itemCode || single.code || item.itemCode || '', unitPrice: price, amount: (item.quantity || 1) * price } : item)
         }));
       }
 
@@ -319,12 +320,37 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         if (item.id !== id) return item;
         const qty = item.quantity || 1;
         const unitPrice = Number(suggestion.amount) || 0;
-        return { ...item, item: suggestion.name, itemCode: suggestion.itemCode || suggestion.code || item.itemCode || '', unitPrice, amount: unitPrice * qty };
+        return { ...item, item: suggestion.name, itemCode: suggestion.tariffCode || suggestion.itemCode || suggestion.code || item.itemCode || '', unitPrice, amount: unitPrice * qty };
       })
     }));
     setItemSearchMap(prev => ({ ...prev, [id]: '' }));
     setItemSuggestionsMap(prev => ({ ...prev, [id]: [] }));
     setShowItemSuggestionsMap(prev => ({ ...prev, [id]: false }));
+  };
+
+  const resolveItemFromName = (id: string) => {
+    const row = formData.treatmentItems.find((it) => it.id === id);
+    if (!row) return;
+    const qName = (row.item || '').toString().trim().toLowerCase();
+    if (!qName) return;
+
+    // try exact match first
+    const exact = tariffs.find(t => {
+      const n = (t.name || '').toString().toLowerCase();
+      const c = (t.code || '').toString().toLowerCase();
+      const ic = (t.itemCode || '').toString().toLowerCase();
+      const tc = (t.tariffCode || '').toString().toLowerCase();
+      return n === qName || c === qName || ic === qName || tc === qName;
+    });
+    const match = exact || tariffs.find(t => (t.searchText || t.name || '').toString().toLowerCase().includes(qName));
+    if (match) {
+      const qty = row.quantity || 1;
+      const unitPrice = Number(match.amount) || 0;
+      setFormData(prev => ({
+        ...prev,
+        treatmentItems: prev.treatmentItems.map(item => item.id === id ? { ...item, item: match.name || item.item, itemCode: match.tariffCode || match.itemCode || match.code || item.itemCode || '', unitPrice, amount: unitPrice * qty } : item)
+      }));
+    }
   };
 
   const addDiagnosis = (value: string) => {
@@ -425,22 +451,38 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
     if (Object.keys(errors).length === 0 && invalidItems.length === 0) {
       // Build backend-shaped payload
       const total = calculateTotalAmount();
-      const treatmentItemsPayload = formData.treatmentItems.map((item) => ({
-        id: item.id,
-        item: item.item || '',
-        itemCode: item.itemCode || '',
-        description: item.item || '',
-        quantity: item.quantity || 1,
-        unitPrice: Number(item.unitPrice) || 0,
-        amount: Number(item.amount) || ((item.quantity || 1) * (Number(item.unitPrice) || 0)),
-      }));
+      const treatmentItemsPayload = formData.treatmentItems.map((item) => {
+        // try to resolve missing itemCode/unitPrice from loaded tariffs
+        const qName = (item.item || '').toString().trim().toLowerCase();
+        const match = tariffs.find(t => {
+          const n = (t.name || '').toString().toLowerCase();
+          const c = (t.code || '').toString().toLowerCase();
+          const ic = (t.itemCode || '').toString().toLowerCase();
+          return (qName && (n === qName || c === qName || ic === qName));
+        });
+
+        const resolvedItemCode = item.itemCode || match?.itemCode || match?.code || '';
+        const resolvedUnitPrice = Number(item.unitPrice) || Number(match?.amount) || Number(match?.price) || 0;
+        const qty = item.quantity || 1;
+        const resolvedAmount = Number(item.amount) || qty * resolvedUnitPrice;
+
+        return {
+          id: item.id,
+          item: item.item || '',
+          itemCode: resolvedItemCode,
+          description: (item.item) || '',
+          quantity: qty,
+          unitPrice: resolvedUnitPrice,
+          amount: resolvedAmount,
+        };
+      });
 
       const tariffCode = (treatmentItemsPayload[0]?.item) || '';
       const tierSourceRaw = (providerTier || providerProfile?.tier || providerProfile?.planTier || '').toString().trim();
       const resolvedTier = tierSourceRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '').replace(/\s+/g, '').replace(/\+/g, 'Plus') || '';
       const priceSample = (treatmentItemsPayload[0]?.unitPrice) || total || 0;
 
-      const diagnosisField = `${formData.diagnosis || ''}\n\n[AUTHORIZATION REQUEST DETAILS]\nTariff Code: ${tariffCode}\nTier: ${resolvedTier}\nPrice: ${Number(priceSample).toFixed(2)}`;
+      const diagnosisField = `${formData.diagnosis || ''}`;
 
       const payload = {
         authorizationCode: '',
@@ -451,7 +493,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
         source: 'provider',
         patientId: formData.hmoid || '',
         providerId: providerProfile?.data?.providerId || providerProfile?.providerId || providerProfile?.id || '',
-        providerTier: resolvedTier || providerTier || providerProfile?.tier || '',
+        providerTier: providerProfile?.tier || '',
         patientPlan: '',
         patientsBenefits: [],
         status: 'pending',
@@ -474,7 +516,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 bg-[#ffffff] rounded-[15px] shadow-sm p-6">
+    <form onSubmit={handleSubmit} className="space-y-8 bg-[#ffffff] rounded-[15px] shadow-sm px-4 py-6 md:px-6">
       {/* Basic Information */}
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -624,6 +666,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
             <thead>
               <tr className="border-b border-[#D9D9D9]">
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Item</th>
+                {/* <th className="px-4 py-3 text-left text-[15px] font-semibold">Item Code</th> */}
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Quantity</th>
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Unit Price</th>
                 <th className="px-4 py-3 text-left text-[15px] font-semibold">Amount</th>
@@ -638,6 +681,7 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
                       type="text"
                       value={item.item}
                       onChange={(e) => handleItemSearchChange(item.id, e.target.value)}
+                      onClick={() => resolveItemFromName(item.id)}
                       onBlur={() => setTimeout(() => setShowItemSuggestionsMap(prev => ({ ...prev, [item.id]: false })), 120)}
                       onFocus={() => { if ((itemSearchMap[item.id] || item.item || '').toString().length >= 1) setShowItemSuggestionsMap(prev => ({ ...prev, [item.id]: true })); }}
                       disabled={isSubmitting}
@@ -667,6 +711,16 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
                       </div>
                     )}
                   </td>
+                  {/* <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={item.itemCode}
+                      onChange={(e) => handleTreatmentItemChange(item.id, 'itemCode', e.target.value)}
+                      disabled={isSubmitting}
+                      className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#49A5EF] disabled:bg-gray-100"
+                      placeholder="Item code"
+                    />
+                  </td> */}
                   <td className="px-4 py-3">
                     <input
                       type="number"
@@ -757,11 +811,11 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, provide
           </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end">
+      <div className="flex md:justify-end">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-3 bg-[#49A5EF] text-white font-semibold rounded-lg hover:bg-[#49A5EF]/90 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 w-full md:w-fit py-3 bg-[#49A5EF] text-white font-semibold rounded-lg hover:bg-[#49A5EF]/90 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isSubmitting ? (
             <>

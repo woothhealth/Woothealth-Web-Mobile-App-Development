@@ -47,7 +47,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Provider profile GET error', err?.message || err);
+    // console.error('Provider profile GET error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to fetch provider profiles' }, { status: 500 });
   }
 }
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Provider profile POST error', err?.message || err);
+    // console.error('Provider profile POST error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to create provider profile' }, { status: 500 });
   }
 }
@@ -100,7 +100,7 @@ export async function PUT(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Provider profile PUT error', err?.message || err);
+    // console.error('Provider profile PUT error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to update provider profile' }, { status: 500 });
   }
 }
@@ -126,7 +126,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes);
     return NextResponse.json(data, { status: backendRes.status });
   } catch (err: any) {
-    console.error('Provider profile DELETE error', err?.message || err);
+    // console.error('Provider profile DELETE error', err?.message || err);
     return NextResponse.json({ success: false, error: 'Failed to delete provider profile' }, { status: 500 });
   }
 }

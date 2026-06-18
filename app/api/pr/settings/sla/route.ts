@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider settings sla GET error', err?.message || err)
+    // console.error('Provider settings sla GET error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to fetch SLA documents' }, { status: 500 })
   }
 }
@@ -47,7 +47,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider settings sla DELETE error', err?.message || err)
+    // console.error('Provider settings sla DELETE error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to delete SLA document' }, { status: 500 })
   }
 }

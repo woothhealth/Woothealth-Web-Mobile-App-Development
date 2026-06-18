@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { toast } from "sonner";
 import { useProviderProfiles } from '@/lib/providerUserProfile';
+import { matchProviderToTariff, buildTierKeys, findAmount } from '@/lib/providerTariffMatch';
 
 interface TariffRow {
   $id?: string;
@@ -20,13 +21,12 @@ interface TariffRow {
   price?: any;
   amount?: any;
   $createdAt?: string;
-  // computed
   _serviceName?: string;
   _providerType?: string;
   _resolvedPrice?: number | null;
 }
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 40;
 
 export default function TariffTableClient() {
   const [rows, setRows] = useState<TariffRow[]>([]);
@@ -63,44 +63,7 @@ export default function TariffTableClient() {
         ? data.data
         : [];
 
-      // helper: build tier keys
-      const buildTierKeys = (t: string) => {
-        if (!t) return [] as string[];
-        const cleaned = t.replace(/\s+/g, "").replace(/\+/g, "Plus");
-        return [
-          `tier${cleaned}`,
-          `tier${cleaned.toLowerCase()}`,
-          `tier${cleaned.toUpperCase()}`,
-          `price${cleaned}`,
-          `price${cleaned.toLowerCase()}`,
-          `price${cleaned.toUpperCase()}`,
-          cleaned,
-          cleaned.toLowerCase(),
-          cleaned.toUpperCase(),
-        ].filter(Boolean);
-      };
-
-      const nestedKeys = ["prices", "price", "tiers", "amounts", "rates"];
-
-      const findAmount = (t: any, tierCandidates: string[]) => {
-        if (!t) return null;
-        for (const k of tierCandidates) {
-          if (t[k] != null) return Number(t[k]);
-        }
-        for (const nk of nestedKeys) {
-          const obj = t[nk];
-          if (obj && typeof obj === "object") {
-            for (const k of tierCandidates) {
-              if (obj[k] != null) return Number(obj[k]);
-            }
-            const vals = Object.values(obj).filter((v) => v != null && (typeof v === "number" || !Number.isNaN(Number(v))));
-            if (vals.length > 0) return Number(vals[0]);
-          }
-        }
-        if (t.amount != null) return Number(t.amount);
-        if (t.price != null) return Number(t.price);
-        return null;
-      };
+      // use shared helpers for tier key building and price extraction
 
       const mapped: TariffRow[] = rawList.map((r: any) => {
         const rec: any = { ...(r || {}) };
@@ -122,15 +85,16 @@ export default function TariffTableClient() {
       // If we have provider profile details, restrict displayed tariffs to the provider's type and tier prices
       if (resolvedProviderTier && resolvedProviderType) {
         const filteredForProvider = mapped.filter((rec) => {
-          const recType = (rec._providerType || '').toString().trim().toLowerCase();
-          const hasTypeMatch = recType === resolvedProviderType;
-          const hasPrice = rec._resolvedPrice != null;
-          return hasTypeMatch && hasPrice;
-        });
-        setRows(filteredForProvider);
+          // enforce exact provider type + tier presence using reusable matcher
+          const typeMatch = matchProviderToTariff(resolvedProviderType, resolvedProviderTier, rec)
+          // also ensure a resolved price exists
+          const hasPrice = rec._resolvedPrice != null || rec.tierA != null || rec.tierB != null || rec.tierC != null || rec.tierD != null || rec.price != null || rec.amount != null
+          return typeMatch && hasPrice
+        })
+        setRows(filteredForProvider)
       } else {
         // No provider profile yet — don't show generic tariff list
-        setRows([]);
+        setRows([])
       }
     } catch (err: any) {
       setError(err?.message || "Unable to fetch tariff data.");
@@ -218,14 +182,14 @@ export default function TariffTableClient() {
       </div>
 
       <div className="rounded-[15px] bg-white p-4 shadow-sm">
-        <div className="overflow-x-auto h-120 custom-scrollbar">
+        <div className="overflow-auto h-260 custom-scrollbar">
           <table className="min-w-full divide-y divide-border text-sm border rounded-[10px] border-border">
-            <thead className="text-left text-sm font-semibold divide divide-border">
+            <thead className="text-left text-sm font-semibold divide divide-border text-[15px]">
               <tr>
-                <th className="px-4 py-4">S/N</th>
-                <th className="px-4 py-4">Item Code</th>
-                <th className="px-4 py-4">Procedure</th>
-                <th className="px-4 py-4">Price</th>
+                <th className="px-4 py-3">S/N</th>
+                <th className="px-4 py-3">Item Code</th>
+                <th className="px-4 py-3">Procedure</th>
+                <th className="px-4 py-3">Price</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 bg-white text-slate-700">
@@ -240,10 +204,10 @@ export default function TariffTableClient() {
                   const price = rec._resolvedPrice ?? rec.tierA ?? rec.tierB ?? rec.price ?? rec.amount ?? null;
                   return (
                     <tr key={`${rec.$id || itemCode || idx}`} className="hover:bg-slate-50 transition divide-x divide-border">
-                      <td className="px-4 py-4">{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
-                      <td className="px-4 py-4">{itemCode}</td>
-                      <td className="px-4 py-4 font-medium text-slate-900">{procedure}</td>
-                      <td className="px-4 py-4">{formatPrice(price)}</td>
+                      <td className="px-4 py-3">{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
+                      <td className="px-4 py-3">{itemCode}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{procedure}</td>
+                      <td className="px-4 py-3">{formatPrice(price)}</td>
                     </tr>
                   );
                 })

@@ -15,6 +15,7 @@ export interface TreatmentItem {
 }
 
 export interface PaCodeFormData {
+  providerName: string;
   hmoid: string;
   dateOfEncounter: string;
   careType: string;
@@ -33,6 +34,12 @@ const PaCodeCreationPage = () => {
     setIsSubmitting(true);
     try {
       // Validate required fields
+      if (!formData.providerName.trim()) {
+        toast.error('Provider name is required');
+        setIsSubmitting(false);
+        return;
+      }
+
       if (!formData.hmoid.trim()) {
         toast.error('HMOID is required');
         setIsSubmitting(false);

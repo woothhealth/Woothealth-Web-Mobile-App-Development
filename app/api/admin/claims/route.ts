@@ -372,6 +372,17 @@ export async function GET(req: Request) {
 
     const data = await backendRes.json();
 
+    // try {
+    //   // Log a concise preview of backend response (max 10 items) for debugging
+    //   try {
+    //     console.log('[route] backend response for claims', JSON.stringify({ page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined, dataPreview: Array.isArray(data?.data) ? data.data.slice(0, 10) : undefined, raw: typeof data === 'object' && !Array.isArray(data) ? undefined : data }, null, 2));
+    //   } catch (e) {
+    //     console.log('[route] backend response for claims', { page, limit, totalPreview: Array.isArray(data?.data) ? data.data.length : undefined, sample: Array.isArray(data?.data) ? data.data.slice(0, 10) : undefined });
+    //   }
+    // } catch (e) {
+    //   // swallow any logging errors to avoid impacting response
+    // }
+
     // Transform backend data to match frontend expectations
     let claims = [];
     let total = 0;
@@ -500,8 +511,30 @@ export async function PUT(req: Request) {
     const guard = requireAdminRole(cookieHeader);
     if (guard) return guard;
 
-    const body = await req.json().catch(() => ({}));
-    const { id, action, message } = body as any;
+    // read raw text to log malformed bodies and parse safely
+    const rawText = await req.text();
+    let body: any = {};
+    try {
+      body = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      body = rawText;
+    }
+
+    try {
+      console.debug('Admin claims PUT raw body:', rawText);
+      console.debug('Admin claims PUT parsed body:', body);
+      console.debug('Admin claims PUT headers:', {
+        cookie: cookieHeader,
+        referer: req.headers.get('referer') || null,
+        'user-agent': req.headers.get('user-agent') || null,
+        'content-type': req.headers.get('content-type') || null,
+        'content-length': req.headers.get('content-length') || null,
+      });
+    } catch (e) {
+      console.debug('Admin claims PUT debug failed to log body', e);
+    }
+
+    const { id, action, message } = (body || {}) as any;
     if (!id) {
       return NextResponse.json({ success: false, error: 'Missing claim id' }, { status: 400 });
     }
@@ -511,20 +544,48 @@ export async function PUT(req: Request) {
     // Development / mock mode
     if (!BACKEND_URL) {
       // Return a mocked update response so the UI can proceed in dev
-      return NextResponse.json({ success: true, data: { id, status: action === 'approve' ? 'approved' : (action === 'reject' ? 'rejected' : action), message: message || null }, message: 'Claim updated (mock)' }, { status: 200 });
+      return NextResponse.json({ success: true, data: { id, status: action === 'approve' ? 'Approved' : (action === 'reject' ? 'Rejected' : action), message: message || null }, message: 'Claim updated (mock)' }, { status: 200 });
     }
 
-    // Attempt to forward the action to the backend. Prefer PATCH then fallback to PUT.
+    // Attempt to forward the action to the backend. Map actions to backend-friendly payloads.
     const endpoint = `${BACKEND_URL.replace(/\/$/, '')}/admin/claims/${encodeURIComponent(id)}`;
     const headers: any = {
       ...getAdminHeaders(cookieHeader),
       'Content-Type': 'application/json',
     };
 
+    // Map UI action to backend fields (status, reviewNotes, approvedAmount)
+    let payloadToSend: any = {};
+    if (action === 'approve') {
+      payloadToSend.status = 'Approved';
+      if (typeof body.approvedAmount !== 'undefined') payloadToSend.approvedAmount = body.approvedAmount;
+      if (message) payloadToSend.reviewNotes = message;
+    } else if (action === 'reject') {
+      payloadToSend.status = 'Rejected';
+      if (message) payloadToSend.reviewNotes = message;
+    } else {
+      // generic: forward provided keys
+      payloadToSend = { action, message, ...body };
+    }
+
+    // Ensure backend receives claimId when it expects it
+    try {
+      if (id) payloadToSend.claimId = id;
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      console.debug('Admin claims PUT forwarding to backend endpoint:', endpoint);
+      console.debug('Admin claims PUT outbound payload:', payloadToSend);
+    } catch (e) {
+      // ignore logging errors
+    }
+
     let backendRes = await fetch(endpoint, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ action, message }),
+      body: JSON.stringify(payloadToSend),
       credentials: 'include',
     });
 
@@ -533,18 +594,22 @@ export async function PUT(req: Request) {
       backendRes = await fetch(endpoint, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ action, message }),
+        body: JSON.stringify(payloadToSend),
         credentials: 'include',
       });
     }
 
+    const backendText = await backendRes.text().catch(() => null);
+    let backendData: any = null;
+    try { backendData = backendText ? JSON.parse(backendText) : null; } catch { backendData = backendText; }
+
+    console.debug('Admin claims PUT backend response', { status: backendRes.status, statusText: backendRes.statusText, body: backendData });
+
     if (!backendRes.ok) {
-      const text = await backendRes.text().catch(() => null);
-      return NextResponse.json({ success: false, error: 'Backend update failed', details: text }, { status: backendRes.status || 500 });
+      return NextResponse.json({ success: false, error: 'Backend update failed', details: backendData }, { status: backendRes.status || 500 });
     }
 
-    const data = await backendRes.json().catch(() => null);
-    return NextResponse.json(data || { success: true }, { status: 200 });
+    return NextResponse.json(backendData || { success: true }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: 'Failed to update claim' }, { status: 500 });
   }

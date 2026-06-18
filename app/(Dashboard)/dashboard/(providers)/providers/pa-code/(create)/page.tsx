@@ -125,7 +125,7 @@ const PaCodeCreationPage = () => {
   };
 
   return (
-    <div className="h-full px-4 md:px-0 py-4">
+    <div className="h-full px-3 md:px-0 py-4">
       <div className="w-full mx-auto">
         {/* PA Code Form */}
         <PaCodeForm

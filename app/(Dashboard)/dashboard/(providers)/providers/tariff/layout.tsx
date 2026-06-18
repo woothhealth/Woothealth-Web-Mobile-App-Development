@@ -11,7 +11,7 @@ export default function TariffLayout({
       <div className="sticky top-0 z-20">
          <ProviderHeader title="Add Tariff" />
       </div>
-      <div className="p-4">{children}</div>
+      <div className="md:p-4">{children}</div>
     </div>
     </>
   );

@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider profile administrators POST error', err?.message || err)
+    // console.error('Provider profile administrators POST error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to create administrator' }, { status: 500 })
   }
 }

@@ -22,20 +22,48 @@ export async function GET(request: Request) {
       },
     })
 
-    const data = await res.text()
-    if (!res.ok) {
-      console.error('Upstream /provider/tariffs error', {
-        upstream: upstreamUrl.toString(),
-        status: res.status,
-        body: data,
-        forwardedCookie: !!request.headers.get('cookie'),
-      })
-    }
+    const data = await parseJson(res)
+
+    // Prepare a preview of the backend payload (max 10 items)
+    // const makePreview = (raw: any) => {
+    //   try {
+    //     if (raw && typeof raw === 'object') {
+    //       // backend envelope { success, data: [...] }
+    //       if (Array.isArray(raw.data)) {
+    //         return { success: raw.success, message: raw.message, total: raw.data.length, data: raw.data.slice(0, 10) }
+    //       }
+    //     }
+    //     if (Array.isArray(raw)) return { total: raw.length, data: raw.slice(0, 10) }
+    //   } catch (e) {
+    //     // fallback to raw
+    //   }
+    //   return raw
+    // }
+
+    // const preview = makePreview(data)
+
+    // // Log a compact JSON preview of the backend response for debugging
+    // try {
+    //   console.debug('pr/tariff GET backend response', JSON.stringify({
+    //     upstream: upstreamUrl.toString(),
+    //     status: res.status,
+    //     ok: res.ok,
+    //     preview,
+    //     forwardedCookie: !!request.headers.get('cookie'),
+    //   }, null, 2))
+    // } catch (e) {
+    //   console.debug('pr/tariff GET backend response (stringify failed)', {
+    //     upstream: upstreamUrl.toString(),
+    //     status: res.status,
+    //     ok: res.ok,
+    //     forwardedCookie: !!request.headers.get('cookie'),
+    //   })
+    // }
 
     const headers: Record<string, string> = { 'content-type': res.headers.get('content-type') || 'application/json' }
-    return new NextResponse(data, { status: res.status, headers })
+    return new NextResponse(typeof data === 'string' ? data : JSON.stringify(data), { status: res.status, headers })
   } catch (err: any) {
-    console.error('GET /api/pr/tariffs proxy error', err)
+    // console.error('GET /api/pr/tariffs proxy error', err)
     return NextResponse.json({ error: err?.message || 'Proxy error' }, { status: 500 })
   }
 }
@@ -59,7 +87,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider tariffs POST error', err?.message || err)
+    // console.error('Provider tariffs POST error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to create tariffs' }, { status: 500 })
   }
 }

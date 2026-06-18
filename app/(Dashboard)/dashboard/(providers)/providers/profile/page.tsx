@@ -64,7 +64,7 @@ const page = async () => {
   }
 
   return (
-    <div className="space-y-6 px-4 py-6 md:p-6">
+    <div className="space-y-6 px-0 py-6 md:p-6">
       <ProfileClient profileData={profileData} />
     </div>
   )

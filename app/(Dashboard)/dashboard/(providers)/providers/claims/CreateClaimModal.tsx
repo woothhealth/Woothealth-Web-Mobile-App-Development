@@ -10,6 +10,7 @@ type TreatmentItem = {
   description?: string;
   quantity?: number;
   unitPrice?: number;
+  amount?: number;
   Amount?: number;
   price?: number;
   [key: string]: any;
@@ -21,11 +22,10 @@ type Props = {
   onSuccess?: (createdClaim: any) => void;
 };
 
-export default function AddClaimModal({ open, onClose, onSuccess }: Props) {
+export default function CreateClaimModal({ open, onClose, onSuccess }: Props) {
   const [hmoId, setHmoId] = useState('');
   const [paCode, setPaCode] = useState('');
   const [items, setItems] = useState<TreatmentItem[]>([]);
-  const [resolvedPaObj, setResolvedPaObj] = useState<any | null>(null);
   const [loadingItems, setLoadingItems] = useState(false);
   const [careType, setCareType] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
@@ -57,73 +57,98 @@ export default function AddClaimModal({ open, onClose, onSuccess }: Props) {
   const fetchPaCodeItems = async (code: string) => {
     setLoadingItems(true);
     setError(null);
-    setResolvedPaObj(null);
     try {
-      // Try resolving a PA code object (server may return varying shapes)
       const tryFetch = async (paramName: string) => {
-        const resp = await fetch(`/api/admin/pa-codes?${paramName}=${encodeURIComponent(code)}`);
+        const resp = await fetch(`/api/pr/pa-code?${paramName}=${encodeURIComponent(code)}`);
         if (!resp.ok) return null;
         const data = await resp.json().catch(() => null);
         if (!data) return null;
+        // find the paCode object in different response shapes. If backend
+        // returned an array (or a wrapper with .data), try to find the exact
+        // match by authorizationCode / code / paCode; otherwise fall back to
+        // the first element or the object itself.
+        let paObj: any = null;
+        try {
+          let list: any[] | null = null;
+          if (data?.data) {
+            list = Array.isArray(data.data) ? data.data : [data.data];
+          } else if (Array.isArray(data)) {
+            list = data;
+          } else if (data && typeof data === 'object') {
+            list = [data];
+          }
 
-        // normalize to list for exact-match lookup (do NOT fallback to first element)
-        let list: any[] | null = null;
-        if (data?.data) {
-          list = Array.isArray(data.data) ? data.data : [data.data];
-        } else if (Array.isArray(data)) {
-          list = data;
-        } else if (data && typeof data === 'object') {
-          list = [data];
+            if (list && list.length) {
+              const findMatch = (item: any) => {
+                const v = (item.authorizationCode || item.authorization_code || item.paCode || item.code || item.authorization || item.id);
+                if (v == null) return false;
+                try { return String(v).toLowerCase() === String(code).toLowerCase(); } catch { return false; }
+              };
+              // require an exact match; do NOT fallback to first element
+              paObj = list.find(findMatch) || null;
+            } else {
+              paObj = null;
+            }
+        } catch (e) {
+          paObj = null;
         }
 
-        if (!list || !list.length) return null;
-
-        const findMatch = (item: any) => {
-          const v = (item.authorizationCode || item.authorization_code || item.paCode || item.code || item.authorization || item.id);
-          if (v == null) return false;
-          try { return String(v).toLowerCase() === String(code).toLowerCase(); } catch { return false; }
-        };
-
-        return list.find(findMatch) || null;
+        return paObj;
       };
 
-      let paObj = await tryFetch('paCodeId');
+      let paObj = await tryFetch('paCode');
       if (!paObj) paObj = await tryFetch('code');
 
       if (paObj) {
-        setResolvedPaObj(paObj);
-        // extract additional fields for admin claim form
-        const care = paObj.careType || paObj.care_type || paObj.care || paObj.careTypeName || paObj.claimType || '';
-        const diag = paObj.diagnosis || paObj.diagnoses || paObj.diagnosisText || paObj.diagnosis_description || '';
-        const reqBy = paObj.requestedBy || paObj.requested_by || paObj.requestedByName || paObj.requested_by_name || paObj.requested || '';
-        setCareType(String(care || ''));
-        setDiagnosis(String(diag || ''));
-        setRequestedBy(String(reqBy || ''));
-        // Normalize treatment list similar to CreateClaimModal
-        const treatmentRaw: any = paObj.treatment ?? paObj.treatmentItems ?? paObj.items ?? [];
-        const normalized = Array.isArray(treatmentRaw)
-          ? treatmentRaw.map((it: any) => {
-              const item: any = { ...(it || {}) };
-              item.itemCode = item.itemCode || item.item_code || item.ItemCode || item.code || item.Code || item.id || item.item || '';
-              item.description = item.description || item.Description || item.desc || item.note || item.name || '';
-              const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
-              const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
-              item.unitPrice = price;
-              item.quantity = qty;
-              const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
-              if (!existingAmount && price && qty) {
-                item.Amount = price * qty;
-              } else {
-                item.Amount = existingAmount;
-              }
-              item.amount = item.amount ?? item.Amount;
-              return item;
-            })
+        // extract additional fields
+        const care = paObj.careType || paObj.care_type || paObj.care || paObj.careTypeName || ''
+        const diag = paObj.diagnosis || paObj.diagnoses || paObj.diagnosisText || paObj.diagnosis_description || ''
+        const reqBy = paObj.requestedBy || paObj.requested_by || paObj.requestedByName || paObj.requested_by_name || paObj.requested || ''
+
+        setCareType(String(care || ''))
+        setDiagnosis(String(diag || ''))
+        setRequestedBy(String(reqBy || ''))
+        // helper to normalize a single item
+        const normalizeItem = (it: any) => {
+          const item: any = { ...(it || {}) };
+          item.itemCode = item.itemCode || item.item_code || item.ItemCode || item.code || item.Code || item.id || item.item || '';
+          item.description = item.description || item.Description || item.desc || item.note || item.name || '';
+          const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
+          const price = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
+          item.unitPrice = price;
+          item.quantity = qty;
+          const existingAmount = Number(item.Amount ?? item.amount ?? 0) || 0;
+          if (!existingAmount && price && qty) {
+            item.Amount = price * qty;
+          } else {
+            item.Amount = existingAmount;
+          }
+          item.amount = item.amount ?? item.Amount;
+          return item;
+        };
+
+        // extract treatment array from various possible shapes
+        let treatmentRaw: any = null;
+        if (Array.isArray(paObj.treatment)) treatmentRaw = paObj.treatment;
+        else if (Array.isArray(paObj.treatmentItems)) treatmentRaw = paObj.treatmentItems;
+        else if (Array.isArray(paObj.items)) treatmentRaw = paObj.items;
+        else if (paObj.treatment && typeof paObj.treatment === 'object') treatmentRaw = Object.values(paObj.treatment);
+        else if (paObj.treatmentItems && typeof paObj.treatmentItems === 'object') treatmentRaw = Object.values(paObj.treatmentItems);
+        else if (paObj.items && typeof paObj.items === 'object') treatmentRaw = Object.values(paObj.items);
+        else if (paObj.data && (Array.isArray(paObj.data.treatment) || Array.isArray(paObj.data.items))) {
+          treatmentRaw = paObj.data.treatment ?? paObj.data.items;
+        } else {
+          // try common fallbacks
+          treatmentRaw = paObj.treatment ?? paObj.treatmentItems ?? paObj.items ?? [];
+        }
+
+        const normalized: TreatmentItem[] = Array.isArray(treatmentRaw)
+          ? treatmentRaw.map(normalizeItem)
           : [];
 
         setItems(normalized);
       } else {
-        // No exact match — clear items and show message
+        // No exact match found — clear items and display 'no data'
         setItems([]);
         setError('No PA code found');
       }
@@ -140,35 +165,16 @@ export default function AddClaimModal({ open, onClose, onSuccess }: Props) {
     if (!paCode) return toast.error('Please enter PA code');
     setSubmitting(true);
     try {
-      // Build claim-shaped payload using resolved PA object where available
-      const mappedItems = (Array.isArray(items) ? items : []).map((it) => ({
-        itemCode: it.itemCode || it.item_code || it.id || it.Code || it.code || it.item || '',
-        description: it.description || it.name || it.item || '',
-        quantity: Number(it.quantity ?? it.Quantity ?? 1) || 1,
-        unitPrice: Number(it.unitPrice ?? it.unit_price ?? it.price ?? it.Amount ?? it.amount) || 0,
-        amount: Number(it.amount ?? it.Amount ?? 0) || 0,
-        paCodeId: resolvedPaObj?._id || resolvedPaObj?.$id || resolvedPaObj?.id || resolvedPaObj?.paCodeId || undefined,
-      }));
-
-      const payload: any = {
+      // send all data pulled to the POST endpoint
+      const payload = {
         hmoId: hmoId.trim(),
         paCode: paCode.trim(),
-        items: mappedItems,
+        items: Array.isArray(items) ? items : [],
+        careType: careType || undefined,
+        diagnosis: diagnosis || undefined,
+        requestedBy: requestedBy || undefined,
       };
-
-      // attach claimType and diagnosis from the PA object when present
-      if (resolvedPaObj) {
-        payload.claimType = resolvedPaObj.claimType || resolvedPaObj.careType || resolvedPaObj.type || '';
-        payload.diagnosis = resolvedPaObj.diagnosis || resolvedPaObj.Diagnosis || '';
-        // include editable fields copied from the PA object
-        payload.careType = careType || undefined;
-        payload.requestedBy = requestedBy || undefined;
-        payload.dateOfService = resolvedPaObj.dateOfService || resolvedPaObj.createdDate || undefined;
-        payload.hospitalProvider = resolvedPaObj.providerName || resolvedPaObj.hospitalProvider || undefined;
-        payload.description = resolvedPaObj.description || resolvedPaObj.notes || undefined;
-      }
-
-      const resp = await fetch('/api/admin/claims', {
+      const resp = await fetch('/api/pr/claims', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -188,10 +194,10 @@ export default function AddClaimModal({ open, onClose, onSuccess }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center py-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-full mx-4 p-6 overflow-y-auto custom-scrollbar">
-        <h3 className="text-lg font-semibold mb-4">Add Claim</h3>
+      <div className="relative bg-white rounded-lg shadow-lg w-full h-full max-w-2xl mx-4 p-6">
+        <h3 className="text-lg font-semibold mb-4">Create Provider Claim</h3>
 
         <div className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -268,16 +274,16 @@ export default function AddClaimModal({ open, onClose, onSuccess }: Props) {
                         <th className="px-3 py-2 text-left font-semibold">Description</th>
                         <th className="px-3 py-2 text-center font-semibold">Quantity</th>
                         <th className="px-3 py-2 text-right font-semibold">Unit Price</th>
-                        <th className="px-3 py-2 text-right font-semibold">Amount</th>
+                        <th className="px-3 py-2 text-right font-semibold">amount</th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item, idx) => {
                         const code = item.itemCode || item.item_code || item.id || `#${idx + 1}`;
                         const desc = item.description || item.name || item.item || '';
-                        const qty = Number(item.quantity ?? item.Quantity ?? 1) || 1;
-                        const unit = Number(item.unitPrice ?? item.unit_price ?? item.price ?? item.Amount ?? item.amount) || 0;
-                        const amount = Number(item.Amount ?? item.amount ?? unit * qty) || 0;
+                        const qty = Number(item.quantity ?? 1) || 1;
+                        const unit = Number(item.unitPrice ?? 0) || 0;
+                        const amount = Number(item.amount ?? item.amount ?? (unit * qty)) || 0;
                         return (
                           <tr key={item.id ?? idx} className="border-b">
                             <td className="px-3 py-2 text-primary">{code}</td>

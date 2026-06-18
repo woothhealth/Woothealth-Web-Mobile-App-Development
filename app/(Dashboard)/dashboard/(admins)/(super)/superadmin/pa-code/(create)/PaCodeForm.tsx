@@ -3,7 +3,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import diagnosisData from '@/data/diagnosis-data.json';
 import { MdAdd, MdDelete } from 'react-icons/md';
-import type { PaCodeFormData, TreatmentItem } from './create/page';
+
+export interface TreatmentItem {
+  id: string;
+  itemCode: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+}
+
+export interface PaCodeFormData {
+  providerName: string;
+  hmoid: string;
+  dateOfEncounter: string;
+  careType: string;
+  diagnosis: string[];
+  treatmentItems: TreatmentItem[];
+  requestedBy: string;
+}
 
 interface PaCodeFormProps {
   onSubmit: (formData: PaCodeFormData) => void;
@@ -13,6 +30,7 @@ interface PaCodeFormProps {
 
 const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submissionSuccess }) => {
   const initialFormData: PaCodeFormData = {
+    providerName: '',
     hmoid: '',
     dateOfEncounter: '',
     careType: '',
@@ -30,6 +48,10 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
   };
 
   const [formData, setFormData] = useState<PaCodeFormData>(initialFormData);
+  const [providerSearch, setProviderSearch] = useState('');
+  const [providerSuggestions, setProviderSuggestions] = useState<Array<{ id?: string; name: string }>>([]);
+  const [providerLoading, setProviderLoading] = useState(false);
+  const [providerShowSuggestions, setProviderShowSuggestions] = useState(false);
   const [diagnosisSearch, setDiagnosisSearch] = useState('');
   const diagnosisTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [textareaValue, setTextareaValue] = useState((initialFormData.diagnosis || []).join('\n'));
@@ -40,6 +62,27 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Prefill requestedBy from admin profile on mount (client-side)
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/profile', { credentials: 'include' });
+        const data = await res.json().catch(() => null);
+        const payload = data && data.success && data.data ? data.data : data || {};
+        const first = payload.firstName || payload.first_name || payload.name || payload.fullName || '';
+        const last = payload.lastName || payload.last_name || '';
+        const full = [first, last].filter(Boolean).join(' ').trim();
+        if (mounted && full) {
+          setFormData(prev => prev.requestedBy ? prev : ({ ...prev, requestedBy: full }));
+        }
+      } catch (err) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   // Calculate total amount whenever treatment items change
   useEffect(() => {
@@ -131,9 +174,52 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
       return;
     }
 
+    // providerName search is managed separately; only set search text here
+    if (name === 'providerName') {
+      setProviderSearch(value);
+      setProviderShowSuggestions(true);
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
     validateField(name, value);
   };
+
+  // fetch provider suggestions when providerSearch changes (debounced)
+  useEffect(() => {
+    const term = (providerSearch || '').toString().trim();
+    if (!term) {
+      setProviderSuggestions([]);
+      return;
+    }
+    let mounted = true;
+    const id = setTimeout(async () => {
+      setProviderLoading(true);
+      try {
+        const res = await fetch(`/api/admin/providers?search=${encodeURIComponent(term)}`, { credentials: 'include' });
+        const payload = await res.json().catch(() => null);
+        const data = payload?.data || payload || [];
+        if (!mounted) return;
+        let list: any[] = [];
+        if (Array.isArray(data)) list = data;
+        else if (Array.isArray((data as any).items)) list = (data as any).items;
+        else if (Array.isArray((data as any).data)) list = (data as any).data;
+        else list = [];
+        let suggestions = list.map((p: any) => ({ id: p.$id || p.id, name: p.name || p.displayName || p.providerName || '' })).filter((p: any) => p.name);
+        // match similar to diagnosis: include term anywhere (case-insensitive)
+        const termLower = term.toLowerCase();
+        suggestions = suggestions.filter((s: any) => s.name.toLowerCase().includes(termLower)).slice(0, 10);
+        setProviderSuggestions(suggestions);
+        setProviderShowSuggestions(suggestions.length > 0);
+      } catch (e) {
+        if (!mounted) return;
+        setProviderSuggestions([]);
+      } finally {
+        if (mounted) setProviderLoading(false);
+      }
+    }, 300);
+    return () => { mounted = false; clearTimeout(id); };
+  }, [providerSearch]);
 
   const handleDiagnosisTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -322,7 +408,8 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
 
     // If no errors, submit
     if (Object.keys(errors).length === 0 && invalidItems.length === 0) {
-      onSubmit(formData);
+      const payload = { ...formData, providerName: (formData as any).providerName || '' } as any;
+      onSubmit(payload);
     }
   };
 
@@ -344,6 +431,47 @@ const PaCodeForm: React.FC<PaCodeFormProps> = ({ onSubmit, isSubmitting, submiss
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* HMOID */}
+          <div>
+            <label htmlFor="providerName" className="block mb-2">
+              Provider Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="providerName"
+                name="providerName"
+                value={providerSearch}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#49A5EF] ${
+                  errors.hmoid ? 'border-red-500' : 'border-gray-300'
+                } disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                placeholder="Start typing provider name"
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); } }}
+                  onFocus={() => { if ((providerSearch || '').length >= 1 && providerSuggestions.length > 0) setProviderShowSuggestions(true); }}
+                  onBlur={() => setTimeout(() => setProviderShowSuggestions(false), 120)}
+              />
+              {providerShowSuggestions && providerSuggestions.length > 0 && (
+                <div className="absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-auto border bg-white rounded shadow">
+                  {providerSuggestions.map((p) => (
+                    <div
+                      key={p.id || p.name}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setProviderSearch(p.name);
+                        setFormData(prev => ({ ...prev, providerName: p.name } as any));
+                        // attach selected provider id if needed in future
+                        setProviderShowSuggestions(false);
+                      }}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {p.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div>
             <label htmlFor="hmoid" className="block mb-2">
               HMOID

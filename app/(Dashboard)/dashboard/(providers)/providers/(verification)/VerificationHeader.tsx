@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { MdSearch } from 'react-icons/md';
 
 interface VerificationHeaderProps {
-  onVerify: (hmoid: string) => void;
+  onVerify: (hmoid: string, explicit?: boolean) => void;
   isLoading: boolean;
 }
 
@@ -17,13 +17,13 @@ const VerificationHeader: React.FC<VerificationHeaderProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const normalized = hmoid.trim().toUpperCase();
-    onVerify(normalized);
-    setHmoid('');
+    // explicit = true indicates user-initiated verification
+    onVerify(normalized, true);
   };
 
   return (
     <div className="">
-      <form onSubmit={handleSubmit} className="flex gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 bg-[#ffffff]">
           <input
             type="text"

@@ -30,8 +30,8 @@ export default function WelcomeWrapper({
   return (
     <section className="relative">
       {/* Header */}
-      <div className="flex justify-between items-center px-4 md:px-6 py-4 bg-white border-b border-gray-200">
-        <div className="flex items-center gap-2 text-[20px]">
+      <div className="flex justify-between item-end md:items-center px-3 md:px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex items-center gap-2 text-[19px] md:text-[20px]">
           {/* Mobile menu toggle */}
           <div className="block lg:hidden">
             {!menuOpen ? (
@@ -49,7 +49,6 @@ export default function WelcomeWrapper({
             <h3 className="block font-semibold">
               {title}
             </h3>
-          
         </div>
 
         {/* Right side: notifications and user info */}

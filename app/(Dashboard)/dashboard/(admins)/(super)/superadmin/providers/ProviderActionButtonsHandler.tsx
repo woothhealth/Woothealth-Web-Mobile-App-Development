@@ -5,6 +5,7 @@ import { FaUser } from 'react-icons/fa';
 import { FaX } from 'react-icons/fa6';
 import { toast } from 'sonner';
 import AddTariffModal from '../tariff/AddTariffModal';
+import { matchProviderToTariff, buildTierKeys, findAmount } from '@/lib/providerTariffMatch';
 
 interface Provider {
   $id: string;
@@ -117,60 +118,25 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
         if (!res.ok) throw new Error(payload?.error || 'Failed to fetch tariffs');
         if (!mounted) return;
 
-        // Normalize provider info for matching
-        const providerTypeNormalized = (provider.type || '').toString().trim().toLowerCase();
-        const providerTierRaw = (provider.tier || '').toString().trim();
-        const providerTier = providerTierRaw.replace(/^tier\s*/i, '').replace(/^price\s*/i, '');
-
-        const tierCandidates = [
-          `tier${providerTier}`,
-          `tier${providerTier.toLowerCase()}`,
-          `tier${providerTier.toUpperCase()}`,
-          `price${providerTier}`,
-          `price${providerTier.toLowerCase()}`,
-          `price${providerTier.toUpperCase()}`,
-          providerTier,
-          providerTier.toLowerCase(),
-          providerTier.toUpperCase(),
-        ].filter(Boolean);
-
-        const extractAmount = (t: any) => {
-          if (!t) return null;
-          for (const k of tierCandidates) {
-            if (t[k] != null) return t[k];
-          }
-          const nestedKeys = ['prices', 'price', 'tiers', 'amounts', 'rates'];
-          for (const nk of nestedKeys) {
-            const obj = t[nk];
-            if (obj && typeof obj === 'object') {
-              for (const k of tierCandidates) {
-                if (obj[k] != null) return obj[k];
-              }
-              // if object contains numeric values only, try first numeric
-              const vals = Object.values(obj).filter((v) => v != null && (typeof v === 'number' || !Number.isNaN(Number(v))));
-              if (vals.length > 0) return vals[0];
-            }
-          }
-          if (t.amount != null) return t.amount;
-          if (t.price != null) return t.price;
-          return null;
-        };
-
         let rawList: any[] = [];
         if (Array.isArray(data)) rawList = data;
         else if (Array.isArray((data as any).items)) rawList = (data as any).items;
         else if (Array.isArray((data as any).data)) rawList = (data as any).data;
         else rawList = [];
+        // Map and compute resolved price then filter using shared matcher
+        const providerTierRaw = (provider.tier || '').toString().trim();
+        const providerTypeRaw = provider.type || '';
 
-        // Filter tariffs by providerType match and presence of a tier-specific amount
-        const filtered = rawList.filter((t) => {
-          const tProviderType = ((t.providerType || t.provider_type || t.type) || '').toString().trim().toLowerCase();
-          if (!tProviderType || !providerTypeNormalized) return false;
-          if (tProviderType !== providerTypeNormalized) return false;
-          const amt = extractAmount(t);
-          return amt != null;
+        const mapped = rawList.map((t: any) => {
+          const rec = { ...(t || {}) };
+          const tierSource = (t.tier || t.planTier || t.providerTier || t.tierName || '').toString().trim();
+          const providerCandidates = buildTierKeys(providerTierRaw);
+          const tierCandidates = buildTierKeys(tierSource);
+          rec._resolvedPrice = findAmount(t, [...providerCandidates, ...tierCandidates]);
+          return rec;
         });
 
+        const filtered = mapped.filter((t) => matchProviderToTariff(providerTypeRaw, providerTierRaw, t) && t._resolvedPrice != null);
         setTariffs(filtered);
       } catch (err: any) {
         if (!mounted) return;
@@ -504,7 +470,7 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
       case 'viewTariff':
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-xl rounded-[15px] bg-white p-6 shadow-xl h-fit max-h-full overflow-y-auto custom-scrollbar">
+            <div className="w-full md:w-2xl rounded-[15px] bg-white p-6 shadow-xl h-fit max-h-full overflow-y-auto custom-scrollbar">
               <div className="flex items-start justify-between gap-4">
                 <h2 className="text-2xl font-semibold text-slate-900">View Tariff</h2>
                 <FaX onClick={() => setActivePopup(null)} className="cursor-pointer" size={22} />
@@ -515,13 +481,13 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
                     <p className="text-sm text-slate-500">Loading tariffs...</p>
                   </div>
                 ) : tariffsError ? (
-                  <div className="rounded-3xl border border-[#E5E7EB] bg-[#FFF0F0] p-4">
+                  <div className="rounded-[15px] border border-[#E5E7EB] bg-[#FFF0F0] p-4">
                     <p className="text-sm text-red-600">{tariffsError}</p>
                   </div>
                 ) : tariffs && tariffs.length > 0 ? (
-                  <div className="overflow-x-auto rounded-[15px] border border-[#E5E7EB] bg-white">
+                  <div className="overflow-x-auto rounded-[15px] bg-white">
                     <table className="w-full table-auto text-left">
-                      <thead className="bg-[#F8FAFC] border-b border-border text-[17px]">
+                      <thead className="bg-[#F8FAFC] border border-border text-[17px] rounded-t-[15px]">
                         <tr>
                           <th className="px-4 py-3">Tariff Code</th>
                           <th className="px-4 py-3">Service Name</th>
@@ -584,10 +550,10 @@ export const ProviderActionButtonsHandler: React.FC<ProviderActionButtonsHandler
                           const amount = amountRaw == null ? 'N/A' : amountRaw;
 
                           return (
-                            <tr key={index} className="even:bg-[#FBFDFF] divide-y divide-border">
-                              <td className="px-4 py-3 text-sm text-slate-700 align-top">{code}</td>
-                              <td className="px-4 py-3 text-sm text-slate-700 align-top">{serviceName}</td>
-                              <td className="px-4 py-3 text-sm font-semibold text-slate-900 border-b border-border">{formatAmount(amount)}</td>
+                            <tr key={index} className="even:bg-[#FBFDFF]">
+                              <td className="px-4 py-3 text-sm text-slate-700 align-top border border-border">{code}</td>
+                              <td className="px-4 py-3 text-sm text-slate-700 align-top border border-border">{serviceName}</td>
+                              <td className="px-4 py-3 text-sm font-semibold text-slate-900 border border-border">{formatAmount(amount)}</td>
                             </tr>
                           );
                         })}

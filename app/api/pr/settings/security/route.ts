@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider settings security GET error', err?.message || err)
+    // console.error('Provider settings security GET error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to fetch security sessions' }, { status: 500 })
   }
 }
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider settings security POST error', err?.message || err)
+    // console.error('Provider settings security POST error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to perform security action' }, { status: 500 })
   }
 }
@@ -72,7 +72,7 @@ export async function DELETE(req: Request) {
     const data = await parseJson(backendRes)
     return NextResponse.json(data, { status: backendRes.status })
   } catch (err: any) {
-    console.error('Provider settings security DELETE error', err?.message || err)
+    // console.error('Provider settings security DELETE error', err?.message || err)
     return NextResponse.json({ success: false, error: 'Failed to delete session' }, { status: 500 })
   }
 }
